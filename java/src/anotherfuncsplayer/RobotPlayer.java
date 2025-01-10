@@ -185,13 +185,13 @@ public class RobotPlayer {
                 System.out.println("Built a tower at " + targetLoc + "!");
             }
         }
-
         // Move and attack randomly if no objective.
         Direction dir = directions[rng.nextInt(directions.length)];
         MapLocation nextLoc = rc.getLocation().add(dir);
         if (rc.canMove(dir)){
-            rc.move(dir);
+            Pathfinding.move(nextLoc);
         }
+        
         // Try to paint beneath us as we walk to avoid paint penalties.
         // Avoiding wasting paint by re-painting our own tiles.
         MapInfo currentTile = rc.senseMapInfo(rc.getLocation());
