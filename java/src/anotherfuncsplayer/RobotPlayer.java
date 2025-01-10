@@ -146,9 +146,14 @@ public class RobotPlayer {
         MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
         // Search for a nearby ruin to complete.
         MapInfo curRuin = null;
+        int curDist = 999999;
         for (MapInfo tile : nearbyTiles){
             if (tile.hasRuin()){
-                curRuin = tile;
+            	int dist = tile.getMapLocation().distanceSquaredTo(rc.getLocation());
+            	if (dist < curDist) {
+	                curRuin = tile;
+	                curDist = dist;
+            	}
             }
         }
         if (curRuin != null){
