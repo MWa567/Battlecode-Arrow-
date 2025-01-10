@@ -145,6 +145,8 @@ public class RobotPlayer {
         // Sense information about all visible nearby tiles.
         MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
         // Search for a nearby ruin to complete.
+        
+        //If we can see a well, move towards it
         MapInfo curRuin = null;
         int curDist = 999999;
         for (MapInfo tile : nearbyTiles){
@@ -156,11 +158,12 @@ public class RobotPlayer {
             	}
             }
         }
+        
         if (curRuin != null){
             MapLocation targetLoc = curRuin.getMapLocation();
             Direction dir = rc.getLocation().directionTo(targetLoc);
             if (rc.canMove(dir))
-                rc.move(dir);
+            	Pathfinding.move(curRuin.getMapLocation());
             // Mark the pattern we need to draw to build a tower here if we haven't already.
             MapLocation shouldBeMarked = curRuin.getMapLocation().subtract(dir);
             if (rc.senseMapInfo(shouldBeMarked).getMark() == PaintType.EMPTY && rc.canMarkTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc)){
