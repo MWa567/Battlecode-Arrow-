@@ -38,14 +38,11 @@ public class Pathfinding {
         return true;
     }
     static public void move(MapLocation loc) {
-    	System.out.println("AT LEAST ITS BEING CALLED");
     	if (!rc.isMovementReady()) {
             return ;
     	}
-    	System.out.println("THIS IS HAPPENING AHHh");
         target = loc;
         if (!BugNav.move())
-        	System.out.println("GREEDY BEING RUN");
         	greedyPath();
         BugNav.move();
     }

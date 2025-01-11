@@ -191,13 +191,28 @@ public class RobotPlayer {
             }
         }
         
-        // Move and attack randomly if no objective.
+        // Move randomly to one of the four corners
+        /*
+         * Potential improvements:
+         * Randomly generate a coordinate on the edge of one of the four quadrants
+         * Relative position, weighted random generator to send it toward areas of more empty space
+         */
         
         Pathfinding.init(rc);
         
         Pathfinding.initTurn();
         
-        target = new MapLocation(0, 19);
+        int map_height = rc.getMapHeight();
+        int map_width = rc.getMapWidth();
+        
+        MapLocation target_1 = new MapLocation(0, map_height);
+        MapLocation target_2 = new MapLocation(map_width, map_height);
+        MapLocation target_3 = new MapLocation(map_width, 0);
+        MapLocation target_4 = new MapLocation(0, 0);
+        MapLocation[] coord_options = {target_1, target_2, target_3, target_3, target_4};
+        Random rand = new Random();
+        int randomInd = rand.nextInt(coord_options.length);
+        MapLocation target = coord_options[randomInd];
         
         System.out.println("OKAY WE ARE GETTING TO HERE");
         Pathfinding.move(target);
