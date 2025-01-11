@@ -30,9 +30,6 @@ public class RobotPlayer {
      * we get the same sequence of numbers every time this code is run. This is very useful for debugging!
      */
     static final Random rng = new Random(6147);
-    
-    static boolean hasSpawned = false;
-    
     static MapLocation target;
 
     /** Array containing all the possible movement directions. */
@@ -118,14 +115,16 @@ public class RobotPlayer {
         MapLocation nextLoc = rc.getLocation().add(dir);
         // Pick a random robot type to build.
         int robotType = rng.nextInt(3);
-        if (robotType == 0 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)){
+        if (robotType == 1 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)){
             rc.buildRobot(UnitType.SOLDIER, nextLoc);
             System.out.println("BUILT A SOLDIER");
         }
+        /*
         else if (robotType == 1 && rc.canBuildRobot(UnitType.MOPPER, nextLoc)){
             rc.buildRobot(UnitType.MOPPER, nextLoc);
             System.out.println("BUILT A MOPPER");
         }
+        */
         else if (robotType == 2 && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
             // rc.buildRobot(UnitType.SPLASHER, nextLoc);
             // System.out.println("BUILT A SPLASHER");
@@ -146,8 +145,9 @@ public class RobotPlayer {
      * Run a single turn for a Soldier.
      * This code is wrapped inside the infinite loop in run(), so it is called once per turn.
      */
-    public static void runSoldier(RobotController rc) throws GameActionException{
-        // Sense information about all visible nearby tiles.
+    public static void runSoldier(RobotController rc) throws GameActionException{;
+    	System.out.println("SOLDIERS BEING CREATED");
+    	// Sense information about all visible nearby tiles.
         MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
         // Search for a nearby ruin to complete.
         
@@ -191,11 +191,19 @@ public class RobotPlayer {
             }
         }
         
-        MapLocation target = new MapLocation(19, 19);
-
-        
         // Move and attack randomly if no objective.
+        
+        Pathfinding.init(rc);
+        
+        Pathfinding.initTurn();
+        
+        target = new MapLocation(0, 19);
+        
+        System.out.println("OKAY WE ARE GETTING TO HERE");
         Pathfinding.move(target);
+        
+     // Optional debug logging
+        System.out.println("Target: " + target + ", Current Location: " + rc.getLocation());
         /*
         Direction dir = directions[rng.nextInt(directions.length)];
         MapLocation nextLoc = rc.getLocation().add(dir);
@@ -219,7 +227,7 @@ public class RobotPlayer {
      * This code is wrapped inside the infinite loop in run(), so it is called once per turn.
      */
     public static void runMopper(RobotController rc) throws GameActionException{
-        // Move and attack randomly.
+    	// Move and attack randomly.
         Direction dir = directions[rng.nextInt(directions.length)];
         MapLocation nextLoc = rc.getLocation().add(dir);
         if (rc.canMove(dir)){
@@ -227,7 +235,7 @@ public class RobotPlayer {
         }
         if (rc.canMopSwing(dir)){
             rc.mopSwing(dir);
-            System.out.println("Mop Swing! Booyah!");
+            System.out.println("IT IS UPDATED Mop Swing! Booyah!");
         }
         else if (rc.canAttack(nextLoc)){
             rc.attack(nextLoc);

@@ -4,8 +4,9 @@ import battlecode.common.*;
 import java.util.Random;
 
 public class Util {
-    static Random rng;
-
+	
+	static Random rng;
+	
     private static RobotController rc;
 
     static int MAP_WIDTH;

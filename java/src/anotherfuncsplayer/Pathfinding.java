@@ -1,4 +1,5 @@
 package anotherfuncsplayer;
+
 import battlecode.common.*;
 import java.util.HashSet;
 import java.util.Random;
@@ -20,6 +21,7 @@ public class Pathfinding {
     };
     public static void init(RobotController r) {
         rc = r;
+        Util.init(rc);
         BugNav.rotateRight = Util.rng.nextDouble() > 0.5;
     }
     static void setImpassable(boolean[] imp) {
@@ -36,12 +38,15 @@ public class Pathfinding {
         return true;
     }
     static public void move(MapLocation loc) {
-        if (!rc.isMovementReady())
-            return;
+    	System.out.println("AT LEAST ITS BEING CALLED");
+    	if (!rc.isMovementReady()) {
+            return ;
+    	}
+    	System.out.println("THIS IS HAPPENING AHHh");
         target = loc;
-        if (!BugNav.move()) {
+        if (!BugNav.move())
+        	System.out.println("GREEDY BEING RUN");
         	greedyPath();
-        }
         BugNav.move();
     }
     static final double eps = 1e-5;
@@ -69,16 +74,8 @@ public class Pathfinding {
                     bestEstimationDist = newDist;
                 }
             }
-            if (bestDir != null) {
+            if (bestDir != null)
                 rc.move(bestDir);
-            }
-            else {
-	            Direction dir = directions[rng.nextInt(directions.length)];
-	            MapLocation nextLoc = rc.getLocation().add(dir);
-	            if (rc.canMove(dir)){
-	            	rc.move(dir);
-	            }
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
