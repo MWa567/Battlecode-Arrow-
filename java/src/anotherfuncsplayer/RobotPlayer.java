@@ -30,6 +30,10 @@ public class RobotPlayer {
      * we get the same sequence of numbers every time this code is run. This is very useful for debugging!
      */
     static final Random rng = new Random(6147);
+    
+    static boolean hasSpawned = false;
+    
+    static MapLocation target;
 
     /** Array containing all the possible movement directions. */
     static final Direction[] directions = {
@@ -58,7 +62,8 @@ public class RobotPlayer {
 
         // You can also use indicators to save debug notes in replays.
         rc.setIndicatorString("Hello world!");
-
+        
+        
         while (true) {
             // This code runs during the entire lifespan of the robot, which is why it is in an infinite
             // loop. If we ever leave this loop and return from run(), the robot dies! At the end of the
@@ -78,7 +83,7 @@ public class RobotPlayer {
                     case SPLASHER: break; // Consider upgrading examplefuncsplayer to use splashers!
                     default: runTower(rc); break;
                     }
-                }
+             }
              catch (GameActionException e) {
                 // Oh no! It looks like we did something illegal in the Battlecode world. You should
                 // handle GameActionExceptions judiciously, in case unexpected events occur in the game
@@ -163,7 +168,7 @@ public class RobotPlayer {
             MapLocation targetLoc = curRuin.getMapLocation();
             Direction dir = rc.getLocation().directionTo(targetLoc);
             if (rc.canMove(dir))
-            	Pathfinding.move(curRuin.getMapLocation());
+            	rc.move(dir);
             // Mark the pattern we need to draw to build a tower here if we haven't already.
             MapLocation shouldBeMarked = curRuin.getMapLocation().subtract(dir);
             if (rc.senseMapInfo(shouldBeMarked).getMark() == PaintType.EMPTY && rc.canMarkTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc)){
@@ -185,12 +190,20 @@ public class RobotPlayer {
                 System.out.println("Built a tower at " + targetLoc + "!");
             }
         }
+        
+        MapLocation target = new MapLocation(19, 19);
+
+        
         // Move and attack randomly if no objective.
+        Pathfinding.move(target);
+        /*
         Direction dir = directions[rng.nextInt(directions.length)];
         MapLocation nextLoc = rc.getLocation().add(dir);
         if (rc.canMove(dir)){
-            Pathfinding.move(nextLoc);
+        	rc.move(dir);
         }
+        */
+        
         
         // Try to paint beneath us as we walk to avoid paint penalties.
         // Avoiding wasting paint by re-painting our own tiles.

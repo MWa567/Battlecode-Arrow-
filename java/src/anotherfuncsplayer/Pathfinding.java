@@ -1,10 +1,12 @@
 package anotherfuncsplayer;
 import battlecode.common.*;
 import java.util.HashSet;
+import java.util.Random;
 public class Pathfinding {
     static RobotController rc;
     static MapLocation target = null;
     static boolean[] impassable = null;
+    static final Random rng = new Random(6147);
     static final Direction[] directions = {
             Direction.NORTH,
             Direction.NORTHEAST,
@@ -37,8 +39,9 @@ public class Pathfinding {
         if (!rc.isMovementReady())
             return;
         target = loc;
-        if (!BugNav.move())
-            greedyPath();
+        if (!BugNav.move()) {
+        	greedyPath();
+        }
         BugNav.move();
     }
     static final double eps = 1e-5;
@@ -66,8 +69,16 @@ public class Pathfinding {
                     bestEstimationDist = newDist;
                 }
             }
-            if (bestDir != null)
+            if (bestDir != null) {
                 rc.move(bestDir);
+            }
+            else {
+	            Direction dir = directions[rng.nextInt(directions.length)];
+	            MapLocation nextLoc = rc.getLocation().add(dir);
+	            if (rc.canMove(dir)){
+	            	rc.move(dir);
+	            }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
