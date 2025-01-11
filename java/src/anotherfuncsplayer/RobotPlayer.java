@@ -8,6 +8,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+
 
 
 /**
@@ -31,6 +34,7 @@ public class RobotPlayer {
      */
     static final Random rng = new Random(6147);
     static MapLocation target;
+    static MapLocation originalLocation;
 
     /** Array containing all the possible movement directions. */
     static final Direction[] directions = {
@@ -66,7 +70,7 @@ public class RobotPlayer {
             // loop. If we ever leave this loop and return from run(), the robot dies! At the end of the
             // loop, we call Clock.yield(), signifying that we've done everything we want to do.
 
-            originalLocation = rc.getMapLocation()
+            originalLocation = rc.getLocation();
             turnCount += 1;  // We have now been alive for one more turn!
 
             // Try/catch blocks stop unhandled exceptions, which cause your robot to explode.
@@ -76,7 +80,7 @@ public class RobotPlayer {
                 // use different strategies on different robots. If you wish, you are free to rewrite
                 // this into a different control structure!
                 switch (rc.getType()){
-                    case SOLDIER: runSoldier(rc, originalLocation); break;
+                    case SOLDIER: runSoldier(rc); break;
                     case MOPPER: runMopper(rc); break;
                     case SPLASHER: break; // Consider upgrading examplefuncsplayer to use splashers!
                     default: runTower(rc); break;
@@ -147,7 +151,7 @@ public class RobotPlayer {
      * Run a single turn for a Soldier.
      * This code is wrapped inside the infinite loop in run(), so it is called once per turn.
      */
-    public static void runSoldier(RobotController rc, originalLocation) throws GameActionException{;
+    public static void runSoldier(RobotController rc) throws GameActionException{;
     	System.out.println("SOLDIERS BEING CREATED");
     	// Sense information about all visible nearby tiles.
         MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
@@ -209,30 +213,39 @@ public class RobotPlayer {
 
         // currentLocation = rc.getMapLocation()
 
+
         MapLocation target_1 = new MapLocation(0, map_height);
         MapLocation target_2 = new MapLocation(map_width, map_height);
         MapLocation target_3 = new MapLocation(map_width, 0);
         MapLocation target_4 = new MapLocation(0, 0);
 
-        MapLocation[] coord_options = {target_1, target_1, target_2, target_2, target_3, target_3, target_4, target_4};
-        if ((originalLocation.x < (map_width/2)) && (originalLocation.y < (map_height/2))){
+        List<MapLocation> coord_options = new ArrayList<>();
+        coord_options.add(target_1);
+        coord_options.add(target_1);
+        coord_options.add(target_2);
+        coord_options.add(target_2);
+        coord_options.add(target_3);
+        coord_options.add(target_3);
+        coord_options.add(target_4);
+        coord_options.add(target_4);
+
+        // Remove the appropriate target based on conditions
+        if ((originalLocation.x < (map_width / 2)) && (originalLocation.y < (map_height / 2))) {
             coord_options.remove(target_4);
-        }
-        else if ((originalLocation.x < (map_width/2)) && (originalLocation.y >= (map_height/2))){
+        } else if ((originalLocation.x < (map_width / 2)) && (originalLocation.y >= (map_height / 2))) {
             coord_options.remove(target_1);
-        }
-        else if ((originalLocation.x >= (map_width/2)) && (originalLocation.y >= (map_height/2))){
+        } else if ((originalLocation.x >= (map_width / 2)) && (originalLocation.y >= (map_height / 2))) {
             coord_options.remove(target_2);
-        }
-        else{
+        } else {
             coord_options.remove(target_3);
         }
 
         Random rand = new Random();
-        int randomInd = rand.nextInt(coord_options.length);
-        MapLocation target = coord_options[randomInd];
+        int randomInd = rand.nextInt(coord_options.size()); // Use size() instead of length
+        MapLocation target = coord_options.get(randomInd);  // Get the random target
 
-        System.out.println("OKAY WE ARE GETTING TO HERE");
+        System.out.println("This is my coord_options: " + coord_options);
+        System.out.println("This is my target: " + target);
         Pathfinding.move(target);
 
      // Optional debug logging
