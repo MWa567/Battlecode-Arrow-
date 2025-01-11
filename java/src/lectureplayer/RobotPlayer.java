@@ -323,8 +323,6 @@ public class RobotPlayer {
         }
     }
 
-
-
     public static void updateEnemyRobots(RobotController rc) throws GameActionException{
         // Sensing methods can be passed in a radius of -1 to automatically
         // use the largest possible value.
@@ -350,5 +348,131 @@ public class RobotPlayer {
         }
     }
 
+    public static void bug0(RobotController rc) throws GameActionException{
+        // get direction from current location to target
+        Direction dir = rc.getLocation().directionTo(target);
 
+        MapLocation nextLoc = rc.getLocation().add(dir);
+        rc.setIndicatorDot(nextLoc, 255, 0, 0);
+        Clock.yield();
+
+        // try to move in the target direction
+        if(rc.canMove(dir)){
+            rc.move(dir);
+        }
+
+        // keep turning left until we can move
+        for (int i=0; i<8; i++){
+            dir = dir.rotateLeft();
+            if(rc.canMove(dir)){
+                rc.move(dir);
+                break;
+            }
+        }
+    }
+
+    public static void bug1(RobotController rc) throws GameActionException{
+        if (!isTracing){
+            //proceed as normal
+            Direction dir = rc.getLocation().directionTo(target);
+            MapLocation nextLoc = rc.getLocation().add(dir);
+            rc.setIndicatorDot(nextLoc, 255, 0, 0);
+            Clock.yield();
+            // try to move in the target direction
+            if(rc.canMove(dir)){
+                rc.move(dir);
+            }
+            else{
+                isTracing = true;
+                tracingDir = dir;
+            }
+        }
+        else{
+            // tracing mode
+
+            // need a stopping condition - this will be when we see the closestLocation again
+            if (rc.getLocation().equals(closestLocation)){
+                // returned to closest location along perimeter of the obstacle
+                isTracing = false;
+                smallestDistance = 10000000;
+                closestLocation = null;
+                tracingDir= null;
+            }
+            else{
+                // keep tracing
+
+                // update closestLocation and smallestDistance
+                int distToTarget = rc.getLocation().distanceSquaredTo(target);
+                if(distToTarget < smallestDistance){
+                    smallestDistance = distToTarget;
+                    closestLocation = rc.getLocation();
+                }
+
+                // go along perimeter of obstacle
+                if(rc.canMove(tracingDir)){
+                    //move forward and try to turn right
+                    rc.move(tracingDir);
+                    tracingDir = tracingDir.rotateRight();
+                    tracingDir = tracingDir.rotateRight();
+                }
+                else{
+                    // turn left because we cannot proceed forward
+                    // keep turning left until we can move again
+                    for (int i=0; i<8; i++){
+                        tracingDir = tracingDir.rotateLeft();
+                        if(rc.canMove(tracingDir)){
+                            rc.move(tracingDir);
+                            tracingDir = tracingDir.rotateRight();
+                            tracingDir = tracingDir.rotateRight();
+                            break;
+                        }
+                    }
+                }
+
+                MapLocation nextLoc = rc.getLocation().add(tracingDir);
+                rc.setIndicatorDot(nextLoc, 255, 0, 0);
+                Clock.yield();
+            }
+        }
+    }
+    public static void bug2(RobotController rc) throws GameActionException{
+
+        if(!target.equals(prevDest)) {
+            prevDest = target;
+            line = createLine(rc.getLocation(), target);
+        }
+
+        for(MapLocation loc : line) {
+            rc.setIndicatorDot(loc, 255, 0, 0);
+        }
+
+        if(!isTracing) {
+            Direction dir = rc.getLocation().directionTo(target);
+            rc.setIndicatorDot(rc.getLocation().add(dir), 255, 0, 0);
+            Clock.yield();
+
+            if(rc.canMove(dir)){
+                rc.move(dir);
+            } else {
+                isTracing = true;
+                obstacleStartDist = rc.getLocation().distanceSquaredTo(target);
+                tracingDir = dir;
+            }
+        } else {
+            if(line.contains(rc.getLocation()) && rc.getLocation().distanceSquaredTo(target) < obstacleStartDist) {
+                isTracing = false;
+            }
+
+            for(int i = 0; i < 9; i++){
+                if(rc.canMove(tracingDir)){
+                    rc.move(tracingDir);
+                    tracingDir = tracingDir.rotateRight();
+                    tracingDir = tracingDir.rotateRight();
+                    break;
+                } else {
+                    tracingDir = tracingDir.rotateLeft();
+                }
+            }
+        }
+    }
 }
