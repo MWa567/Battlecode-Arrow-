@@ -59,13 +59,14 @@ public class RobotPlayer {
 
         // You can also use indicators to save debug notes in replays.
         rc.setIndicatorString("Hello world!");
-        
-        
+
+
         while (true) {
             // This code runs during the entire lifespan of the robot, which is why it is in an infinite
             // loop. If we ever leave this loop and return from run(), the robot dies! At the end of the
             // loop, we call Clock.yield(), signifying that we've done everything we want to do.
 
+            originalLocation = rc.getMapLocation()
             turnCount += 1;  // We have now been alive for one more turn!
 
             // Try/catch blocks stop unhandled exceptions, which cause your robot to explode.
@@ -75,7 +76,7 @@ public class RobotPlayer {
                 // use different strategies on different robots. If you wish, you are free to rewrite
                 // this into a different control structure!
                 switch (rc.getType()){
-                    case SOLDIER: runSoldier(rc); break;
+                    case SOLDIER: runSoldier(rc, originalLocation); break;
                     case MOPPER: runMopper(rc); break;
                     case SPLASHER: break; // Consider upgrading examplefuncsplayer to use splashers!
                     default: runTower(rc); break;
@@ -114,8 +115,9 @@ public class RobotPlayer {
         Direction dir = directions[rng.nextInt(directions.length)];
         MapLocation nextLoc = rc.getLocation().add(dir);
         // Pick a random robot type to build.
-        int robotType = rng.nextInt(3);
-        if (robotType == 1 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)){
+        // int robotType = rng.nextInt(3);
+        // if (robotType == 1 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)){
+        if (rc.canBuildRobot(UnitType.SOLDIER, nextLoc)){
             rc.buildRobot(UnitType.SOLDIER, nextLoc);
             System.out.println("BUILT A SOLDIER");
         }
@@ -125,11 +127,11 @@ public class RobotPlayer {
             System.out.println("BUILT A MOPPER");
         }
         */
-        else if (robotType == 2 && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
-            // rc.buildRobot(UnitType.SPLASHER, nextLoc);
-            // System.out.println("BUILT A SPLASHER");
-            rc.setIndicatorString("SPLASHER NOT IMPLEMENTED YET");
-        }
+        // else if (robotType == 2 && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
+        //     // rc.buildRobot(UnitType.SPLASHER, nextLoc);
+        //     // System.out.println("BUILT A SPLASHER");
+        //     rc.setIndicatorString("SPLASHER NOT IMPLEMENTED YET");
+        // }
 
         // Read incoming messages
         Message[] messages = rc.readMessages(-1);
@@ -145,12 +147,12 @@ public class RobotPlayer {
      * Run a single turn for a Soldier.
      * This code is wrapped inside the infinite loop in run(), so it is called once per turn.
      */
-    public static void runSoldier(RobotController rc) throws GameActionException{;
+    public static void runSoldier(RobotController rc, originalLocation) throws GameActionException{;
     	System.out.println("SOLDIERS BEING CREATED");
     	// Sense information about all visible nearby tiles.
         MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
         // Search for a nearby ruin to complete.
-        
+
         //If we can see a well, move towards it
         MapInfo curRuin = null;
         int curDist = 999999;
@@ -163,7 +165,7 @@ public class RobotPlayer {
             	}
             }
         }
-        
+
         if (curRuin != null){
             MapLocation targetLoc = curRuin.getMapLocation();
             Direction dir = rc.getLocation().directionTo(targetLoc);
@@ -190,33 +192,49 @@ public class RobotPlayer {
                 System.out.println("Built a tower at " + targetLoc + "!");
             }
         }
-        
+
         // Move randomly to one of the four corners
         /*
          * Potential improvements:
          * Randomly generate a coordinate on the edge of one of the four quadrants
          * Relative position, weighted random generator to send it toward areas of more empty space
          */
-        
+
         Pathfinding.init(rc);
-        
+
         Pathfinding.initTurn();
-        
+
         int map_height = rc.getMapHeight();
         int map_width = rc.getMapWidth();
-        
+
+        // currentLocation = rc.getMapLocation()
+
         MapLocation target_1 = new MapLocation(0, map_height);
         MapLocation target_2 = new MapLocation(map_width, map_height);
         MapLocation target_3 = new MapLocation(map_width, 0);
         MapLocation target_4 = new MapLocation(0, 0);
-        MapLocation[] coord_options = {target_1, target_2, target_3, target_3, target_4};
+
+        MapLocation[] coord_options = {target_1, target_1, target_2, target_2, target_3, target_3, target_4, target_4};
+        if ((originalLocation.x < (map_width/2)) && (originalLocation.y < (map_height/2))){
+            coord_options.remove(target_4);
+        }
+        else if ((originalLocation.x < (map_width/2)) && (originalLocation.y >= (map_height/2))){
+            coord_options.remove(target_1);
+        }
+        else if ((originalLocation.x >= (map_width/2)) && (originalLocation.y >= (map_height/2))){
+            coord_options.remove(target_2);
+        }
+        else{
+            coord_options.remove(target_3);
+        }
+
         Random rand = new Random();
         int randomInd = rand.nextInt(coord_options.length);
         MapLocation target = coord_options[randomInd];
-        
+
         System.out.println("OKAY WE ARE GETTING TO HERE");
         Pathfinding.move(target);
-        
+
      // Optional debug logging
         System.out.println("Target: " + target + ", Current Location: " + rc.getLocation());
         /*
@@ -226,8 +244,8 @@ public class RobotPlayer {
         	rc.move(dir);
         }
         */
-        
-        
+
+
         // Try to paint beneath us as we walk to avoid paint penalties.
         // Avoiding wasting paint by re-painting our own tiles.
         MapInfo currentTile = rc.senseMapInfo(rc.getLocation());
