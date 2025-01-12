@@ -71,8 +71,9 @@ public class Pathfinding {
                     bestEstimationDist = newDist;
                 }
             }
-            if (bestDir != null)
+            if (bestDir != null) {
                 rc.move(bestDir);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
