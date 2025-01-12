@@ -66,6 +66,7 @@ public class RobotPlayer {
         // You can also use indicators to save debug notes in replays.
         rc.setIndicatorString("Hello world!");
         
+        originalLocation = rc.getLocation();
         while (true) {
             // This code runs during the entire lifespan of the robot, which is why it is in an infinite
             // loop. If we ever leave this loop and return from run(), the robot dies! At the end of the
@@ -125,16 +126,17 @@ public class RobotPlayer {
             System.out.println("BUILT A SOLDIER");
         }
         
-        else if (turnCount > 800 && rc.canBuildRobot(UnitType.MOPPER, nextLoc) && (turnCount % 2 == 0)){
+        else if (turnCount > 800 && rc.canBuildRobot(UnitType.MOPPER, nextLoc)){
             rc.buildRobot(UnitType.MOPPER, nextLoc);
             System.out.println("BUILT A MOPPER");
         }
-        
+        /*
         else if (rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
             // rc.buildRobot(UnitType.SPLASHER, nextLoc);
             // System.out.println("BUILT A SPLASHER");
             rc.setIndicatorString("SPLASHER NOT IMPLEMENTED YET");
         }
+        */
 
         // Read incoming messages
         Message[] messages = rc.readMessages(-1);
@@ -156,21 +158,6 @@ public class RobotPlayer {
         Pathfinding.init(rc);
         Pathfinding.initTurn();
         target = Explore.getExploreTarget();
-        if (rc.getLocation().x == 0 || rc.getLocation().x == rc.getMapWidth()) {
-     	   Direction dir = directions[rng.nextInt(directions.length)];
-            MapLocation nextLoc = rc.getLocation().add(dir);
-            if (rc.canMove(dir)){
-                rc.move(dir);
-            }
-        }
-        
-        if (rc.getLocation().y == 0 || rc.getLocation().y == rc.getMapHeight()) {
-     	   Direction dir = directions[rng.nextInt(directions.length)];
-            MapLocation nextLoc = rc.getLocation().add(dir);
-            if (rc.canMove(dir)){
-                rc.move(dir);
-            }
-        }
     	while (true) {
     		towerCount += 1;
 	    	// Sense information about all visible nearby tiles.
@@ -256,16 +243,34 @@ public class RobotPlayer {
                 rc.attack(rc.getLocation());
             }
          
-            try {
-            	Pathfinding.move(target);
-                Explore.initialize();
-            } catch (Exception e) {
-                System.out.println(rc.getType() + " Exception");
-                e.printStackTrace();
-            }
+           if (rc.getLocation().x == 0 || rc.getLocation().x == rc.getMapWidth()) {
+        	   Direction dir = directions[rng.nextInt(directions.length)];
+               MapLocation nextLoc = rc.getLocation().add(dir);
+               if (rc.canMove(dir)){
+                   rc.move(dir);
+                   break;
+               }
+           }
+           
+           if (rc.getLocation().y == 0 || rc.getLocation().y == rc.getMapHeight()) {
+        	   Direction dir = directions[rng.nextInt(directions.length)];
+               MapLocation nextLoc = rc.getLocation().add(dir);
+               if (rc.canMove(dir)){
+                   rc.move(dir);
+                   break;
+               }
+           }
+           else {
+	            try {
+	            	Pathfinding.move(target);
+	                Explore.initialize();
+	            } catch (Exception e) {
+	                System.out.println(rc.getType() + " Exception");
+	                e.printStackTrace();
+	            }
+           }
         }
     }
-
 
     /**
      * Run a single turn for a Mopper.
@@ -273,23 +278,83 @@ public class RobotPlayer {
      */
     public static void runMopper(RobotController rc) throws GameActionException{
     	
-    	// Move and attack randomly.
-        Direction dir = directions[rng.nextInt(directions.length)];
-        MapLocation nextLoc = rc.getLocation().add(dir);
-        if (rc.canMove(dir)){
-            rc.move(dir);
-        }
-        
-        if (rc.canMopSwing(dir)){
-            rc.mopSwing(dir);
-            System.out.println("Mop Swing! Booyah!");
-        }
-        else if (rc.canAttack(nextLoc)){
-            rc.attack(nextLoc);
-        }
-        // We can also move our code into different methods or classes to better organize it!
-        updateEnemyRobots(rc);
+    	int coord_x = originalLocation.x;
+    	int coord_y = originalLocation.y;
+    	
+    	int map_height = rc.getMapHeight();
+        int map_width = rc.getMapWidth();
+    	
+    	if (coord_x < coord_y) {
+	    	if (coord_x < map_width / 2) {
+	            Random rand = new Random();
+	            int randomInd = rand.nextInt(map_height);
+	            MapLocation my_target = new MapLocation(map_width, randomInd);
+	            
+	            Pathfinding.init(rc);
+	            Pathfinding.initTurn();
+	            Pathfinding.move(my_target);
+	    	}
+	    	else {
+	    		Random rand = new Random();
+	            int randomInd = rand.nextInt(map_height);
+	            MapLocation my_target = new MapLocation(0, randomInd);
+	            
+	            Pathfinding.init(rc);
+	            Pathfinding.initTurn();
+	            Pathfinding.move(my_target);
+	    	}
+	    	
+	    	// Attack randomly.
+	    	Direction dir = directions[rng.nextInt(directions.length)];
+	        MapLocation nextLoc = rc.getLocation().add(dir);
+			if (rc.canAttack(nextLoc)){
+	            rc.attack(nextLoc);
+	        }
+			else if (rc.canMopSwing(dir)){
+	            rc.mopSwing(dir);
+	            System.out.println("Mop Swing! Booyah!");
+	        }
+			
+			// We can also move our code into different methods or classes to better organize it!
+	        updateEnemyRobots(rc);
+    	}
+    	else {
+    		if (coord_y < map_height / 2) {
+	            Random rand = new Random();
+	            int randomInd = rand.nextInt(map_width);
+	            MapLocation my_target = new MapLocation(randomInd, map_height);
+	            
+	            Pathfinding.init(rc);
+	            Pathfinding.initTurn();
+	            Pathfinding.move(my_target);
+	    	}
+	    	else {
+	    		Random rand = new Random();
+	    		int randomInd = rand.nextInt(map_width);
+	            MapLocation my_target = new MapLocation(0, map_height);
+	            
+	            Pathfinding.init(rc);
+	            Pathfinding.initTurn();
+	            Pathfinding.move(my_target);
+	    	}
+	    	
+	    	// Attack randomly.
+	    	Direction dir = directions[rng.nextInt(directions.length)];
+	        MapLocation nextLoc = rc.getLocation().add(dir);
+			if (rc.canAttack(nextLoc)){
+	            rc.attack(nextLoc);
+	        }
+			else if (rc.canMopSwing(dir)){
+	            rc.mopSwing(dir);
+	            System.out.println("Mop Swing! Booyah!");
+	        }
+			
+			// We can also move our code into different methods or classes to better organize it!
+	        updateEnemyRobots(rc);
+    	}
     }
+    
+    
 
     public static void updateEnemyRobots(RobotController rc) throws GameActionException{
         // Sensing methods can be passed in a radius of -1 to automatically
