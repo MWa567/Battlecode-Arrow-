@@ -76,14 +76,9 @@ public class RobotPlayer {
 
             // Try/catch blocks stop unhandled exceptions, which cause your robot to explode.
             try {
-                // The same run() function is called for every robot on your team, even if they are
-                // different types. Here, we separate the control depending on the UnitType, so we can
-                // use different strategies on different robots. If you wish, you are free to rewrite
-                // this into a different control structure!
                 switch (rc.getType()){
                     case SOLDIER: runSoldier(rc); break;
                     case MOPPER: runMopper(rc); break;
-                    case SPLASHER: break; // Consider upgrading examplefuncsplayer to use splashers!
                     default: runTower(rc, turnCount); break;
                     }
              }
@@ -107,8 +102,6 @@ public class RobotPlayer {
             }
             // End of loop: go back to the top. Clock.yield() has ended, so it's time for another turn!
         }
-
-        // Your code should never reach here (unless it's intentional)! Self-destruction imminent...
     }
 
     /**
@@ -125,18 +118,10 @@ public class RobotPlayer {
             rc.buildRobot(UnitType.SOLDIER, nextLoc);
             System.out.println("BUILT A SOLDIER");
         }
-        
-        else if (turnCount > 800 && rc.canBuildRobot(UnitType.MOPPER, nextLoc)){
+        else if (rc.getRoundNum() > 800 && rc.canBuildRobot(UnitType.MOPPER, nextLoc)){
             rc.buildRobot(UnitType.MOPPER, nextLoc);
             System.out.println("BUILT A MOPPER");
         }
-        /*
-        else if (rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
-            // rc.buildRobot(UnitType.SPLASHER, nextLoc);
-            // System.out.println("BUILT A SPLASHER");
-            rc.setIndicatorString("SPLASHER NOT IMPLEMENTED YET");
-        }
-        */
 
         // Read incoming messages
         Message[] messages = rc.readMessages(-1);
@@ -182,7 +167,7 @@ public class RobotPlayer {
 	            if (rc.canMove(dir))
 	            	rc.move(dir);
 	            int randomNumber = towerCount % 6;
-	            if (randomNumber == 0 || randomNumber == 2 || randomNumber == 1) {
+	            if (randomNumber == 0 || randomNumber == 1 || randomNumber == 2) {
 	            	// Mark the pattern we need to draw to build a tower here if we haven't already.
 	                MapLocation shouldBeMarked = curRuin.getMapLocation().subtract(dir);
 	                if (rc.senseMapInfo(shouldBeMarked).getMark() == PaintType.EMPTY && rc.canMarkTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc)){
@@ -216,7 +201,7 @@ public class RobotPlayer {
 	            }
 	            
 	            // Complete the ruin if we can.
-	            if (randomNumber == 0 || randomNumber == 2 || randomNumber == 1) {
+	            if (randomNumber == 0 || randomNumber == 1 || randomNumber == 2) {
 	            	if (rc.canCompleteTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc)){
 	                    rc.completeTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc);
 	                    towerCount = 1;
@@ -276,6 +261,10 @@ public class RobotPlayer {
      * Run a single turn for a Mopper.
      * This code is wrapped inside the infinite loop in run(), so it is called once per turn.
      */
+    /**
+     * Run a single turn for a Mopper.
+     * This code is wrapped inside the infinite loop in run(), so it is called once per turn.
+     */
     public static void runMopper(RobotController rc) throws GameActionException{
     	
     	int coord_x = originalLocation.x;
@@ -331,7 +320,7 @@ public class RobotPlayer {
 	    	else {
 	    		Random rand = new Random();
 	    		int randomInd = rand.nextInt(map_width);
-	            MapLocation my_target = new MapLocation(0, map_height);
+	            MapLocation my_target = new MapLocation(randomInd, 0);
 	            
 	            Pathfinding.init(rc);
 	            Pathfinding.initTurn();
@@ -351,6 +340,82 @@ public class RobotPlayer {
 			
 			// We can also move our code into different methods or classes to better organize it!
 	        updateEnemyRobots(rc);
+    	}
+    }
+    
+    /**
+     * Run a single turn for a Splasher.
+     * This code is wrapped inside the infinite loop in run(), so it is called once per turn.
+     */
+    public static void runSplasher(RobotController rc) throws GameActionException{
+    	
+    	int coord_x = originalLocation.x;
+    	int coord_y = originalLocation.y;
+    	
+    	int map_height = rc.getMapHeight();
+        int map_width = rc.getMapWidth();
+    	
+    	if (coord_x < coord_y) {
+	    	if (coord_x < map_width / 2) {
+	            Random rand = new Random();
+	            int randomInd = rand.nextInt(map_height);
+	            MapLocation my_target = new MapLocation(map_width, randomInd);
+	            
+	            Pathfinding.init(rc);
+	            Pathfinding.initTurn();
+	            Pathfinding.move(my_target);
+	    	}
+	    	else {
+	    		Random rand = new Random();
+	            int randomInd = rand.nextInt(map_height);
+	            MapLocation my_target = new MapLocation(0, randomInd);
+	            
+	            Pathfinding.init(rc);
+	            Pathfinding.initTurn();
+	            Pathfinding.move(my_target);
+	    	}
+	    	
+	    	// Attack randomly.
+	    	Direction dir = directions[rng.nextInt(directions.length)];
+	        MapLocation nextLoc = rc.getLocation().add(dir);
+			if (rc.canAttack(nextLoc)){
+	            rc.attack(nextLoc);
+	        }
+			
+			// We can also move our code into different methods or classes to better organize it!
+	        updateEnemyRobots(rc);
+    	}
+    	else {
+    		if (coord_y < map_height / 2) {
+	            Random rand = new Random();
+	            int randomInd = rand.nextInt(map_width);
+	            MapLocation my_target = new MapLocation(randomInd, map_height);
+	            
+	            Pathfinding.init(rc);
+	            Pathfinding.initTurn();
+	            Pathfinding.move(my_target);
+	    	}
+	    	else {
+	    		Random rand = new Random();
+	    		int randomInd = rand.nextInt(map_width);
+	            MapLocation my_target = new MapLocation(0, map_height);
+	            
+	            Pathfinding.init(rc);
+	            Pathfinding.initTurn();
+	            Pathfinding.move(my_target);
+	    	}
+	    	
+	    	// Attack randomly.
+    		MapInfo currentTile = rc.senseMapInfo(rc.getLocation());
+            if (!currentTile.getPaint().isAlly() && rc.canAttack(rc.getLocation())){
+                rc.attack(rc.getLocation());
+            }
+            
+	    	Direction dir = directions[rng.nextInt(directions.length)];
+	        MapLocation nextLoc = rc.getLocation().add(dir);
+			if (rc.canAttack(nextLoc)){
+	            rc.attack(nextLoc);
+	        }
     	}
     }
     
