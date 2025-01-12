@@ -24,7 +24,7 @@ public class RobotPlayer {
      * these variables are static, in Battlecode they aren't actually shared between your robots.
      */
     static int turnCount = 0;
-    
+
     static int towerCount = 0;
 
     /**
@@ -65,9 +65,10 @@ public class RobotPlayer {
 
         // You can also use indicators to save debug notes in replays.
         rc.setIndicatorString("Hello world!");
-        
+
         originalLocation = rc.getLocation();
-        
+        System.out.println(originalLocation);
+
         while (true) {
             // This code runs during the entire lifespan of the robot, which is why it is in an infinite
             // loop. If we ever leave this loop and return from run(), the robot dies! At the end of the
@@ -126,12 +127,12 @@ public class RobotPlayer {
             rc.buildRobot(UnitType.SOLDIER, nextLoc);
             System.out.println("BUILT A SOLDIER");
         }
-        
+
         else if (turnCount > 870 && rc.canBuildRobot(UnitType.MOPPER, nextLoc)){
             rc.buildRobot(UnitType.MOPPER, nextLoc);
             System.out.println("BUILT A MOPPER");
         }
-        
+
         else if (rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
             // rc.buildRobot(UnitType.SPLASHER, nextLoc);
             // System.out.println("BUILT A SPLASHER");
@@ -156,7 +157,7 @@ public class RobotPlayer {
     	// Sense information about all visible nearby tiles.
         MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
         // Search for a nearby ruin to complete.
-        
+
         //If we can see a well, move towards it
         MapInfo curRuin = null;
         int curDist = 999999;
@@ -208,7 +209,7 @@ public class RobotPlayer {
                     }
                 }
             }
-            
+
             // Complete the ruin if we can.
             if (randomNumber == 0 || randomNumber == 1 || randomNumber == 2) {
             	if (rc.canCompleteTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc)){
@@ -229,21 +230,21 @@ public class RobotPlayer {
                 }
             }
         }
-        
+
         // Move randomly to one of the four corners
         /*
          * Potential improvements:
          * Randomly generate a coordinate on the edge of one of the four quadrants
          * Relative position, weighted random generator to send it toward areas of more empty space
          */
-        
+
         Pathfinding.init(rc);
-        
+
         Pathfinding.initTurn();
-        
+
         int map_height = rc.getMapHeight();
         int map_width = rc.getMapWidth();
-        
+
         MapLocation target_1 = new MapLocation(0, map_height);
         MapLocation target_2 = new MapLocation(map_width, map_height);
         MapLocation target_3 = new MapLocation(map_width, 0);
@@ -252,9 +253,9 @@ public class RobotPlayer {
         Random rand = new Random();
         int randomInd = rand.nextInt(coord_options.length);
         MapLocation target = coord_options[randomInd];
-        
+
         Pathfinding.move(target);
-        
+
         // Try to paint beneath us as we walk to avoid paint penalties.
         // Avoiding wasting paint by re-painting our own tiles.
         MapInfo currentTile = rc.senseMapInfo(rc.getLocation());
@@ -269,14 +270,14 @@ public class RobotPlayer {
      * This code is wrapped inside the infinite loop in run(), so it is called once per turn.
      */
     public static void runMopper(RobotController rc) throws GameActionException{
-    	
+
     	// Move and attack randomly.
         Direction dir = directions[rng.nextInt(directions.length)];
         MapLocation nextLoc = rc.getLocation().add(dir);
         if (rc.canMove(dir)){
             rc.move(dir);
         }
-        
+
         if (rc.canMopSwing(dir)){
             rc.mopSwing(dir);
             System.out.println("Mop Swing! Booyah!");
