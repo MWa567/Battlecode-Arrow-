@@ -230,15 +230,6 @@ public class RobotPlayer {
         coord_options.add(target_4);
 
         // Remove the appropriate target based on conditions
-        if ((originalLocation.x < (map_width / 2)) && (originalLocation.y < (map_height / 2))) {
-            coord_options.remove(target_4);
-        } else if ((originalLocation.x < (map_width / 2)) && (originalLocation.y >= (map_height / 2))) {
-            coord_options.remove(target_1);
-        } else if ((originalLocation.x >= (map_width / 2)) && (originalLocation.y >= (map_height / 2))) {
-            coord_options.remove(target_2);
-        } else {
-            coord_options.remove(target_3);
-        }
 
         Random rand = new Random();
         int randomInd = rand.nextInt(coord_options.size()); // Use size() instead of length
