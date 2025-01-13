@@ -79,8 +79,9 @@ public class Pathfinding {
     		}
         	target = Explore.getExploreTarget();
         	return ;
-    		}  	
-        target = loc;
+    		}
+    	
+    	target = loc;
         if (!BugNav.move()) {
         	greedyPath();
         	paint(isSplasher);

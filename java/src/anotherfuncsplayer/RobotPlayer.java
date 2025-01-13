@@ -120,12 +120,12 @@ public class RobotPlayer {
         Direction dir = directions[rng.nextInt(directions.length)];
         MapLocation nextLoc = rc.getLocation().add(dir);
 
-        if ((rc.getRoundNum() <= 500) && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)){
+        if ((rc.getRoundNum() <= 450) && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)){
             rc.buildRobot(UnitType.SOLDIER, nextLoc);
             System.out.println("BUILT A SOLDIER");
         }
         
-        else if ((rc.getRoundNum() > 500) && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
+        else if ((rc.getRoundNum() > 450) && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
             rc.buildRobot(UnitType.SPLASHER, nextLoc);
             System.out.println("BUILT A SPLASHER");
         }
@@ -158,14 +158,14 @@ public class RobotPlayer {
         target = Explore.getExploreTarget();
     	while (true) {
 	    	// Sense information about all visible nearby tiles.
-	        MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
-	        // Search for a nearby ruin to complete.
+	    MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
+	    // Search for a nearby ruin to complete.
 	        
-	        //If we can see a ruin, move towards it
-	        MapInfo curRuin = null;
-	        int curDist = 999999;
-	        for (MapInfo tile : nearbyTiles){
-	            if (tile.hasRuin() && rc.senseRobotAtLocation(tile.getMapLocation()) == null){
+	    //If we can see a ruin, move towards it
+	    MapInfo curRuin = null;
+	    int curDist = 999999;
+	    for (MapInfo tile : nearbyTiles){
+	    		if (tile.hasRuin() && rc.senseRobotAtLocation(tile.getMapLocation()) == null){
 	            	int dist = tile.getMapLocation().distanceSquaredTo(rc.getLocation());
 	            	if (dist < curDist) {
 		                curRuin = tile;
@@ -183,7 +183,7 @@ public class RobotPlayer {
 	                    System.out.println("Built a money tower at " + targetLoc + "!");
 	                    }
 	            	}
-	            }
+	            	}
 	        }
 	        if (curRuin != null){
 	            MapLocation targetLoc = curRuin.getMapLocation();
@@ -193,10 +193,10 @@ public class RobotPlayer {
 	            	rc.move(dir);
 	            
 	            Random random = new Random();
-	            int randomNumber = random.nextInt(2);
+	            int randomNumber = random.nextInt(9);
 	            
-	            if ((rc.getChips() > 1000 && randomNumber == 0) || rc.getNumberTowers() == 2) {
-	            	// Mark the pattern we need to draw to build a tower here if we haven't already.
+	            if (randomNumber % 2 == 1) {
+	            		// Mark the pattern we need to draw to build a tower here if we haven't already.
 	                MapLocation shouldBeMarked = curRuin.getMapLocation().subtract(dir);
 	                if (rc.senseMapInfo(shouldBeMarked).getMark() == PaintType.EMPTY && rc.canMarkTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc)){
 	                	rc.markTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc);
