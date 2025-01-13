@@ -1,9 +1,10 @@
-package archer;
+package anotherfuncsplayer;
 
 import battlecode.common.*;
 import java.util.HashSet;
 import java.util.Random;
-public class Pathfinding {
+
+public class Pathfinder {
     static RobotController rc;
     static MapLocation target = null;
     static boolean[] impassable = null;
@@ -42,6 +43,12 @@ public class Pathfinding {
             return ;
     	}
         target = loc;
+        MapLocation myLoc = rc.getLocation();
+        if (myLoc.distanceSquaredTo(loc) < 10) {
+        	Explore.init(rc);
+        	Explore.getExploreTarget();
+        	target = Explore.exploreTarget;
+        }
         if (!BugNav.move())
         	greedyPath();
         BugNav.move();

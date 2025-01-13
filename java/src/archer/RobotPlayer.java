@@ -16,18 +16,9 @@ public strictfp class RobotPlayer {
         }
 
         while(true){
-            int round = rc.getRoundNum();
             r.initTurn();
-            // Robot.bytecodeDebug += " BCINIT = " + Clock.getBytecodeNum();
             r.play();
-            // Robot.bytecodeDebug += "  BCPLAY = " + Clock.getBytecodeNum();
             r.endTurn();
-            int roundEnd = rc.getRoundNum();
-            if (round < roundEnd){
-                System.out.println("FAIL " + round + " " + rc.getLocation().toString() + Robot.bytecodeDebug);
-            }
-            // Robot.bytecodeDebug = new String();
-            // Constants.indicatorString = new String();
             Clock.yield();
         }
     }
