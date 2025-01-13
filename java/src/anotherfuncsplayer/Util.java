@@ -53,6 +53,14 @@ public class Util {
         return Math.min(Math.max(n, lo), hi);
     }
     
+    public static MapLocation reflectX(MapLocation loc) {
+    	return new MapLocation(-loc.x, loc.y);
+    }
+    
+    public static MapLocation reflectY(MapLocation loc) {
+    	return new MapLocation(loc.x, -loc.y);
+    }
+    
     static MapLocation clipToWithinMap(MapLocation loc) {
         return new MapLocation(clip(loc.x, 0, MAP_WIDTH), clip(loc.y, 0, MAP_HEIGHT));
     }

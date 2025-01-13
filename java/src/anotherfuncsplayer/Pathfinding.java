@@ -38,23 +38,36 @@ public class Pathfinding {
             return false;
         return true;
     }
+    
+    static public void paint() throws GameActionException {
+    	MapInfo currentTile = rc.senseMapInfo(rc.getLocation());
+        if (!currentTile.getPaint().isAlly() && rc.canAttack(rc.getLocation())){
+            rc.attack(rc.getLocation());
+            }
+    }
+    
     static public void move(MapLocation loc) throws GameActionException {
     	if (!rc.isMovementReady() || (rc.getLocation().distanceSquaredTo(loc) <= 3)) {
     		for (Direction dir: directions) {
     			if (rc.canMove(dir)) {
     				System.out.println(rc.getType() + "IS GETTING UNSTUCK HOORAY");
     				rc.move(dir);
+    				paint();
+    				}
     			}
-    		}
     		Explore.init(rc);
-    		target = Explore.getExploreTarget();
-            return ;
-    	}
-    	
+        	target = Explore.getExploreTarget();
+        	return ;
+    		}  	
         target = loc;
-        if (!BugNav.move())
+        if (!BugNav.move()) {
         	greedyPath();
-        BugNav.move();
+        	paint();
+        }
+		else {
+			BugNav.move();
+			paint();
+        }
     }
     static final double eps = 1e-5;
     static void greedyPath() {
