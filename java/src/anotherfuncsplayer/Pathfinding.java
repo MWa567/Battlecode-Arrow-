@@ -47,7 +47,7 @@ public class Pathfinding {
             	if (tile.getPaint().isAlly() && tile.getPaint().isSecondary()) {
             		return ;
             	}
-            	else if (tile.getPaint() == PaintType.EMPTY) {
+            	else if (tile.getPaint() == PaintType.EMPTY || tile.getPaint().isEnemy()) {
             		existsEmpty = true;
             	}
             }
@@ -61,9 +61,12 @@ public class Pathfinding {
             }
     }
     
+    static public void setTarget(MapLocation newTarget) {
+    	target = newTarget;
+    }
+    
     static public void move(MapLocation loc, boolean isSplasher) throws GameActionException {
     	if (!rc.isMovementReady() || (rc.getLocation().distanceSquaredTo(loc) <= 5)) {
-    		System.out.println("REACHED PREVIOUS TARGET" + target);
     		for (Direction dir: directions) {
     			if (rc.canMove(dir)) {
     				rc.move(dir);
@@ -75,7 +78,6 @@ public class Pathfinding {
     			Explore.init(rc);
     		}
         	target = Explore.getExploreTarget();
-        	System.out.println("NEW TARGET IS " + target);
         	return ;
     		}  	
         target = loc;
