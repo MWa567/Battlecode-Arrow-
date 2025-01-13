@@ -86,8 +86,8 @@ public class RobotPlayer {
                 // this into a different control structure!
                 switch (rc.getType()){
                     case SOLDIER: runSoldier(rc); break;
-                    case MOPPER: runMopper(rc); break;
-                    case SPLASHER: break; // Consider upgrading examplefuncsplayer to use splashers!
+                    case SPLASHER: runSplasher(rc); break;
+                    // case SPLASHER: break; // Consider upgrading examplefuncsplayer to use splashers!
                     default: runTower(rc, turnCount); break;
                     }
              }
@@ -124,13 +124,13 @@ public class RobotPlayer {
         Direction dir = directions[rng.nextInt(directions.length)];
         MapLocation nextLoc = rc.getLocation().add(dir);
 
-        if (rc.getRoundNum() <= 800 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)){
+        if (rc.getRoundNum() <= 500 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)){
             rc.buildRobot(UnitType.SOLDIER, nextLoc);
             System.out.println("BUILT A SOLDIER");
         }
         
-        else if (rc.getRoundNum() > 800 && rc.canBuildRobot(UnitType.MOPPER, nextLoc)){
-            rc.buildRobot(UnitType.MOPPER, nextLoc);
+        else if (rc.getRoundNum() > 500 && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
+            rc.buildRobot(UnitType.SPLASHER, nextLoc);
             System.out.println("BUILT A MOPPER");
         }
         /*
@@ -265,7 +265,7 @@ public class RobotPlayer {
      * Run a single turn for a Mopper.
      * This code is wrapped inside the infinite loop in run(), so it is called once per turn.
      */
-    public static void runMopper(RobotController rc) throws GameActionException{
+    public static void runSplasher(RobotController rc) throws GameActionException{
     	
     	int coord_x = originalLocation.x;
     	int coord_y = originalLocation.y;
@@ -299,10 +299,12 @@ public class RobotPlayer {
 			if (rc.canAttack(nextLoc)){
 	            rc.attack(nextLoc);
 	        }
+			/*
 			else if (rc.canMopSwing(dir)){
 	            rc.mopSwing(dir);
 	            System.out.println("Mop Swing! Booyah!");
 	        }
+	        */
 			
 			// We can also move our code into different methods or classes to better organize it!
 	        updateEnemyRobots(rc);
@@ -333,10 +335,12 @@ public class RobotPlayer {
 			if (rc.canAttack(nextLoc)){
 	            rc.attack(nextLoc);
 	        }
+			/*
 			else if (rc.canMopSwing(dir)){
 	            rc.mopSwing(dir);
 	            System.out.println("Mop Swing! Booyah!");
 	        }
+	        */
 			
 			// We can also move our code into different methods or classes to better organize it!
 	        updateEnemyRobots(rc);
