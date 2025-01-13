@@ -14,6 +14,10 @@ public class Soldier extends Robot {
 
 
     void play() throws GameActionException {
+        MapLocation targetLoc = curRuin.getMapLocation();
+Direction dir = rc.getLocation().directionTo(targetLoc);
+if (rc.canMove(dir))
+    rc.move(dir);
 
     }
 
