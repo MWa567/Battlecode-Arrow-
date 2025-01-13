@@ -191,8 +191,11 @@ public class RobotPlayer {
 	            
 	            if (rc.canMove(dir))
 	            	rc.move(dir);
-	            	
-	            if (rc.getChips() > 1000 || rc.getNumberTowers() == 2) {
+	            
+	            Random random = new Random();
+	            int randomNumber = random.nextInt(2);
+	            
+	            if ((rc.getChips() > 1000 && randomNumber == 0) || rc.getNumberTowers() == 2) {
 	            	// Mark the pattern we need to draw to build a tower here if we haven't already.
 	                MapLocation shouldBeMarked = curRuin.getMapLocation().subtract(dir);
 	                if (rc.senseMapInfo(shouldBeMarked).getMark() == PaintType.EMPTY && rc.canMarkTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc)){
@@ -237,7 +240,7 @@ public class RobotPlayer {
                 }
 	        }
 	        
-	        if (rc.getLocation().x == 0 || rc.getLocation().x == rc.getMapWidth() || rc.getLocation().y == 0 || rc.getLocation().y == rc.getMapHeight()) {
+	       if (rc.getLocation().x == 0 || rc.getLocation().x == rc.getMapWidth() || rc.getLocation().y == 0 || rc.getLocation().y == rc.getMapHeight()) {
         	   try {
 	            	Pathfinding.move(target, false);
 	            } catch (Exception e) {
@@ -285,6 +288,14 @@ public class RobotPlayer {
 	            Pathfinding.initTurn();
 	            Pathfinding.move(my_target, true);
 	    	}
+	  if (rc.getLocation().x == 0 || rc.getLocation().x == rc.getMapWidth() || rc.getLocation().y == 0 || rc.getLocation().y == rc.getMapHeight()) {
+	        	   try {
+		            	Pathfinding.move(target, false);
+		            } catch (Exception e) {
+		                System.out.println(rc.getType() + " Exception");
+		                e.printStackTrace();
+		            }
+	           }
 			/*
 			else if (rc.canMopSwing(dir)){
 	            rc.mopSwing(dir);
