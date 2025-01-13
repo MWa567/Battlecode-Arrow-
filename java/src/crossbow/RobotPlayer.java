@@ -74,7 +74,6 @@ public class RobotPlayer {
                 // this into a different control structure!
                 switch (rc.getType()){
                     case SOLDIER: runSoldier(rc); break;
-					case MOPPER: runMopper(rc); break;
                     case SPLASHER: runSplasher(rc); break;
                     default: runTower(rc, turnCount); break;
                     }
@@ -111,6 +110,16 @@ public class RobotPlayer {
         // Pick a direction to build in.
         Direction dir = directions[rng.nextInt(directions.length)];
         MapLocation nextLoc = rc.getLocation().add(dir);
+
+		// if (rc.canBuildRobot(UnitType.SOLDIER, nextLoc)){
+        //     rc.buildRobot(UnitType.SOLDIER, nextLoc);
+        //     System.out.println("BUILT A SOLDIER");
+        // }
+
+        // if (rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
+        //     rc.buildRobot(UnitType.SPLASHER, nextLoc);
+        //     System.out.println("BUILT A SPLASHER");
+        // }
 
         if (rc.getRoundNum() <= 500 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)){
             rc.buildRobot(UnitType.SOLDIER, nextLoc);
@@ -235,6 +244,24 @@ public class RobotPlayer {
 	        if (rc.getLocation().x == 0 || rc.getLocation().x == rc.getMapWidth() || rc.getLocation().y == 0 || rc.getLocation().y == rc.getMapHeight()) {
         	   try {
 	            	Pathfinding.move(target);
+					// MapInfo[] nearby = rc.senseNearbyMapInfos();
+					// int num = 0;
+
+					// for (int i=0; i<nearby.length; i++){
+					// 	num++;
+					// 	MapInfo cur = nearby[i];
+					// 	MapLocation nextLoc = cur.getMapLocation();
+
+					// 	if (cur.isPassable() && (cur.getPaint()==PaintType.EMPTY || cur.getPaint().isEnemy())){
+					// 		System.out.println("Paintcheck" + num + "  " + nextLoc + rc.getPaint());
+					// 		if (rc.canAttack(nextLoc)){
+					// 			rc.attack(nextLoc);
+					// 			// rc.move(ourLoc.directionTo(nextLoc));
+					// 			// Clock.yield();
+					// 		}
+					// 	}
+					// }
+
 	            } catch (Exception e) {
 	                System.out.println(rc.getType() + " Exception");
 	                e.printStackTrace();
@@ -243,6 +270,25 @@ public class RobotPlayer {
 
         	try {
         		Pathfinding.move(target);
+
+				// MapInfo[] nearby = rc.senseNearbyMapInfos();
+				// int num = 0;
+
+				// for (int i=0; i<nearby.length; i++){
+				// 	num++;
+				// 	MapInfo cur = nearby[i];
+				// 	MapLocation nextLoc = cur.getMapLocation();
+
+				// 	if (cur.isPassable() && (cur.getPaint()==PaintType.EMPTY || cur.getPaint().isEnemy())){
+				// 		System.out.println("Paintcheck" + num + "  " + nextLoc + rc.getPaint());
+				// 		if (rc.canAttack(nextLoc)){
+				// 			rc.attack(nextLoc);
+				// 			// rc.move(ourLoc.directionTo(nextLoc));
+				// 			// Clock.yield();
+				// 		}
+				// 	}
+				// }
+
         		} catch (Exception e) {
         			System.out.println(rc.getType() + " Exception");
            }
@@ -267,25 +313,19 @@ public class RobotPlayer {
 		MapLocation[] results;
 		int map_height = rc.getMapHeight();
 		int map_width = rc.getMapWidth();
+		// RobotInfo[] enemyRobots = rc.senseNearbyRobots(-1, rc.getTeam().opponent());
+		// if (enemyRobots.length >=3){
+		// 	rc.setIndicatorString("There are nearby enemy robots! Scary!");
+		// 	MapLocation[] enemyLocations = new MapLocation[enemyRobots.length];
+		// 	for (int j = 0; j< enemyRobots.length; j++){
+		// 		enemyLocations[j] = enemyRobots[j].getLocation();
+		// 		if (rc.canAttack(enemyLocations[j])){
+		// 			rc.attack(enemyLocations[j]);
+		// 		}
 
-		MapInfo[] nearby = rc.senseNearbyMapInfos();
-		int num = 0;
-		for (int i=0; i<nearby.length; i++){
-			num++;
-			MapInfo cur = nearby[i];
-			if (cur.isPassable() && cur.getPaint()!=PaintType.ALLY_SECONDARY && cur.getPaint()!=PaintType.ALLY_PRIMARY){
-				MapLocation nextLoc = cur.getMapLocation();
-				System.out.println("Paintcheck" + num + "  " + nextLoc + rc.getPaint());
-				if (rc.canAttack(nextLoc)){
-					rc.attack(nextLoc);
-					rc.move(ourLoc.directionTo(nextLoc));
-					Clock.yield();
-				}
-			}
-		}
-
-		rc.setIndicatorString("we are here!!!!!");
-		System.out.println("we are surrounded by paint i think");
+		// 	}
+		// Clock.yield();
+		// }
 
 		if (coord_x < coord_y) {
 	    	if (coord_x < map_width / 2) {
@@ -307,14 +347,24 @@ public class RobotPlayer {
 	            Pathfinding.move(my_target);
 	    	}
 
-	    	// Attack randomly.
-	    	Direction dir = directions[rng.nextInt(directions.length)];
-	        MapLocation nextLoc = rc.getLocation().add(dir);
-			if (rc.canAttack(nextLoc)){
-	            rc.attack(nextLoc);
-	        }
+			//UPDATE
+			MapInfo[] nearby = rc.senseNearbyMapInfos();
+			int num = 0;
 
+			for (int i=0; i<nearby.length; i++){
+				num++;
+				MapInfo cur = nearby[i];
+				MapLocation nextLoc = cur.getMapLocation();
 
+				if (cur.isPassable() && (cur.getPaint()==PaintType.EMPTY || cur.getPaint().isEnemy())){
+					System.out.println("Paintcheck" + num + "  " + nextLoc + rc.getPaint());
+					if (rc.canAttack(nextLoc)){
+						rc.attack(nextLoc);
+						// rc.move(ourLoc.directionTo(nextLoc));
+						// Clock.yield();
+					}
+				}
+			}
 		 	// We can also move our code into different methods or classes to better organize it!
 	        updateEnemyRobots(rc);
     	}
@@ -338,14 +388,25 @@ public class RobotPlayer {
 	            Pathfinding.move(my_target);
 	    	}
 
-			// Attack randomly.
-	    	Direction dir = directions[rng.nextInt(directions.length)];
-	        MapLocation nextLoc = rc.getLocation().add(dir);
-			if (rc.canAttack(nextLoc)){
-	            rc.attack(nextLoc);
-	        }
+			// UPDATE
+			MapInfo[] nearby = rc.senseNearbyMapInfos();
+			int num = 0;
 
 
+			for (int i=0; i<nearby.length; i++){
+				num++;
+				MapInfo cur = nearby[i];
+				MapLocation nextLoc = cur.getMapLocation();
+
+				if (cur.isPassable() && (cur.getPaint()==PaintType.EMPTY || cur.getPaint().isEnemy())){
+					System.out.println("Paintcheck" + num + "  " + nextLoc + rc.getPaint());
+					if (rc.canAttack(nextLoc)){
+						rc.attack(nextLoc);
+						// rc.move(ourLoc.directionTo(nextLoc));
+						// Clock.yield();
+					}
+				}
+			}
 		 	// We can also move our code into different methods or classes to better organize it!
 	        updateEnemyRobots(rc);
 
