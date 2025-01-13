@@ -3,10 +3,6 @@ package anotherfuncsplayer;
 import battlecode.common.*;
 import java.util.Random;
 
-/**
- * Run a single turn for a Mopper.
- * This code is wrapped inside the infinite loop in run(), so it is called once per turn.
- */
 public class Mopper {
 	
 	static final Random rng = new Random(6147);
@@ -26,6 +22,10 @@ public class Mopper {
         Direction.NORTHWEST,
     };
     
+    /**
+     * Run a single turn for a Mopper.
+     * This code is wrapped inside the infinite loop in run(), so it is called once per turn.
+     */
     public static void runMopper(RobotController rc) throws GameActionException{
     	
     	int coord_x = originalLocation.x;
@@ -81,7 +81,7 @@ public class Mopper {
 	    	else {
 	    		Random rand = new Random();
 	    		int randomInd = rand.nextInt(map_width);
-	            MapLocation my_target = new MapLocation(randomInd, 0);
+	            MapLocation my_target = new MapLocation(0, map_height);
 	            
 	            Pathfinding.init(rc);
 	            Pathfinding.initTurn();

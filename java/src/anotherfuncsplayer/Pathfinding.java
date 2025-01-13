@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Random;
 public class Pathfinding {
     static RobotController rc;
-    static MapLocation target = null;
+    static MapLocation target;
     static boolean[] impassable = null;
     static final Random rng = new Random(6147);
     static final Direction[] directions = {
@@ -24,6 +24,7 @@ public class Pathfinding {
         Util.init(rc);
         BugNav.rotateRight = Util.rng.nextDouble() > 0.5;
     }
+    
     static void setImpassable(boolean[] imp) {
         impassable = imp;
     }
@@ -37,17 +38,20 @@ public class Pathfinding {
             return false;
         return true;
     }
-    static public void move(MapLocation loc) {
-    	if (!rc.isMovementReady()) {
+    static public void move(MapLocation loc) throws GameActionException {
+    	if (!rc.isMovementReady() || (rc.getLocation().distanceSquaredTo(loc) <= 3)) {
+    		for (Direction dir: directions) {
+    			if (rc.canMove(dir)) {
+    				System.out.println(rc.getType() + "IS GETTING UNSTUCK HOORAY");
+    				rc.move(dir);
+    			}
+    		}
+    		Explore.init(rc);
+    		target = Explore.getExploreTarget();
             return ;
     	}
+    	
         target = loc;
-        MapLocation myLoc = rc.getLocation();
-        if (myLoc.distanceSquaredTo(loc) < 10) {
-        	Explore.init(rc);
-        	Explore.getExploreTarget();
-        	target = Explore.exploreTarget;
-        }
         if (!BugNav.move())
         	greedyPath();
         BugNav.move();
