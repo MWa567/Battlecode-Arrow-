@@ -34,8 +34,6 @@ public class RobotPlayer {
     static final Random rng = new Random(6147);
     static MapLocation target;
     static MapLocation originalLocation = null;
-    
-    static int towersBuilding = 0;
 
     /** Array containing all the possible movement directions. */
     static final Direction[] directions = {
@@ -175,13 +173,11 @@ public class RobotPlayer {
 		            MapLocation targetLoc = curRuin.getMapLocation();
 	                // Complete the ruin if we can.
 	            	if (rc.canCompleteTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc)){
-	            		System.out.println("IS ABLE TO COMPLETE");
 	                    rc.completeTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc);
 	                    rc.setTimelineMarker("Tower built", 0, 255, 0);
 	                    System.out.println("Built a paint tower at " + targetLoc + "!");
 	                }
 	            	else if (rc.canCompleteTowerPattern(UnitType.LEVEL_ONE_MONEY_TOWER, targetLoc)){
-	            		System.out.println("IS ABLE TO COMPLETE");
 	                    rc.completeTowerPattern(UnitType.LEVEL_ONE_MONEY_TOWER, targetLoc);
 	                    rc.setTimelineMarker("Tower built", 0, 255, 0);
 	                    System.out.println("Built a money tower at " + targetLoc + "!");
@@ -196,13 +192,11 @@ public class RobotPlayer {
 	            if (rc.canMove(dir))
 	            	rc.move(dir);
 	            	
-	            int towerCount = towersBuilding % 6;
-	            if (towerCount == 0 || towerCount == 2 || towerCount == 5) {
+	            if (rc.getChips() > 1500 || rc.getNumberTowers() == 2) {
 	            	// Mark the pattern we need to draw to build a tower here if we haven't already.
 	                MapLocation shouldBeMarked = curRuin.getMapLocation().subtract(dir);
-	                towersBuilding += 1;
 	                if (rc.senseMapInfo(shouldBeMarked).getMark() == PaintType.EMPTY && rc.canMarkTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc)){
-	                    rc.markTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc);
+	                	rc.markTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc);
 	                    System.out.println("Trying to build a tower at " + targetLoc);
 	                }
 	                // Fill in any spots in the pattern with the appropriate paint.
@@ -217,9 +211,8 @@ public class RobotPlayer {
 	            else {
 	            	// Mark the pattern we need to draw to build a tower here if we haven't already.
 	                MapLocation shouldBeMarked = curRuin.getMapLocation().subtract(dir);
-	                towersBuilding += 1;
 	                if (rc.senseMapInfo(shouldBeMarked).getMark() == PaintType.EMPTY && rc.canMarkTowerPattern(UnitType.LEVEL_ONE_MONEY_TOWER, targetLoc)){
-	                    rc.markTowerPattern(UnitType.LEVEL_ONE_MONEY_TOWER, targetLoc);
+	                	rc.markTowerPattern(UnitType.LEVEL_ONE_MONEY_TOWER, targetLoc);
 	                    System.out.println("Trying to build a tower at " + targetLoc);
 	                }
 	                // Fill in any spots in the pattern with the appropriate paint.
@@ -246,7 +239,7 @@ public class RobotPlayer {
 	        
 	        if (rc.getLocation().x == 0 || rc.getLocation().x == rc.getMapWidth() || rc.getLocation().y == 0 || rc.getLocation().y == rc.getMapHeight()) {
         	   try {
-	            	Pathfinding.move(target);
+	            	Pathfinding.move(target, false);
 	            } catch (Exception e) {
 	                System.out.println(rc.getType() + " Exception");
 	                e.printStackTrace();
@@ -254,7 +247,7 @@ public class RobotPlayer {
            }
 
         	try {
-        		Pathfinding.move(target);
+        		Pathfinding.move(target, false);
         		} catch (Exception e) {
         			System.out.println(rc.getType() + " Exception");
            }
@@ -281,7 +274,7 @@ public class RobotPlayer {
 	            
 	            Pathfinding.init(rc);
 	            Pathfinding.initTurn();
-	            Pathfinding.move(my_target);
+	            Pathfinding.move(my_target, true);
 	    	}
 	    	else {
 	    		Random rand = new Random();
@@ -290,16 +283,8 @@ public class RobotPlayer {
 	            
 	            Pathfinding.init(rc);
 	            Pathfinding.initTurn();
-	            Pathfinding.move(my_target);
+	            Pathfinding.move(my_target, true);
 	    	}
-	    	/*
-	    	// Attack randomly.
-	    	Direction dir = directions[rng.nextInt(directions.length)];
-	        MapLocation nextLoc = rc.getLocation().add(dir);
-			if (rc.canAttack(nextLoc)){
-	            rc.attack(nextLoc);
-	        }
-	        */
 			/*
 			else if (rc.canMopSwing(dir)){
 	            rc.mopSwing(dir);
@@ -318,7 +303,7 @@ public class RobotPlayer {
 	            
 	            Pathfinding.init(rc);
 	            Pathfinding.initTurn();
-	            Pathfinding.move(my_target);
+	            Pathfinding.move(my_target, true);
 	    	}
 	    	else {
 	    		Random rand = new Random();
@@ -327,22 +312,8 @@ public class RobotPlayer {
 	            
 	            Pathfinding.init(rc);
 	            Pathfinding.initTurn();
-	            Pathfinding.move(my_target);
+	            Pathfinding.move(my_target, true);
 	    	}
-	    	
-	    	// Attack randomly.
-	    	Direction dir = directions[rng.nextInt(directions.length)];
-	        MapLocation nextLoc = rc.getLocation().add(dir);
-			if (rc.canAttack(nextLoc)){
-	            rc.attack(nextLoc);
-	        }
-			/*
-			else if (rc.canMopSwing(dir)){
-	            rc.mopSwing(dir);
-	            System.out.println("Mop Swing! Booyah!");
-	        }
-	        */
-			
 			// We can also move our code into different methods or classes to better organize it!
 	        updateEnemyRobots(rc);
     	}

@@ -39,33 +39,46 @@ public class Pathfinding {
         return true;
     }
     
-    static public void paint() throws GameActionException {
+    static public void paint(boolean isSplasher) throws GameActionException {
+    	if (isSplasher) {
+    		MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
+            for (MapInfo tile : nearbyTiles) {
+            	if (tile.getPaint().isAlly() && tile.getPaint().isSecondary()) {
+            		return ;
+            	}
+            }
+    	}
     	MapInfo currentTile = rc.senseMapInfo(rc.getLocation());
         if (!currentTile.getPaint().isAlly() && rc.canAttack(rc.getLocation())){
             rc.attack(rc.getLocation());
             }
     }
     
-    static public void move(MapLocation loc) throws GameActionException {
-    	if (!rc.isMovementReady() || (rc.getLocation().distanceSquaredTo(loc) <= 3)) {
+    static public void move(MapLocation loc, boolean isSplasher) throws GameActionException {
+    	if (!rc.isMovementReady() || (rc.getLocation().distanceSquaredTo(loc) <= 5)) {
+    		System.out.println("REACHED PREVIOUS TARGET" + target);
     		for (Direction dir: directions) {
     			if (rc.canMove(dir)) {
     				rc.move(dir);
-    				paint();
+    				paint(isSplasher);
     				}
     			}
     		Explore.init(rc);
+    		while (Explore.getExploreTarget().distanceSquaredTo(target) <= 15) {
+    			Explore.init(rc);
+    		}
         	target = Explore.getExploreTarget();
+        	System.out.println("NEW TARGET IS " + target);
         	return ;
     		}  	
         target = loc;
         if (!BugNav.move()) {
         	greedyPath();
-        	paint();
+        	paint(isSplasher);
         }
 		else {
 			BugNav.move();
-			paint();
+			paint(isSplasher);
         }
     }
     static final double eps = 1e-5;
