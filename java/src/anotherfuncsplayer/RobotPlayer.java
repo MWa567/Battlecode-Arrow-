@@ -170,12 +170,13 @@ public class RobotPlayer {
 	        MapInfo curRuin = null;
 	        int curDist = 999999;
 	        for (MapInfo tile : nearbyTiles){
-	            if (tile.hasRuin()){
+	            if (tile.hasRuin() && rc.senseRobotAtLocation(tile.getMapLocation()) == null){
 	            	int dist = tile.getMapLocation().distanceSquaredTo(rc.getLocation());
 	            	if (dist < curDist) {
 		                curRuin = tile;
 		                curDist = dist;
 		                MapLocation targetLoc = curRuin.getMapLocation();
+		                
 		                // Complete the ruin if we can.
 		            	if (rc.canCompleteTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc)){
 		                    rc.completeTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc);
@@ -195,8 +196,8 @@ public class RobotPlayer {
 	            Direction dir = rc.getLocation().directionTo(targetLoc);
 	            if (rc.canMove(dir))
 	            	rc.move(dir);
-	            int towerCount =  towersBuilding % 6;
-	            if (towerCount == 0 || towerCount == 2 || towerCount == 3) {
+	            int towerCount = towersBuilding % 6;
+	            if (towerCount == 0 || towerCount == 2 || towerCount == 5) {
 	            	// Mark the pattern we need to draw to build a tower here if we haven't already.
 	                MapLocation shouldBeMarked = curRuin.getMapLocation().subtract(dir);
 	                towersBuilding += 1;
@@ -230,6 +231,17 @@ public class RobotPlayer {
 	                    }
 	                }
 	            }
+	            // Complete the ruin if we can.
+            	if (rc.canCompleteTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc)){
+                    rc.completeTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc);
+                    rc.setTimelineMarker("Tower built", 0, 255, 0);
+                    System.out.println("Built a paint tower at " + targetLoc + "!");
+                }
+            	else if (rc.canCompleteTowerPattern(UnitType.LEVEL_ONE_MONEY_TOWER, targetLoc)){
+                    rc.completeTowerPattern(UnitType.LEVEL_ONE_MONEY_TOWER, targetLoc);
+                    rc.setTimelineMarker("Tower built", 0, 255, 0);
+                    System.out.println("Built a money tower at " + targetLoc + "!");
+                }
 	        }
 	        
 	        if (rc.getLocation().x == 0 || rc.getLocation().x == rc.getMapWidth() || rc.getLocation().y == 0 || rc.getLocation().y == rc.getMapHeight()) {

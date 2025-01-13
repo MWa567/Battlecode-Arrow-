@@ -50,7 +50,6 @@ public class Pathfinding {
     	if (!rc.isMovementReady() || (rc.getLocation().distanceSquaredTo(loc) <= 3)) {
     		for (Direction dir: directions) {
     			if (rc.canMove(dir)) {
-    				System.out.println(rc.getType() + "IS GETTING UNSTUCK HOORAY");
     				rc.move(dir);
     				paint();
     				}
