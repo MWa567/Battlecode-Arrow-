@@ -192,7 +192,7 @@ public class RobotPlayer {
 	            if (rc.canMove(dir))
 	            	rc.move(dir);
 	            	
-	            if (rc.getChips() > 1500 || rc.getNumberTowers() == 2) {
+	            if (rc.getChips() > 1000 || rc.getNumberTowers() == 2) {
 	            	// Mark the pattern we need to draw to build a tower here if we haven't already.
 	                MapLocation shouldBeMarked = curRuin.getMapLocation().subtract(dir);
 	                if (rc.senseMapInfo(shouldBeMarked).getMark() == PaintType.EMPTY && rc.canMarkTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc)){

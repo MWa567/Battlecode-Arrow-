@@ -41,11 +41,18 @@ public class Pathfinding {
     
     static public void paint(boolean isSplasher) throws GameActionException {
     	if (isSplasher) {
+    		boolean existsEmpty = false;
     		MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
             for (MapInfo tile : nearbyTiles) {
             	if (tile.getPaint().isAlly() && tile.getPaint().isSecondary()) {
             		return ;
             	}
+            	else if (tile.getPaint() == PaintType.EMPTY) {
+            		existsEmpty = true;
+            	}
+            }
+            if (!existsEmpty) {
+        		return ;
             }
     	}
     	MapInfo currentTile = rc.senseMapInfo(rc.getLocation());
