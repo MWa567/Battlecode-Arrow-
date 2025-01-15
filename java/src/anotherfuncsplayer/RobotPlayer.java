@@ -121,12 +121,12 @@ public class RobotPlayer {
         Direction dir = directions[rng.nextInt(directions.length)];
         MapLocation nextLoc = rc.getLocation().add(dir);
 
-        if (rc.getRoundNum() <= 350 && rc.getNumberTowers() < 20 && rc.getChips() > 300 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)){
+        if (rc.getRoundNum() <= 300 && rc.getNumberTowers() < 20 && rc.getChips() > 300 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)){
             rc.buildRobot(UnitType.SOLDIER, nextLoc);
             System.out.println("BUILT A SOLDIER");
         }
         
-        else if (rc.getRoundNum() > 350 && rc.getChips() > 300 && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
+        else if (rc.getRoundNum() > 300 && rc.getChips() > 300 && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
             rc.buildRobot(UnitType.SPLASHER, nextLoc);
             System.out.println("BUILT A SPLASHER");
         }

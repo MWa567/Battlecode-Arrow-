@@ -45,7 +45,11 @@ public class Pathfinding {
     		boolean existsEmpty = false;
     		MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
             for (MapInfo tile : nearbyTiles) {
-            	if (tile.getPaint().isAlly() && tile.getPaint().isSecondary()) {
+            	if (tile.hasRuin() && rc.senseRobotAtLocation(tile.getMapLocation()) != null && rc.senseRobotAtLocation(tile.getMapLocation()).getTeam() != rc.getTeam()) {
+            		setTarget(tile.getMapLocation());
+            		rc.attack(tile.getMapLocation());
+            	}
+            	else if (tile.getPaint().isAlly() && tile.getPaint().isSecondary()) {
             		return ;
             	}
             	else if (tile.getPaint() == PaintType.EMPTY || tile.getPaint().isEnemy()) {
