@@ -1,4 +1,4 @@
-package anotherfuncsplayer;
+package fletching;
 
 import battlecode.common.*;
 
@@ -62,11 +62,11 @@ public class RobotPlayer {
 
         // You can also use indicators to save debug notes in replays.
         rc.setIndicatorString("Hello world!");
-        
+
         if (originalLocation == null) {
         	originalLocation = rc.getLocation();
         }
-        
+
         while (true) {
             // This code runs during the entire lifespan of the robot, which is why it is in an infinite
             // loop. If we ever leave this loop and return from run(), the robot dies! At the end of the
@@ -120,16 +120,16 @@ public class RobotPlayer {
         Direction dir = directions[rng.nextInt(directions.length)];
         MapLocation nextLoc = rc.getLocation().add(dir);
 
-        if ((rc.getRoundNum() <= 450) && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)){
+        if ((rc.getRoundNum() <= 500) && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)){
             rc.buildRobot(UnitType.SOLDIER, nextLoc);
             System.out.println("BUILT A SOLDIER");
         }
-        
-        else if ((rc.getRoundNum() > 450) && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
+
+        else if ((rc.getRoundNum() > 500) && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
             rc.buildRobot(UnitType.SPLASHER, nextLoc);
             System.out.println("BUILT A SPLASHER");
         }
-        
+
         // Read incoming messages
         Message[] messages = rc.readMessages(-1);
         for (Message m : messages) {
@@ -145,7 +145,7 @@ public class RobotPlayer {
         		}
         	}
         }
-  
+
     /**
      * Run a single turn for a Soldier.
      * This code is wrapped inside the infinite loop in run(), so it is called once per turn.
@@ -158,14 +158,14 @@ public class RobotPlayer {
         target = Explore.getExploreTarget();
     	while (true) {
 	    	// Sense information about all visible nearby tiles.
-	    MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
-	    // Search for a nearby ruin to complete.
-	        
-	    //If we can see a ruin, move towards it
-	    MapInfo curRuin = null;
-	    int curDist = 999999;
-	    for (MapInfo tile : nearbyTiles){
-	    		if (tile.hasRuin() && rc.senseRobotAtLocation(tile.getMapLocation()) == null){
+	        MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
+	        // Search for a nearby ruin to complete.
+
+	        //If we can see a ruin, move towards it
+	        MapInfo curRuin = null;
+	        int curDist = 999999;
+	        for (MapInfo tile : nearbyTiles){
+	            if (tile.hasRuin() && rc.senseRobotAtLocation(tile.getMapLocation()) == null){
 	            	int dist = tile.getMapLocation().distanceSquaredTo(rc.getLocation());
 	            	if (dist < curDist) {
 		                curRuin = tile;
@@ -183,20 +183,20 @@ public class RobotPlayer {
 	                    System.out.println("Built a money tower at " + targetLoc + "!");
 	                    }
 	            	}
-	            	}
+	            }
 	        }
 	        if (curRuin != null){
 	            MapLocation targetLoc = curRuin.getMapLocation();
 	            Direction dir = rc.getLocation().directionTo(targetLoc);
-	            
+
 	            if (rc.canMove(dir))
 	            	rc.move(dir);
-	            
+
 	            Random random = new Random();
-	            int randomNumber = random.nextInt(9);
-	            
-	            if (randomNumber % 2 == 1) {
-	            		// Mark the pattern we need to draw to build a tower here if we haven't already.
+	            int randomNumber = random.nextInt(2);
+
+	            if ((rc.getChips() > 1000 && randomNumber == 0) || rc.getNumberTowers() == 2) {
+	            	// Mark the pattern we need to draw to build a tower here if we haven't already.
 	                MapLocation shouldBeMarked = curRuin.getMapLocation().subtract(dir);
 	                if (rc.senseMapInfo(shouldBeMarked).getMark() == PaintType.EMPTY && rc.canMarkTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc)){
 	                	rc.markTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc);
@@ -239,7 +239,7 @@ public class RobotPlayer {
                     System.out.println("Built a money tower at " + targetLoc + "!");
                 }
 	        }
-	        
+
 	       if (rc.getLocation().x == 0 || rc.getLocation().x == rc.getMapWidth() || rc.getLocation().y == 0 || rc.getLocation().y == rc.getMapHeight()) {
         	   try {
 	            	Pathfinding.move(target, false);
@@ -262,19 +262,19 @@ public class RobotPlayer {
      * This code is wrapped inside the infinite loop in run(), so it is called once per turn.
      */
     public static void runSplasher(RobotController rc) throws GameActionException{
-    	
+
     	int coord_x = originalLocation.x;
     	int coord_y = originalLocation.y;
-    	
+
     	int map_height = rc.getMapHeight();
         int map_width = rc.getMapWidth();
-        
+
     	if (coord_x < coord_y) {
 	    	if (coord_x < map_width / 2) {
 	            Random rand = new Random();
 	            int randomInd = rand.nextInt(map_height);
 	            MapLocation my_target = new MapLocation(map_width, randomInd);
-	            
+
 	            Pathfinding.init(rc);
 	            Pathfinding.initTurn();
 	            Pathfinding.move(my_target, true);
@@ -283,7 +283,7 @@ public class RobotPlayer {
 	    		Random rand = new Random();
 	            int randomInd = rand.nextInt(map_height);
 	            MapLocation my_target = new MapLocation(0, randomInd);
-	            
+
 	            Pathfinding.init(rc);
 	            Pathfinding.initTurn();
 	            Pathfinding.move(my_target, true);
@@ -302,7 +302,7 @@ public class RobotPlayer {
 	            System.out.println("Mop Swing! Booyah!");
 	        }
 	        */
-			
+
 			// We can also move our code into different methods or classes to better organize it!
 	        updateEnemyRobots(rc);
     	}
@@ -311,7 +311,7 @@ public class RobotPlayer {
 	            Random rand = new Random();
 	            int randomInd = rand.nextInt(map_width);
 	            MapLocation my_target = new MapLocation(randomInd, map_height);
-	            
+
 	            Pathfinding.init(rc);
 	            Pathfinding.initTurn();
 	            Pathfinding.move(my_target, true);
@@ -320,17 +320,31 @@ public class RobotPlayer {
 	    		Random rand = new Random();
 	    		int randomInd = rand.nextInt(map_width);
 	            MapLocation my_target = new MapLocation(randomInd, 0);
-	            
+
 	            Pathfinding.init(rc);
 	            Pathfinding.initTurn();
 	            Pathfinding.move(my_target, true);
 	    	}
 			// We can also move our code into different methods or classes to better organize it!
 	        updateEnemyRobots(rc);
+
+			RobotInfo[] enemyRobots = rc.senseNearbyRobots(-1, rc.getTeam().opponent());
+			if (enemyRobots.length != 0){
+				rc.setIndicatorString("There are nearby enemy robots! Scary!");
+				// Save an array of locations with enemy robots in them for possible future use.
+				MapLocation[] enemyLocations = new MapLocation[enemyRobots.length];
+				for (int i = 0; i < enemyRobots.length; i++){
+					enemyLocations[i] = enemyRobots[i].getLocation();
+					if (rc.canAttack(nextLoc)){
+						rc.attack(nextLoc);
+					}
+				}
+			}
+
     	}
     }
-    
-    
+
+
 
     public static void updateEnemyRobots(RobotController rc) throws GameActionException{
         // Sensing methods can be passed in a radius of -1 to automatically
