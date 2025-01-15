@@ -8,6 +8,7 @@ public class Pathfinding {
     static MapLocation target;
     static boolean[] impassable = null;
     static final Random rng = new Random(6147);
+    static boolean changedTarget = false;
     static final Direction[] directions = {
             Direction.NORTH,
             Direction.NORTHEAST,
@@ -71,17 +72,19 @@ public class Pathfinding {
     			if (rc.canMove(dir)) {
     				rc.move(dir);
     				paint(isSplasher);
-    				}
     			}
+    		}
     		Explore.init(rc);
     		while (Explore.getExploreTarget().distanceSquaredTo(target) <= 15) {
     			Explore.init(rc);
     		}
         	target = Explore.getExploreTarget();
+        	changedTarget = true;
         	return ;
     		}
-    	
-    	target = loc;
+    	if (!changedTarget) {
+    		target = loc;
+    	}
         if (!BugNav.move()) {
         	greedyPath();
         	paint(isSplasher);
