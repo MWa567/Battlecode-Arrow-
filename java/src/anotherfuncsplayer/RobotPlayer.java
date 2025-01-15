@@ -239,7 +239,7 @@ public class RobotPlayer {
                     System.out.println("Built a money tower at " + targetLoc + "!");
                 }
 	        }
-	        
+	        /*
 	       if (rc.getLocation().x == 0 || rc.getLocation().x == rc.getMapWidth() || rc.getLocation().y == 0 || rc.getLocation().y == rc.getMapHeight()) {
         	   try {
 	            	Pathfinding.move(target, false);
@@ -248,7 +248,7 @@ public class RobotPlayer {
 	                e.printStackTrace();
 	            }
            }
-
+			*/
         	try {
         		Pathfinding.move(target, false);
         		} catch (Exception e) {

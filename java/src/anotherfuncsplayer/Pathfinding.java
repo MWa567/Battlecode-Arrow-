@@ -66,7 +66,7 @@ public class Pathfinding {
     }
     
     static public void move(MapLocation loc, boolean isSplasher) throws GameActionException {
-    	if (!rc.isMovementReady() || (rc.getLocation().distanceSquaredTo(loc) <= 5)) {
+    	if (!rc.isMovementReady() || rc.getLocation().distanceSquaredTo(loc) <= 5) {
     		for (Direction dir: directions) {
     			if (rc.canMove(dir)) {
     				rc.move(dir);
