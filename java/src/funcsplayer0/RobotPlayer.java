@@ -1,4 +1,4 @@
-package anotherfuncsplayer;
+package funcsplayer0;
 
 import battlecode.common.*;
 
@@ -35,16 +35,6 @@ public class RobotPlayer {
     static MapLocation target;
     static MapLocation originalLocation = null;
     static MapLocation nearestTower;
-    
-    static int map_height;
-    static int map_width;
-    
-    static boolean[][] paintTowerPattern = null;
-    static boolean[][] moneyTowerPattern = null;
-    static boolean[][] defenseTowerPattern = null;
-    
-    static MapLocation paintingRuinLoc = null;
-    static UnitType paintingTowerType = null;
 
     /** Array containing all the possible movement directions. */
     static final Direction[] directions = {
@@ -70,17 +60,13 @@ public class RobotPlayer {
         // Hello world! Standard output is very useful for debugging.
         // Everything you say here will be directly viewable in your terminal when you run a match!
         System.out.println("I'm alive");
+
+        // You can also use indicators to save debug notes in replays.
+        rc.setIndicatorString("Hello world!");
         
         if (originalLocation == null) {
         	originalLocation = rc.getLocation();
         }
-        
-        paintTowerPattern = rc.getTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER);
-        moneyTowerPattern = rc.getTowerPattern(UnitType.LEVEL_ONE_MONEY_TOWER);
-        defenseTowerPattern = rc.getTowerPattern(UnitType.LEVEL_ONE_DEFENSE_TOWER);
-        
-        map_height = rc.getMapHeight();
-        map_width = rc.getMapWidth();
         
         while (true) {
             // This code runs during the entire lifespan of the robot, which is why it is in an infinite
@@ -163,46 +149,7 @@ public class RobotPlayer {
         	}
         }
     }
-    
-    public static boolean isWithinPattern(MapLocation ruinLoc, MapLocation paintLoc) {
-    	return Math.abs(paintLoc.x - ruinLoc.x) <= 2 && Math.abs(paintLoc.y - ruinLoc.y) <= 2 && !ruinLoc.equals(paintLoc);
-    }
-    
-    public static UnitType getNewTowerType(RobotController rc) {
-    	Random random = new Random();
-        int randomNumber = random.nextInt(9);
-
-        boolean inMiddleX = 0.25 * map_width < rc.getLocation().x && rc.getLocation().x  < 0.75 * map_width;
-        boolean inMiddleY = 0.25 * map_height < rc.getLocation().y && rc.getLocation().y  < 0.75 * map_height;
-        if (rc.getNumberTowers() < 4) {
-        		return UnitType.LEVEL_ONE_MONEY_TOWER;
-        }
-    	else if ((randomNumber == 0 || randomNumber == 3 || (inMiddleX && inMiddleY)) && rc.getRoundNum() > 150) {
-    		return UnitType.LEVEL_ONE_DEFENSE_TOWER;
-    	}
-    	else if (randomNumber == 1 || randomNumber == 2) {
-	    	return UnitType.LEVEL_ONE_PAINT_TOWER;
-    	}
-	    else {
-	    	return UnitType.LEVEL_ONE_MONEY_TOWER;
-	    }
-    }
-    
-    public static boolean getIsSecondary(MapLocation ruinLoc, MapLocation paintLoc, UnitType towerType) {
-    	if (!isWithinPattern(ruinLoc, paintLoc)) return false;
-    	int col = paintLoc.x - ruinLoc.x + 2;
-    	int row = paintLoc.y - ruinLoc.y + 2;
-    	if (towerType == UnitType.LEVEL_ONE_PAINT_TOWER) {
-    		return paintTowerPattern[row][col];
-    	}
-    	else if (towerType == UnitType.LEVEL_ONE_MONEY_TOWER) {
-    		return moneyTowerPattern[row][col];
-    	}
-    	else {
-    		return defenseTowerPattern[row][col];
-    	}
-    }
-    
+  
     /**
      * Run a single turn for a Soldier.
      * This code is wrapped inside the infinite loop in run(), so it is called once per turn.
@@ -214,6 +161,7 @@ public class RobotPlayer {
         Pathfinding.initTurn();
         target = Explore.getExploreTarget();
     	while (true) {
+    		
 	    	// Sense information about all visible nearby tiles.
 		    MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
 		    // Search for a nearby ruin to complete.
@@ -251,6 +199,17 @@ public class RobotPlayer {
 	    
         if (curRuin != null){
         	MapLocation targetLoc = curRuin.getMapLocation();
+            // Complete the ruin if we can.
+        	if (rc.canCompleteTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc)){
+                rc.completeTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc);
+                rc.setTimelineMarker("Tower built", 0, 255, 0);
+                System.out.println("Built a paint tower at " + targetLoc + "!");
+            }
+        	else if (rc.canCompleteTowerPattern(UnitType.LEVEL_ONE_MONEY_TOWER, targetLoc)){
+                rc.completeTowerPattern(UnitType.LEVEL_ONE_MONEY_TOWER, targetLoc);
+                rc.setTimelineMarker("Tower built", 0, 255, 0);
+                System.out.println("Built a money tower at " + targetLoc + "!");
+                }
         	
             Direction dir = rc.getLocation().directionTo(targetLoc);
             
@@ -264,26 +223,35 @@ public class RobotPlayer {
             	rc.move(dir.rotateRight());
             }
             
-            paintingTowerType = getNewTowerType(rc);
-            paintingRuinLoc = curRuin.getMapLocation();
+            Random random = new Random();
+            int randomNumber = random.nextInt(3);
             
-            if (rc.isActionReady()) {
-            	MapInfo[] infos = rc.senseNearbyMapInfos(3);
-            	for (MapInfo info: infos) {
-            		MapLocation paintLoc = info.getMapLocation();
-            		boolean isSecondary = getIsSecondary(paintingRuinLoc, paintLoc, paintingTowerType);
-	            	if (rc.canAttack(paintLoc) && (info.getPaint() == PaintType.EMPTY || info.getPaint().isSecondary() != isSecondary)
-	            		&& isWithinPattern(paintingRuinLoc, paintLoc)) {
-	            		rc.attack(paintLoc, isSecondary);
-	            	}
-            	}
+            if (randomNumber == 1) {
+            	// Mark the pattern for paint tower
+                MapLocation shouldBeMarked = curRuin.getMapLocation().subtract(dir);
+                if (rc.senseMapInfo(shouldBeMarked).getMark() == PaintType.EMPTY && rc.canMarkTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc)){
+                	rc.markTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc);
+                    System.out.println("Trying to build a tower at " + targetLoc);
+                }
+            }
+            else {
+            	// Mark the pattern for money tower
+                MapLocation shouldBeMarked = curRuin.getMapLocation().subtract(dir);
+                if (rc.senseMapInfo(shouldBeMarked).getMark() == PaintType.EMPTY && rc.canMarkTowerPattern(UnitType.LEVEL_ONE_MONEY_TOWER, targetLoc)){
+                	rc.markTowerPattern(UnitType.LEVEL_ONE_MONEY_TOWER, targetLoc);
+                    System.out.println("Trying to build a tower at " + targetLoc);
+                }
             }
             
-            if (rc.canCompleteTowerPattern(paintingTowerType, paintingRuinLoc)){
-                rc.completeTowerPattern(paintingTowerType, paintingRuinLoc);
+            // Fill in any spots in the pattern with the appropriate paint.
+            for (MapInfo patternTile : rc.senseNearbyMapInfos(targetLoc, -1)){
+                if (patternTile.getMark() != patternTile.getPaint() && patternTile.getMark() != PaintType.EMPTY){
+                    boolean useSecondaryColor = patternTile.getMark() == PaintType.ALLY_SECONDARY;
+                    if (rc.canAttack(patternTile.getMapLocation()))
+                        rc.attack(patternTile.getMapLocation(), useSecondaryColor);
+                }
             }
         }
-        
         if (rc.getPaint() < 30) {
 	    	Pathfinding.setTarget(nearestTower);
 	    	try {
@@ -312,6 +280,9 @@ public class RobotPlayer {
     	
     	int coord_x = originalLocation.x;
     	int coord_y = originalLocation.y;
+    	
+    	int map_height = rc.getMapHeight();
+        int map_width = rc.getMapWidth();
         
     	if (coord_x < coord_y) {
 	    	if (coord_x < map_width / 2) {

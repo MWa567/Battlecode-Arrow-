@@ -1,4 +1,4 @@
-package anotherfuncsplayer;
+package funcsplayer0;
 
 import battlecode.common.*;
 import java.util.HashSet;
@@ -47,9 +47,7 @@ public class Pathfinding {
             for (MapInfo tile : nearbyTiles) {
             	if (tile.hasRuin() && rc.senseRobotAtLocation(tile.getMapLocation()) != null && rc.senseRobotAtLocation(tile.getMapLocation()).getTeam() != rc.getTeam()) {
             		setTarget(tile.getMapLocation());
-            		if (rc.canAttack(target)) {
-            			rc.attack(tile.getMapLocation());
-            		}
+            		rc.attack(tile.getMapLocation());
             	}
             	else if (tile.getPaint().isAlly() && tile.getPaint().isSecondary()) {
             		return ;

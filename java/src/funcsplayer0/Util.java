@@ -1,4 +1,4 @@
-package anotherfuncsplayer;
+package funcsplayer0;
 
 import battlecode.common.*;
 import java.util.Random;
