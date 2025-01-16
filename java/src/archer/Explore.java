@@ -47,8 +47,11 @@ public class Explore {
         rc = r;
         getNewTarget(10);
     }
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 56b7afd43227db45ad5274fb079309afeb00268d
     public static void pickNewExploreDir() {
         Direction[] newDirChoices = {
                 // Util.turnLeft90(lastExploreDir),
