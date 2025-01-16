@@ -73,8 +73,9 @@ public class Pathfinding {
     }
     
     static public void move(MapLocation loc, boolean isSplasher) throws GameActionException {
+    	System.out.println("ACTUALLY MOVING TOWARD TARGET AT " + target + " FROM " + rc.getLocation());
     	if (!rc.isMovementReady() || rc.getLocation().distanceSquaredTo(loc) <= 5) {
-    		// rc.setIndicatorString("REACHED TARGET OR BLOCK AT " + target);
+    		System.out.println("REACHED TARGET OR BLOCK AT " + target);
     		for (Direction dir: directions) {
     			if (rc.canMove(dir)) {
     				rc.move(dir);
@@ -87,10 +88,11 @@ public class Pathfinding {
     		}
         	target = Explore.getExploreTarget();
         	changedTarget = true;
-        	// rc.setIndicatorString("NEW TARGET IS " + target);
+        	rc.setIndicatorString("NEW TARGET IS " + target);
         	return ;
     	}
-    	if (!changedTarget) {
+    	
+    	if (!changedTarget || rc.getLocation().distanceSquaredTo(target) <= 5) {
     		target = loc;
     	}
         if (!BugNav.move()) {

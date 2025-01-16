@@ -135,12 +135,12 @@ public class RobotPlayer {
         Direction dir = directions[rng.nextInt(directions.length)];
         MapLocation nextLoc = rc.getLocation().add(dir);
 
-        if (rc.getRoundNum() <= 300 && rc.getNumberTowers() < 20 && rc.getChips() > 300 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)){
+        if (rc.getRoundNum() <= 300 && rc.getNumberTowers() < 20 && rc.getChips() > 500 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)){
             rc.buildRobot(UnitType.SOLDIER, nextLoc);
             System.out.println("BUILT A SOLDIER");
         }
         
-        else if (rc.getRoundNum() > 300 && rc.getChips() > 300 && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
+        else if (rc.getRoundNum() > 300 && rc.getChips() > 500 && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
             rc.buildRobot(UnitType.SPLASHER, nextLoc);
             System.out.println("BUILT A SPLASHER");
         }
@@ -171,17 +171,17 @@ public class RobotPlayer {
     
     public static UnitType getNewTowerType(RobotController rc) {
     	Random random = new Random();
-        int randomNumber = random.nextInt(3);
+        int randomNumber = random.nextInt(7);
 
         boolean inMiddleX = 0.3 * map_width < rc.getLocation().x && rc.getLocation().x < 0.7 * map_width;
         boolean inMiddleY = 0.3 * map_height < rc.getLocation().y && rc.getLocation().y < 0.7 * map_height;
-        if (rc.getNumberTowers() < 4) {
-        	return UnitType.LEVEL_ONE_MONEY_TOWER;
-        }
-    	else if (inMiddleX && inMiddleY) {
+        if (inMiddleX && inMiddleY) {
     		return UnitType.LEVEL_ONE_DEFENSE_TOWER;
     	}
-    	else if (randomNumber == 0) {
+        else if (rc.getNumberTowers() < 4) {
+        	return UnitType.LEVEL_ONE_MONEY_TOWER;
+        }
+    	else if (randomNumber == 0 || randomNumber == 1) {
 	    	return UnitType.LEVEL_ONE_PAINT_TOWER;
     	}
 	    else {
@@ -316,8 +316,9 @@ public class RobotPlayer {
 	                }
 	            }
 	        }
-        
-	        if (rc.getPaint() < 30) {
+		    
+		    if (rc.getPaint() < 50) {
+	        	System.out.println("GOING BACK FOR MORE PAINT");
 		    	Pathfinding.setTarget(nearestTower);
 		    	try {
 		    		Pathfinding.move(nearestTower, false);
@@ -325,13 +326,15 @@ public class RobotPlayer {
 		    			System.out.println(rc.getType() + " Exception");
 		    		}
 		    }
+        
 	        if (rc.getMovementCooldownTurns() > 10) {
 	        	Clock.yield();
 	        }
 	        if (curRuin == null) {
 	        	try {
-		    		System.out.println("STARTING TO MOVE TOWARD TARGET AT " + target);
 		    		Pathfinding.move(target, false);
+		    		System.out.println("TELLING BOT TO MOVE TOWARD " + target);
+		    		rc.setIndicatorString("Moving toward target at "+ Pathfinding.target);
 	    		}
 	        	catch (Exception e) {
 	    			System.out.println(rc.getType() + " Exception");
