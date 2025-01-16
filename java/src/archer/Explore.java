@@ -47,11 +47,8 @@ public class Explore {
         rc = r;
         getNewTarget(10);
     }
-<<<<<<< HEAD:java/src/anotherfuncsplayer/Explore.java
-    
-=======
 
->>>>>>> nehaexp2:java/src/archer/Explore.java
+
     public static void pickNewExploreDir() {
         Direction[] newDirChoices = {
                 // Util.turnLeft90(lastExploreDir),
@@ -84,7 +81,7 @@ public class Explore {
         }
     }
 <<<<<<< HEAD:java/src/anotherfuncsplayer/Explore.java
-    
+
 =======
 
 >>>>>>> nehaexp2:java/src/archer/Explore.java
@@ -128,19 +125,11 @@ public class Explore {
         }
         return dir;
     }
-<<<<<<< HEAD:java/src/anotherfuncsplayer/Explore.java
-    
-    static void initExploreDir() {
-        assignExplore3Dir(directions[Util.rng.nextInt(8)]);
-    }
-    
-=======
 
     static void initExploreDir() {
         assignExplore3Dir(directions[Util.rng.nextInt(8)]);
     }
 
->>>>>>> nehaexp2:java/src/archer/Explore.java
     static void initialize() {
         if (initialized)
             return;
@@ -174,7 +163,7 @@ public class Explore {
         return exploreTarget;
     }
 <<<<<<< HEAD:java/src/anotherfuncsplayer/Explore.java
-    
+
 =======
 
 >>>>>>> nehaexp2:java/src/archer/Explore.java
@@ -183,7 +172,7 @@ public class Explore {
         return explore3Target;
     }
 <<<<<<< HEAD:java/src/anotherfuncsplayer/Explore.java
-    
+
 =======
 
 >>>>>>> nehaexp2:java/src/archer/Explore.java
