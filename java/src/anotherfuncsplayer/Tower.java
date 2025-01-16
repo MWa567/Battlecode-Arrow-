@@ -9,7 +9,7 @@ import java.util.Random;
  */
 
 public class Tower {
-	
+
 	static final Random rng = new Random(6147);
     static MapLocation target;
     static MapLocation my_target;
@@ -26,7 +26,7 @@ public class Tower {
         Direction.WEST,
         Direction.NORTHWEST,
     };
-    
+
     public static void runTower(RobotController rc, int turnCount) throws GameActionException{
         // Pick a direction to build in.
         Direction dir = directions[rng.nextInt(directions.length)];

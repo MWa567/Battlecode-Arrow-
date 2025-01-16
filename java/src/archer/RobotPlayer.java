@@ -5,6 +5,19 @@ import battlecode.common.GameActionException;
 import battlecode.common.RobotController;
 
 public class RobotPlayer {
+    static RobotController rc;
+    static int turnCount;
+    static int islandCount;
+
+    static int mapWidth, mapHeight;
+
+    static Team myTeam;
+    static Team oppTeam;
+
+    public static String indicator;
+    public static int startRound;
+
+
     @SuppressWarnings("unused")
     public static void run(RobotController rc) throws GameActionException {
         Robot r;

@@ -22,7 +22,6 @@ public class Tower extends Robot {
             rc.buildRobot(UnitType.SPLASHER, nextLoc);
             System.out.println("BUILT A SPLASHER");
         }
-        //sarah is really cool
 
         // Read incoming messages
         Message[] messages = rc.readMessages(-1);

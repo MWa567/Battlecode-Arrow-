@@ -16,6 +16,12 @@ public abstract class Robot {
 
     public Robot(RobotController rc) throws GameActionException {
         this.rc = rc;
+        RobotPlayer.rc = rc;
+        myTeam = rc.getTeam();
+        oppTeam = rc.getTeam().opponent();
+        mapWidth = rc.getMapWidth();
+        mapHeight = rc.getMapHeight();
+        turnCount = 0;
     }
 
     static final Random rng = new Random(6147);
@@ -39,10 +45,18 @@ public abstract class Robot {
     abstract void play() throws GameActionException;
 
     void initTurn() throws GameActionException {
-
+        startRound = rc.getRoundNum();
+        indicator = "";
+        Comm.turn_starts();
     }
 
     void endTurn() throws GameActionException {
+        rc.setIndicatorString(indicator);
+        turnCount += 1;
+        if (startRound != rc.getRoundNum()) {
+            System.out.printf("overran turn from %d to %d\n", startRound, rc.getRoundNum());
+        }
+
         Clock.yield();
     }
 }

@@ -1,4 +1,4 @@
-package archer;
+package anotherfuncsplayer;
 
 import battlecode.common.*;
 import java.util.Random;
