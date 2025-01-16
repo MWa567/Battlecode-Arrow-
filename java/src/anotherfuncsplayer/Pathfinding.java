@@ -65,7 +65,7 @@ public class Pathfinding {
     	MapInfo currentTile = rc.senseMapInfo(rc.getLocation());
         if (!currentTile.getPaint().isAlly() && rc.canAttack(rc.getLocation())){
             rc.attack(rc.getLocation());
-            }
+        }
     }
     
     static public void setTarget(MapLocation newTarget) {
@@ -74,7 +74,7 @@ public class Pathfinding {
     
     static public void move(MapLocation loc, boolean isSplasher) throws GameActionException {
     	if (!rc.isMovementReady() || rc.getLocation().distanceSquaredTo(loc) <= 5) {
-    		rc.setIndicatorString("Reached target or block at " + target);
+    		// rc.setIndicatorString("REACHED TARGET OR BLOCK AT " + target);
     		for (Direction dir: directions) {
     			if (rc.canMove(dir)) {
     				rc.move(dir);
@@ -87,7 +87,7 @@ public class Pathfinding {
     		}
         	target = Explore.getExploreTarget();
         	changedTarget = true;
-        	rc.setIndicatorString("New target is " + target);
+        	// rc.setIndicatorString("NEW TARGET IS " + target);
         	return ;
     	}
     	if (!changedTarget) {
