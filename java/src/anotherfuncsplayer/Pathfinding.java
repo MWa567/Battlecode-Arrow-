@@ -25,7 +25,7 @@ public class Pathfinding {
         Util.init(rc);
         BugNav.rotateRight = Util.rng.nextDouble() > 0.5;
     }
-    
+
     static void setImpassable(boolean[] imp) {
         impassable = imp;
     }
@@ -39,7 +39,7 @@ public class Pathfinding {
             return false;
         return true;
     }
-    
+
     static public void paint(boolean isSplasher) throws GameActionException {
     	if (isSplasher) {
     		boolean existsEmpty = false;
@@ -65,11 +65,11 @@ public class Pathfinding {
             rc.attack(rc.getLocation());
             }
     }
-    
+
     static public void setTarget(MapLocation newTarget) {
     	target = newTarget;
     }
-    
+
     static public void move(MapLocation loc, boolean isSplasher) throws GameActionException {
     	if (!rc.isMovementReady() || rc.getLocation().distanceSquaredTo(loc) <= 5) {
     		rc.setIndicatorString("Reached target or block at " + target);
