@@ -47,7 +47,11 @@ public class Explore {
         rc = r;
         getNewTarget(10);
     }
+<<<<<<< HEAD:java/src/anotherfuncsplayer/Explore.java
     
+=======
+
+>>>>>>> nehaexp2:java/src/archer/Explore.java
     public static void pickNewExploreDir() {
         Direction[] newDirChoices = {
                 // Util.turnLeft90(lastExploreDir),
@@ -79,7 +83,11 @@ public class Explore {
             }
         }
     }
+<<<<<<< HEAD:java/src/anotherfuncsplayer/Explore.java
     
+=======
+
+>>>>>>> nehaexp2:java/src/archer/Explore.java
     // If you're traveling south *right* next to a wall, you should go
     // southwest/east for a turn
     public static Direction rotateAwayFromWallIfNecessary(Direction dir) {
@@ -120,11 +128,19 @@ public class Explore {
         }
         return dir;
     }
+<<<<<<< HEAD:java/src/anotherfuncsplayer/Explore.java
     
     static void initExploreDir() {
         assignExplore3Dir(directions[Util.rng.nextInt(8)]);
     }
     
+=======
+
+    static void initExploreDir() {
+        assignExplore3Dir(directions[Util.rng.nextInt(8)]);
+    }
+
+>>>>>>> nehaexp2:java/src/archer/Explore.java
     static void initialize() {
         if (initialized)
             return;
@@ -157,12 +173,20 @@ public class Explore {
     static MapLocation getExploreTarget() {
         return exploreTarget;
     }
+<<<<<<< HEAD:java/src/anotherfuncsplayer/Explore.java
     
+=======
+
+>>>>>>> nehaexp2:java/src/archer/Explore.java
     static MapLocation getExplore3Target() {
         checkDirection();
         return explore3Target;
     }
+<<<<<<< HEAD:java/src/anotherfuncsplayer/Explore.java
     
+=======
+
+>>>>>>> nehaexp2:java/src/archer/Explore.java
     static void assignExplore3Dir(Direction dir) {
         exploreDir = dir;
         double tempAngle = Math.atan2(exploreDir.dy, exploreDir.dx);
@@ -331,4 +355,8 @@ public class Explore {
         }
     }
     */
+<<<<<<< HEAD:java/src/anotherfuncsplayer/Explore.java
 }
+=======
+}
+>>>>>>> nehaexp2:java/src/archer/Explore.java

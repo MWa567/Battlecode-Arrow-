@@ -1,3 +1,4 @@
+<<<<<<< HEAD:java/src/anotherfuncsplayer/Tower.java
 package anotherfuncsplayer;
 
 import battlecode.common.*;
@@ -41,6 +42,33 @@ public class Tower {
             rc.buildRobot(UnitType.MOPPER, nextLoc);
             System.out.println("BUILT A MOPPER");
         }
+=======
+package archer;
+
+import battlecode.common.*;
+
+public class Tower extends Robot {
+
+    Tower(RobotController rc) throws GameActionException {
+        super(rc);
+    }
+
+    void play() throws GameActionException {
+        // Pick a direction to build in.
+        Direction dir = directions[rng.nextInt(directions.length)];
+        MapLocation nextLoc = rc.getLocation().add(dir);
+
+        if (rc.getRoundNum() <= 300 && rc.getNumberTowers() < 20 && rc.getChips() > 300 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)){
+            rc.buildRobot(UnitType.SOLDIER, nextLoc);
+            System.out.println("BUILT A SOLDIER");
+        }
+
+        else if (rc.getRoundNum() > 300 && rc.getChips() > 300 && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
+            rc.buildRobot(UnitType.SPLASHER, nextLoc);
+            System.out.println("BUILT A SPLASHER");
+        }
+        //sarah is really cool
+>>>>>>> nehaexp2:java/src/archer/Tower.java
 
         // Read incoming messages
         Message[] messages = rc.readMessages(-1);
@@ -48,6 +76,22 @@ public class Tower {
             System.out.println("Tower received message: '#" + m.getSenderID() + " " + m.getBytes());
         }
 
+<<<<<<< HEAD:java/src/anotherfuncsplayer/Tower.java
         // TODO: can we attack other bots?
     }
 }
+=======
+        // Attack Nearby Bots
+        MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
+        for (MapInfo tile : nearbyTiles) {
+        	if ((rc.senseRobotAtLocation(tile.getMapLocation()) != null) && (rc.senseRobotAtLocation(tile.getMapLocation()).getTeam() != rc.getTeam())) {
+        		MapLocation enemy = tile.getMapLocation();
+        		if (rc.canAttack(enemy)) {
+        			rc.attack(enemy);
+        		}
+        	}
+        }
+    }
+
+}
+>>>>>>> nehaexp2:java/src/archer/Tower.java
