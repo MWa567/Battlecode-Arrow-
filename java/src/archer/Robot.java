@@ -43,6 +43,6 @@ public abstract class Robot {
     }
 
     void endTurn() throws GameActionException {
-
+        Clock.yield();
     }
 }

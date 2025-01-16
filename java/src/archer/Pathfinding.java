@@ -1,14 +1,14 @@
-package archer;
+package anotherfuncsplayer;
 
 import battlecode.common.*;
 import java.util.HashSet;
 import java.util.Random;
-
 public class Pathfinding {
     static RobotController rc;
-    static MapLocation target = null;
+    static MapLocation target;
     static boolean[] impassable = null;
     static final Random rng = new Random(6147);
+    static boolean changedTarget = false;
     static final Direction[] directions = {
             Direction.NORTH,
             Direction.NORTHEAST,
@@ -25,6 +25,7 @@ public class Pathfinding {
         Util.init(rc);
         BugNav.rotateRight = Util.rng.nextDouble() > 0.5;
     }
+
     static void setImpassable(boolean[] imp) {
         impassable = imp;
     }
@@ -38,20 +39,64 @@ public class Pathfinding {
             return false;
         return true;
     }
-    static public void move(MapLocation loc) {
-    	if (!rc.isMovementReady()) {
-            return ;
+
+    static public void paint(boolean isSplasher) throws GameActionException {
+    	if (isSplasher) {
+    		boolean existsEmpty = false;
+    		MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
+            for (MapInfo tile : nearbyTiles) {
+            	if (tile.hasRuin() && rc.senseRobotAtLocation(tile.getMapLocation()) != null && rc.senseRobotAtLocation(tile.getMapLocation()).getTeam() != rc.getTeam()) {
+            		setTarget(tile.getMapLocation());
+            		rc.attack(tile.getMapLocation());
+            	}
+            	else if (tile.getPaint().isAlly() && tile.getPaint().isSecondary()) {
+            		return ;
+            	}
+            	else if (tile.getPaint() == PaintType.EMPTY || tile.getPaint().isEnemy()) {
+            		existsEmpty = true;
+            	}
+            }
+            if (!existsEmpty) {
+        		return ;
+            }
     	}
-        target = loc;
-        MapLocation myLoc = rc.getLocation();
-        if (myLoc.distanceSquaredTo(loc) < 10) {
-        	Explore.init(rc);
-        	Explore.getExploreTarget();
-        	target = Explore.exploreTarget;
-        }
-        if (!BugNav.move())
+    	MapInfo currentTile = rc.senseMapInfo(rc.getLocation());
+        if (!currentTile.getPaint().isAlly() && rc.canAttack(rc.getLocation())){
+            rc.attack(rc.getLocation());
+            }
+    }
+
+    static public void setTarget(MapLocation newTarget) {
+    	target = newTarget;
+    }
+
+    static public void move(MapLocation loc, boolean isSplasher) throws GameActionException {
+    	if (!rc.isMovementReady() || rc.getLocation().distanceSquaredTo(loc) <= 5) {
+    		for (Direction dir: directions) {
+    			if (rc.canMove(dir)) {
+    				rc.move(dir);
+    				paint(isSplasher);
+    			}
+    		}
+    		Explore.init(rc);
+    		while (Explore.getExploreTarget().distanceSquaredTo(target) <= 15) {
+    			Explore.init(rc);
+    		}
+        	target = Explore.getExploreTarget();
+        	changedTarget = true;
+        	return ;
+    		}
+    	if (!changedTarget) {
+    		target = loc;
+    	}
+        if (!BugNav.move()) {
         	greedyPath();
-        BugNav.move();
+        	paint(isSplasher);
+        }
+		else {
+			BugNav.move();
+			paint(isSplasher);
+        }
     }
     static final double eps = 1e-5;
     static void greedyPath() {

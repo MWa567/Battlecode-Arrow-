@@ -1,4 +1,4 @@
-package archer;
+package anotherfuncsplayer;
 
 import battlecode.common.*;
 
@@ -45,13 +45,7 @@ public class Explore {
     static ExploreType exploreType;
     public static void init(RobotController r) {
         rc = r;
-        visionRadius = 20;
-        fillDirPath();
-        Math.random(); // for some reason the first entry is buggy...
-        initExploreDir();
-        initialX = rc.getLocation().x;
-        initialY = rc.getLocation().y;
-        exploreType = ExploreType.GREEDY;
+        getNewTarget(10);
     }
 
     public static void pickNewExploreDir() {
@@ -161,10 +155,6 @@ public class Explore {
         exploreTarget = null;
     }
     static MapLocation getExploreTarget() {
-        if (!initialized)
-            emergencyTarget(10);
-        else
-            getNewTarget(10);
         return exploreTarget;
     }
 
@@ -242,9 +232,7 @@ public class Explore {
         return visited[loc.x][loc.y];
     }
     static void getNewTarget(int tries) {
-        if (exploreTarget != null && Util.onTheMap(exploreTarget) && !hasVisited(exploreTarget))
-            return;
-        MapLocation currLoc = rc.getLocation();
+    	MapLocation currLoc = rc.getLocation();
         for (int i = tries; i-- > 0;) {
             int dx = 4 * (int) (Util.rng.nextInt(16) - 8);
             int dy = 4 * (int) (Util.rng.nextInt(16) - 8);
