@@ -43,11 +43,6 @@ public class Pathfinding {
             return false;
         return true;
     }
-<<<<<<< HEAD:java/src/anotherfuncsplayer/Pathfinding.java
-    
-=======
-
->>>>>>> nehaexp2:java/src/archer/Pathfinding.java
     static public void paint(boolean isSplasher) throws GameActionException {
     	if (isSplasher) {
     		boolean existsEmpty = false;
@@ -73,19 +68,11 @@ public class Pathfinding {
             rc.attack(rc.getLocation());
             }
     }
-<<<<<<< HEAD:java/src/anotherfuncsplayer/Pathfinding.java
-    
-    static public void setTarget(MapLocation newTarget) {
-    	target = newTarget;
-    }
-    
-=======
 
     static public void setTarget(MapLocation newTarget) {
     	target = newTarget;
     }
 
->>>>>>> nehaexp2:java/src/archer/Pathfinding.java
     static public void move(MapLocation loc, boolean isSplasher) throws GameActionException {
     	if (!rc.isMovementReady() || rc.getLocation().distanceSquaredTo(loc) <= 5) {
     		for (Direction dir: directions) {
