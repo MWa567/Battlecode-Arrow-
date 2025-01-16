@@ -1,8 +1,10 @@
 package archer;
 
-import battlecode.common.Clock;
-import battlecode.common.GameActionException;
-import battlecode.common.RobotController;
+import battlecode.common.*;
+
+// import battlecode.common.Clock;
+// import battlecode.common.GameActionException;
+// import battlecode.common.RobotController;
 
 public class RobotPlayer {
     static RobotController rc;

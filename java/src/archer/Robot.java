@@ -10,9 +10,18 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Robot {
 
-    RobotController rc;
+public abstract class Robot {
+    static RobotController rc;
+    static int turnCount;
+
+    static int mapWidth, mapHeight;
+
+    static Team myTeam;
+    static Team oppTeam;
+
+    public static String indicator;
+    public static int startRound;
 
     public Robot(RobotController rc) throws GameActionException {
         this.rc = rc;
@@ -24,7 +33,6 @@ public abstract class Robot {
         turnCount = 0;
     }
 
-    static final Random rng = new Random(6147);
     static MapLocation target;
     static MapLocation my_target;
     static MapLocation originalLocation;
@@ -45,9 +53,6 @@ public abstract class Robot {
     abstract void play() throws GameActionException;
 
     void initTurn() throws GameActionException {
-        startRound = rc.getRoundNum();
-        indicator = "";
-        Comm.turn_starts();
     }
 
     void endTurn() throws GameActionException {
