@@ -1,6 +1,7 @@
 package archer;
 
 import battlecode.common.*;
+import java.util.Random;
 
 public class Soldier extends Robot {
 
@@ -23,6 +24,7 @@ public class Soldier extends Robot {
 		    MapInfo curRuin = null;
 		    int ruinDist = 999999;
 		    int towerDist = 999999;
+			MapLocation nearestTower = null;
 		    // Search for a nearby ruin to complete. If ruin spotted, move towards it.
             for (MapInfo tile : nearbyTiles){
 	    		if (tile.hasRuin() && rc.senseRobotAtLocation(tile.getMapLocation()) == null){

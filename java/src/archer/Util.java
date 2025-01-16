@@ -1,4 +1,4 @@
-package anotherfuncsplayer;
+package archer;
 
 import battlecode.common.*;
 import java.util.Random;
@@ -52,17 +52,6 @@ public class Util {
     static double clip(double n, double lo, double hi) {
         return Math.min(Math.max(n, lo), hi);
     }
-<<<<<<< HEAD:java/src/anotherfuncsplayer/Util.java
-    
-    public static MapLocation reflectX(MapLocation loc) {
-    	return new MapLocation(-loc.x, loc.y);
-    }
-    
-    public static MapLocation reflectY(MapLocation loc) {
-    	return new MapLocation(loc.x, -loc.y);
-    }
-    
-=======
 
     public static MapLocation reflectX(MapLocation loc) {
     	return new MapLocation(-loc.x, loc.y);
@@ -72,7 +61,6 @@ public class Util {
     	return new MapLocation(loc.x, -loc.y);
     }
 
->>>>>>> nehaexp2:java/src/archer/Util.java
     static MapLocation clipToWithinMap(MapLocation loc) {
         return new MapLocation(clip(loc.x, 0, MAP_WIDTH), clip(loc.y, 0, MAP_HEIGHT));
     }
