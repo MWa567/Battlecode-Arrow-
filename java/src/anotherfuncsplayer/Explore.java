@@ -47,7 +47,7 @@ public class Explore {
         rc = r;
         getNewTarget(10);
     }
-    
+
     public static void pickNewExploreDir() {
         Direction[] newDirChoices = {
                 // Util.turnLeft90(lastExploreDir),
@@ -79,7 +79,7 @@ public class Explore {
             }
         }
     }
-    
+
     // If you're traveling south *right* next to a wall, you should go
     // southwest/east for a turn
     public static Direction rotateAwayFromWallIfNecessary(Direction dir) {
@@ -120,11 +120,11 @@ public class Explore {
         }
         return dir;
     }
-    
+
     static void initExploreDir() {
         assignExplore3Dir(directions[Util.rng.nextInt(8)]);
     }
-    
+
     static void initialize() {
         if (initialized)
             return;
@@ -157,12 +157,12 @@ public class Explore {
     static MapLocation getExploreTarget() {
         return exploreTarget;
     }
-    
+
     static MapLocation getExplore3Target() {
         checkDirection();
         return explore3Target;
     }
-    
+
     static void assignExplore3Dir(Direction dir) {
         exploreDir = dir;
         double tempAngle = Math.atan2(exploreDir.dy, exploreDir.dx);
