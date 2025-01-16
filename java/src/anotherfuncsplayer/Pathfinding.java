@@ -72,6 +72,7 @@ public class Pathfinding {
     
     static public void move(MapLocation loc, boolean isSplasher) throws GameActionException {
     	if (!rc.isMovementReady() || rc.getLocation().distanceSquaredTo(loc) <= 5) {
+    		rc.setIndicatorString("Reached target or block at " + target);
     		for (Direction dir: directions) {
     			if (rc.canMove(dir)) {
     				rc.move(dir);
@@ -84,8 +85,9 @@ public class Pathfinding {
     		}
         	target = Explore.getExploreTarget();
         	changedTarget = true;
+        	rc.setIndicatorString("New target is " + target);
         	return ;
-    		}
+    	}
     	if (!changedTarget) {
     		target = loc;
     	}
