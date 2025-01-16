@@ -1,4 +1,4 @@
-package anotherfuncsplayer;
+package archer;
 
 import battlecode.common.*;
 import java.util.HashSet;
@@ -25,11 +25,6 @@ public class Pathfinding {
         Util.init(rc);
         BugNav.rotateRight = Util.rng.nextDouble() > 0.5;
     }
-<<<<<<< HEAD:java/src/anotherfuncsplayer/Pathfinding.java
-
-=======
-
->>>>>>> nehaexp2:java/src/archer/Pathfinding.java
     static void setImpassable(boolean[] imp) {
         impassable = imp;
     }
@@ -43,11 +38,6 @@ public class Pathfinding {
             return false;
         return true;
     }
-<<<<<<< HEAD:java/src/anotherfuncsplayer/Pathfinding.java
-
-=======
-
->>>>>>> nehaexp2:java/src/archer/Pathfinding.java
     static public void paint(boolean isSplasher) throws GameActionException {
     	if (isSplasher) {
     		boolean existsEmpty = false;
