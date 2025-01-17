@@ -49,11 +49,11 @@ public class Soldier extends Robot {
     }
 
     void play() throws GameActionException {
-    	Util.init(rc);
-        Explore.init(rc);
-        Pathfinding.init(rc);
-        Pathfinding.initTurn();
-        target = Explore.getExploreTarget();
+    	anotherfuncsplayer.Util.init(rc);
+    	anotherfuncsplayer.Explore.init(rc);
+        anotherfuncsplayer.Pathfinding.init(rc);
+        anotherfuncsplayer.Pathfinding.initTurn();
+        target = anotherfuncsplayer.Explore.getExploreTarget();
     	while (true) {
 	    	// Sense information about all visible nearby tiles.
 		    MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
@@ -192,7 +192,7 @@ public class Soldier extends Robot {
 	        }
 	        if (curRuin == null) {
 	        	try {
-	        		Pathfinding.move(target, false);
+	        		anotherfuncsplayer.Pathfinding.move(target, false);
 		    		rc.setIndicatorString("Moving toward target at "+ Pathfinding.target);
 	    		}
 	        	catch (Exception e) {

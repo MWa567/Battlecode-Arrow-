@@ -51,11 +51,6 @@ public class Pathfinding {
             			rc.attack(tile.getMapLocation());
             		}
             	}
-            	/*
-            	else if (tile.getPaint().isAlly() && tile.getPaint().isSecondary()) {
-            		return ;
-            	}
-            	*/
             	else if (tile.getPaint() == PaintType.EMPTY || tile.getPaint().isEnemy()) {
             		existsEmpty = true;
             	}
@@ -74,6 +69,12 @@ public class Pathfinding {
     	target = newTarget;
     }
     
+    static public void splasherNewTarget(MapLocation target) throws GameActionException {
+    	MapLocation rotation = new MapLocation(Robot.mapWidth - target.x - 1, Robot.mapHeight - target.y - 1);
+    	rotation = Util.clipToWithinMap(rotation);
+    	setTarget(rotation);
+    }
+    
     static public void move(MapLocation loc, boolean isSplasher) throws GameActionException {
     	if (!rc.isMovementReady() || rc.getLocation().distanceSquaredTo(loc) <= 5) {
     		for (Direction dir: directions) {
@@ -82,19 +83,24 @@ public class Pathfinding {
     				paint(isSplasher);
     			}
     		}
-    		
-    		Explore.init(rc);
-    		while (Explore.getExploreTarget().distanceSquaredTo(target) <= 30) {
+    		if (!isSplasher) {
     			Explore.init(rc);
+        		while (Explore.getExploreTarget().distanceSquaredTo(target) <= 30) {
+        			Explore.init(rc);
+        		}
+        		setTarget(Explore.getExploreTarget());
     		}
-        	target = Explore.getExploreTarget();
-        	changedTarget = true;
+    		else {
+    			splasherNewTarget(loc);
+    		}
+    		changedTarget = true;
         	return ;
     	}
     	
-    	if (!changedTarget || rc.getLocation().distanceSquaredTo(target) <= 5) {
-    		target = loc;
+    	if (!changedTarget || (rc.getLocation().distanceSquaredTo(target) <= 5 && !isSplasher)) {
+    		setTarget(loc);
     	}
+    	
         if (!BugNav.move()) {
         	greedyPath();
         	paint(isSplasher);

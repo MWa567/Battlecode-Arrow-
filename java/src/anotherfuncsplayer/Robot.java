@@ -48,10 +48,10 @@ public abstract class Robot {
     }
 
     void endTurn() throws GameActionException {
-    	rc.setIndicatorString("Robot turn");
+    	// rc.setIndicatorString("Robot turn");
         turnCount += 1;
         if (startRound != rc.getRoundNum()) {
-            System.out.printf("overran turn from %d to %d\n", startRound, rc.getRoundNum());
+            // System.out.printf("overran turn from %d to %d\n", startRound, rc.getRoundNum());
         }
 
         Clock.yield();

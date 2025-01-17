@@ -33,10 +33,10 @@ public class Mopper extends Robot {
            }
             */
             // No target found, fallback to random movement
-        	Util.init(rc);
-            Explore.init(rc);
-            Pathfinding.init(rc);
-            Pathfinding.initTurn();
+        anotherfuncsplayer.Util.init(rc);
+        	anotherfuncsplayer.Explore.init(rc);
+            anotherfuncsplayer.Pathfinding.init(rc);
+            anotherfuncsplayer.Pathfinding.initTurn();
             target = Explore.getExploreTarget();
         	while (true) {
     		    MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
@@ -68,14 +68,14 @@ public class Mopper extends Robot {
     		            int randomInd = rand.nextInt(mapHeight);
     		            MapLocation my_target = new MapLocation(mapWidth, randomInd);
 
-    		            Pathfinding.move(my_target, true);
+    		            anotherfuncsplayer.Pathfinding.move(my_target, true);
     		    	}
     		    	else {
     		    		Random rand = new Random();
     		            int randomInd = rand.nextInt(mapHeight);
     		            MapLocation my_target = new MapLocation(0, randomInd);
 
-    		            Pathfinding.move(my_target, true);
+    		            anotherfuncsplayer.Pathfinding.move(my_target, true);
     		    	}
     	    	}
     	    	else {
@@ -84,14 +84,14 @@ public class Mopper extends Robot {
     		            int randomInd = rand.nextInt(mapWidth);
     		            MapLocation my_target = new MapLocation(randomInd, mapHeight);
 
-    		            Pathfinding.move(my_target, true);
+    		            anotherfuncsplayer.Pathfinding.move(my_target, true);
     		    	}
     		    	else {
     		    		Random rand = new Random();
     		    		int randomInd = rand.nextInt(mapWidth);
     		            MapLocation my_target = new MapLocation(randomInd, 0);
 
-    		            Pathfinding.move(my_target, true);
+    		            anotherfuncsplayer.Pathfinding.move(my_target, true);
     		    	}
     	    	}
     		    Clock.yield();

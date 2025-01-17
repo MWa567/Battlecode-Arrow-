@@ -43,25 +43,20 @@ public class Splasher extends Robot {
     		}
     	}
     	*/
-    	
+    	anotherfuncsplayer.Pathfinding.init(rc);
+        anotherfuncsplayer.Pathfinding.initTurn();
     	if (coord_x < coord_y) {
 	    	if (coord_x < mapWidth / 2) {
 	            Random rand = new Random();
 	            int randomInd = rand.nextInt(mapHeight);
 	            MapLocation my_target = new MapLocation(mapWidth, randomInd);
-	            
-	            Pathfinding.init(rc);
-	            Pathfinding.initTurn();
-	            Pathfinding.move(my_target, true);
+	            anotherfuncsplayer.Pathfinding.move(my_target, true);
 	    	}
 	    	else {
 	    		Random rand = new Random();
 	            int randomInd = rand.nextInt(mapHeight);
 	            MapLocation my_target = new MapLocation(0, randomInd);
-	            
-	            Pathfinding.init(rc);
-	            Pathfinding.initTurn();
-	            Pathfinding.move(my_target, true);
+	            anotherfuncsplayer.Pathfinding.move(my_target, true);
 	    	}
 	        updateEnemyRobots(rc);
     	}
@@ -70,19 +65,13 @@ public class Splasher extends Robot {
 	            Random rand = new Random();
 	            int randomInd = rand.nextInt(mapWidth);
 	            MapLocation my_target = new MapLocation(randomInd, mapHeight);
-	            
-	            Pathfinding.init(rc);
-	            Pathfinding.initTurn();
-	            Pathfinding.move(my_target, true);
+	            anotherfuncsplayer.Pathfinding.move(my_target, true);
 	    	}
 	    	else {
 	    		Random rand = new Random();
 	    		int randomInd = rand.nextInt(mapWidth);
 	            MapLocation my_target = new MapLocation(randomInd, 0);
-	            
-	            Pathfinding.init(rc);
-	            Pathfinding.initTurn();
-	            Pathfinding.move(my_target, true);
+	            anotherfuncsplayer.Pathfinding.move(my_target, true);
 	    	}
 			// We can also move our code into different methods or classes to better organize it!
 	        updateEnemyRobots(rc);
