@@ -25,7 +25,7 @@ public class Util {
             Direction.NORTHWEST,
     };
 
-    static void init(RobotController r) {
+    public static void init(RobotController r) {
         rc = r;
         rng = new Random(rc.getRoundNum() * 23981 + rc.getID() * 10289);
         MAP_HEIGHT = rc.getMapHeight();

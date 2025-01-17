@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Random;
 public class Pathfinding {
     static RobotController rc;
-    static MapLocation target;
+    public static MapLocation target;
     static boolean[] impassable = null;
     static final Random rng = new Random(6147);
     static boolean changedTarget = false;
@@ -29,7 +29,7 @@ public class Pathfinding {
     static void setImpassable(boolean[] imp) {
         impassable = imp;
     }
-    static void initTurn() {
+    public static void initTurn() {
         impassable = new boolean[directions.length];
     }
     static boolean canMove(Direction dir) {
@@ -47,7 +47,9 @@ public class Pathfinding {
             for (MapInfo tile : nearbyTiles) {
             	if (tile.hasRuin() && rc.senseRobotAtLocation(tile.getMapLocation()) != null && rc.senseRobotAtLocation(tile.getMapLocation()).getTeam() != rc.getTeam()) {
             		setTarget(tile.getMapLocation());
-            		rc.attack(tile.getMapLocation());
+            		if (rc.canAttack(target)) {
+            			rc.attack(tile.getMapLocation());
+            		}
             	}
             	else if (tile.getPaint().isAlly() && tile.getPaint().isSecondary()) {
             		return ;
@@ -63,7 +65,7 @@ public class Pathfinding {
     	MapInfo currentTile = rc.senseMapInfo(rc.getLocation());
         if (!currentTile.getPaint().isAlly() && rc.canAttack(rc.getLocation())){
             rc.attack(rc.getLocation());
-            }
+        }
     }
     
     static public void setTarget(MapLocation newTarget) {
@@ -71,8 +73,9 @@ public class Pathfinding {
     }
     
     static public void move(MapLocation loc, boolean isSplasher) throws GameActionException {
+    	System.out.println("ACTUALLY MOVING TOWARD TARGET AT " + target + " FROM " + rc.getLocation());
     	if (!rc.isMovementReady() || rc.getLocation().distanceSquaredTo(loc) <= 5) {
-    		rc.setIndicatorString("Reached target or block at " + target);
+    		System.out.println("REACHED TARGET OR BLOCK AT " + target);
     		for (Direction dir: directions) {
     			if (rc.canMove(dir)) {
     				rc.move(dir);
@@ -85,10 +88,11 @@ public class Pathfinding {
     		}
         	target = Explore.getExploreTarget();
         	changedTarget = true;
-        	rc.setIndicatorString("New target is " + target);
+        	rc.setIndicatorString("NEW TARGET IS " + target);
         	return ;
     	}
-    	if (!changedTarget) {
+    	
+    	if (!changedTarget || rc.getLocation().distanceSquaredTo(target) <= 5) {
     		target = loc;
     	}
         if (!BugNav.move()) {

@@ -154,7 +154,7 @@ public class Explore {
         }
         exploreTarget = null;
     }
-    static MapLocation getExploreTarget() {
+    public static MapLocation getExploreTarget() {
         return exploreTarget;
     }
     

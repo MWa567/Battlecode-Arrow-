@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Random;
 public class Pathfinding {
     static RobotController rc;
-    static MapLocation target;
+    public static MapLocation target;
     static boolean[] impassable = null;
     static final Random rng = new Random(6147);
     static boolean changedTarget = false;
@@ -29,7 +29,7 @@ public class Pathfinding {
     static void setImpassable(boolean[] imp) {
         impassable = imp;
     }
-    static void initTurn() {
+    public static void initTurn() {
         impassable = new boolean[directions.length];
     }
     static boolean canMove(Direction dir) {
@@ -73,9 +73,7 @@ public class Pathfinding {
     }
     
     static public void move(MapLocation loc, boolean isSplasher) throws GameActionException {
-    	System.out.println("ACTUALLY MOVING TOWARD TARGET AT " + target + " FROM " + rc.getLocation());
     	if (!rc.isMovementReady() || rc.getLocation().distanceSquaredTo(loc) <= 5) {
-    		System.out.println("REACHED TARGET OR BLOCK AT " + target);
     		for (Direction dir: directions) {
     			if (rc.canMove(dir)) {
     				rc.move(dir);
@@ -88,7 +86,6 @@ public class Pathfinding {
     		}
         	target = Explore.getExploreTarget();
         	changedTarget = true;
-        	rc.setIndicatorString("NEW TARGET IS " + target);
         	return ;
     	}
     	
