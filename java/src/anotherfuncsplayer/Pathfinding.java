@@ -25,7 +25,7 @@ public class Pathfinding {
         Util.init(rc);
         BugNav.rotateRight = Util.rng.nextDouble() > 0.5;
     }
-    
+
     static void setImpassable(boolean[] imp) {
         impassable = imp;
     }
@@ -39,14 +39,15 @@ public class Pathfinding {
             return false;
         return true;
     }
-    
+
     static public void paint(boolean isSplasher) throws GameActionException {
     	if (isSplasher) {
     		boolean existsEmpty = false;
     		MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
             for (MapInfo tile : nearbyTiles) {
-            	if (tile.hasRuin() && rc.senseRobotAtLocation(tile.getMapLocation()) != null && rc.senseRobotAtLocation(tile.getMapLocation()).getTeam() != rc.getTeam()) {
-            		setTarget(tile.getMapLocation());
+                MapLocation tileLoc = tile.getMapLocation();
+            	if (tile.hasRuin() && rc.senseRobotAtLocation(tileLoc) != null && rc.senseRobotAtLocation(tileLoc).getTeam() != rc.getTeam()) {
+            		setTarget(tileLoc);
             		if (rc.canAttack(target)) {
             			rc.attack(tile.getMapLocation());
             		}
@@ -67,11 +68,11 @@ public class Pathfinding {
             rc.attack(rc.getLocation());
         }
     }
-    
+
     static public void setTarget(MapLocation newTarget) {
     	target = newTarget;
     }
-    
+
     static public void move(MapLocation loc, boolean isSplasher) throws GameActionException {
     	if (!rc.isMovementReady() || rc.getLocation().distanceSquaredTo(loc) <= 5) {
     		for (Direction dir: directions) {
@@ -88,7 +89,7 @@ public class Pathfinding {
         	changedTarget = true;
         	return ;
     	}
-    	
+
     	if (!changedTarget || rc.getLocation().distanceSquaredTo(target) <= 5) {
     		target = loc;
     	}
