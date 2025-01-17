@@ -326,7 +326,6 @@ public class RobotPlayer {
 	        if (curRuin == null) {
 	        	try {
 		    		Pathfinding.move(target, false);
-		    		System.out.println("TELLING BOT TO MOVE TOWARD " + target);
 		    		rc.setIndicatorString("Moving toward target at "+ Pathfinding.target);
 	    		}
 	        	catch (Exception e) {

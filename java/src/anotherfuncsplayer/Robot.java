@@ -2,7 +2,6 @@ package anotherfuncsplayer;
 
 import battlecode.common.*;
 
-
 public abstract class Robot {
     static RobotController rc;
     static int turnCount;

@@ -30,17 +30,24 @@ public class Tower extends Robot {
         Direction dir = directions[rng.nextInt(directions.length)];
         MapLocation nextLoc = rc.getLocation().add(dir);
         MapLocation ourLoc = rc.getLocation();
-        if (rc.getRoundNum() <= 300 && rc.getNumberTowers() < 20 && rc.getChips() > 500 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)){
+        
+        Random random = new Random();
+        int randomNumber = random.nextInt(3);
+        
+        if (rc.getRoundNum() > 250 && randomNumber == 1 && rc.canBuildRobot(UnitType.MOPPER, nextLoc)) {
+        	rc.buildRobot(UnitType.MOPPER, nextLoc);
+            System.out.println("BUILT A MOPPER");
+        }
+        else if (rc.getRoundNum() < 300 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)){
             rc.buildRobot(UnitType.SOLDIER, nextLoc);
             System.out.println("BUILT A SOLDIER");
         }
-        
-        else if (rc.getRoundNum() > 300 && rc.getChips() > 500 && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
+        else if (rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
             rc.buildRobot(UnitType.SPLASHER, nextLoc);
             System.out.println("BUILT A SPLASHER");
         }
         
-     // Attack Nearby Bots
+        // Attack Nearby Bots
         // Update: AOE
         RobotInfo[] nearbyRobots = rc.senseNearbyRobots();
         if (nearbyRobots.length <= 8){
@@ -58,42 +65,6 @@ public class Tower extends Robot {
                 rc.attack(null);
             }
         }
-        
-        /*
-        else if (rc.getPaint() > 500 && rc.getChips() > 1500 && rc.canBuildRobot(UnitType.MOPPER, nextLoc)) {
-        	rc.buildRobot(UnitType.MOPPER, nextLoc);
-        }
-        */
-        /*
-        if (rc.getRoundNum() <= 25 && rc.canBuildRobot(UnitType.MOPPER, nextLoc)){
-            if (rc.canBuildRobot(UnitType.MOPPER, nextLoc)){
-                rc.buildRobot(UnitType.MOPPER, nextLoc);
-                System.out.println("BUILT A MOPPER");
-            }
-        }
-        else if (rc.getRoundNum() <= 300 && rc.getNumberTowers() < 20 && rc.getChips() > 300){
-            int num = rng.nextInt(2);
-            if (num == 0 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)){
-                rc.buildRobot(UnitType.SOLDIER, nextLoc);
-                System.out.println("BUILT A SOLDIER");
-            }
-            else if (num==1 && rc.canBuildRobot(UnitType.MOPPER, nextLoc)){
-                rc.buildRobot(UnitType.MOPPER, nextLoc);
-                System.out.println("BUILT A MOPPER");
-            }
-        }
-        else if (rc.getRoundNum() > 300 && rc.getChips() > 300 && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
-            int num = rng.nextInt(5);
-            if (num == 0 && rc.canBuildRobot(UnitType.MOPPER, nextLoc)){
-                rc.buildRobot(UnitType.MOPPER, nextLoc);
-                System.out.println("BUILT A MOPPER");
-            }
-            else if (rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
-                rc.buildRobot(UnitType.SPLASHER, nextLoc);
-                System.out.println("BUILT A SPLASHER");
-            }
-        }
-		*/
 
         // Update friendly towers array
         if (turn < 5) {
@@ -110,16 +81,15 @@ public class Tower extends Robot {
             }
         }
         
-
-        /*
         // Broadcast tower locations
         int roundNum = rc.getRoundNum();
         int check = roundNum % 4;
         MapLocation[] sourceArray = (check < 2) ? friendlyTowers : enemyTowers;
         int startIndex = (check % 2 == 0) ? 0 : 1;
-
+        
+        /*
         for (int i = startIndex; i < sourceArray.length; i += 2) {
-            if (sourceArray[i] != null && rc.canBroadcastMessage()) {
+            if (sourceArray[i] != null && (rc.canBroadcastMessage())) {
                 int marker = (check < 2) ? FRIENDLY : ENEMY;
                 rc.broadcastMessage(loc2int(sourceArray[i], marker));
             }

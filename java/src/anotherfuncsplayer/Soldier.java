@@ -14,8 +14,7 @@ public class Soldier extends Robot {
     static MapLocation target;
     static MapLocation originalLocation = null;
     static MapLocation nearestTower;
-
-    static RobotController rc;
+    static MapLocation prevTarget;
     
     static boolean[][] paintTowerPattern = null;
     static boolean[][] moneyTowerPattern = null;
@@ -24,6 +23,7 @@ public class Soldier extends Robot {
     static MapLocation paintingRuinLoc = null;
     static UnitType paintingTowerType = null;
     
+    static boolean hasEnemyPaint = false;
     static MapLocation needMopperAt;
     
     /** Array containing all the possible movement directions. */
@@ -76,10 +76,16 @@ public class Soldier extends Robot {
 	    			if (dist < towerDist) {
 	    				nearestTower = tile.getMapLocation();
 	    				towerDist = dist;
+	    				if (rc.getPaint() < 50) {
+		    				if (rc.canTransferPaint(nearestTower, -75)) {
+		    					rc.transferPaint(nearestTower, -75);
+		    				}
+		    			}
 	    			}
 	    			if (rc.getPaint() < 30) {
-	    				if (rc.canTransferPaint(tile.getMapLocation(), -100)) {
-	    					rc.transferPaint(tile.getMapLocation(), -100);
+	    				if (rc.canTransferPaint(tile.getMapLocation(), -75)) {
+	    					rc.transferPaint(tile.getMapLocation(), -75);
+	    					Clock.yield();
 	    				}
 	    			}
 	    			if (rc.canUpgradeTower(tile.getMapLocation())) {
@@ -88,7 +94,25 @@ public class Soldier extends Robot {
 	    			}
 	    		}
 	    	}
-	    
+		    /*
+		    if (rc.getPaint() < 30) {
+		    	prevTarget = curRuin.getMapLocation();
+	        	System.out.println("GOING BACK FOR MORE PAINT");
+		    	Pathfinding.setTarget(nearestTower);
+		    	try {
+		    		Pathfinding.move(nearestTower, false);
+		    		if (rc.getPaint() < 30) {
+	    				if (rc.canTransferPaint(nearestTower, -75)) {
+	    					rc.transferPaint(nearestTower, -75);
+	    					Pathfinding.setTarget(prevTarget);
+	    				}
+	    			}
+		    		} catch (Exception e) {
+		    			System.out.println(rc.getType() + " Exception");
+		    		}
+		    }
+		    */
+		    
 		    if (curRuin != null){
 	        	MapLocation targetLoc = curRuin.getMapLocation();
 	            // Complete the ruin if we can.
@@ -147,33 +171,28 @@ public class Soldier extends Robot {
 	                }
 	            }
 	            
-	            // Fill in any spots in the pattern with the appropriate paint.
+            	// Fill in any spots in the pattern with the appropriate paint.
 	            for (MapInfo patternTile : rc.senseNearbyMapInfos(targetLoc, -1)){
 	                if (patternTile.getMark() != patternTile.getPaint() && patternTile.getMark() != PaintType.EMPTY){
+	                	rc.setIndicatorString("TRYING TO FILL IN PAINT AT" + patternTile.getMapLocation());
 	                    boolean useSecondaryColor = patternTile.getMark() == PaintType.ALLY_SECONDARY;
 	                    if (rc.canAttack(patternTile.getMapLocation()))
 	                        rc.attack(patternTile.getMapLocation(), useSecondaryColor);
 	                }
+	                if (patternTile.getPaint().isEnemy()) {
+	                	hasEnemyPaint = true;
+	                	needMopperAt = patternTile.getMapLocation();
+	                }
 	            }
+	            Clock.yield();
 	        }
-		    
-		    if (rc.getPaint() < 50) {
-	        	System.out.println("GOING BACK FOR MORE PAINT");
-		    	Pathfinding.setTarget(nearestTower);
-		    	try {
-		    		Pathfinding.move(nearestTower, false);
-		    		} catch (Exception e) {
-		    			System.out.println(rc.getType() + " Exception");
-		    		}
-		    }
         
 	        if (rc.getMovementCooldownTurns() > 10) {
 	        	Clock.yield();
 	        }
 	        if (curRuin == null) {
 	        	try {
-		    		Pathfinding.move(target, false);
-		    		System.out.println("TELLING BOT TO MOVE TOWARD " + target);
+	        		Pathfinding.move(target, false);
 		    		rc.setIndicatorString("Moving toward target at "+ Pathfinding.target);
 	    		}
 	        	catch (Exception e) {
@@ -196,7 +215,7 @@ public class Soldier extends Robot {
         else if (rc.getNumberTowers() < 4) {
         	return UnitType.LEVEL_ONE_MONEY_TOWER;
         }
-    	else if (randomNumber == 0 || randomNumber == 1) {
+    	else if (randomNumber == 0 || randomNumber == 1 || randomNumber == 2) {
 	    	return UnitType.LEVEL_ONE_PAINT_TOWER;
     	}
 	    else {

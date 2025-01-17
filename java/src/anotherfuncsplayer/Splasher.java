@@ -3,13 +3,16 @@ package anotherfuncsplayer;
 import java.util.Random;
 
 import battlecode.common.GameActionException;
+import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotController;
 import battlecode.common.RobotInfo;
+import funcsplayer0.Pathfinding;
 
 public class Splasher extends Robot {
 	
 	static RobotController rc;
+	static MapLocation nearestTower;
 
     Splasher(RobotController rc) throws GameActionException {
         super(rc);
@@ -20,6 +23,26 @@ public class Splasher extends Robot {
     void play() throws GameActionException {
         int coord_x = originalLocation.x;
     	int coord_y = originalLocation.y;
+    	
+    	/*
+    	MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
+    	//If we can see a ruin, move towards it
+	    int towerDist = 999999;
+	    for (MapInfo tile : nearbyTiles){
+    		if (tile.hasRuin() && rc.senseRobotAtLocation(tile.getMapLocation()) != null) {
+    			int dist = tile.getMapLocation().distanceSquaredTo(rc.getLocation());
+    			if (dist < towerDist) {
+    				nearestTower = tile.getMapLocation();
+    				towerDist = dist;
+    			}
+    			if (rc.getPaint() < 30) {
+    				if (rc.canTransferPaint(tile.getMapLocation(), -75)) {
+    					rc.transferPaint(tile.getMapLocation(), -75);
+    				}
+    			}
+    		}
+    	}
+    	*/
     	
     	if (coord_x < coord_y) {
 	    	if (coord_x < mapWidth / 2) {
@@ -65,8 +88,6 @@ public class Splasher extends Robot {
 	        updateEnemyRobots(rc);
         }
     }
-
-
 
     public static void updateEnemyRobots(RobotController rc) throws GameActionException{
         // Sensing methods can be passed in a radius of -1 to automatically

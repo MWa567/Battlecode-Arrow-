@@ -1,9 +1,15 @@
 package anotherfuncsplayer;
 
+import java.util.Random;
+
 import battlecode.common.*;
+import funcsplayer0.Explore;
+import funcsplayer0.Pathfinding;
+import funcsplayer0.Util;
 
 public class Mopper extends Robot {
-
+	static MapLocation nearestTower;
+	
     Mopper(RobotController rc) throws GameActionException {
         super(rc);
         MapRecorder.initMap(mapWidth, mapHeight);
@@ -11,7 +17,7 @@ public class Mopper extends Robot {
 
     void play() throws GameActionException {
         MapLocation myLocation = rc.getLocation();
-
+        /*
         // Initialize symmetry analysis
         if (!Comm.isSymmetryConfirmed) {
             eliminateSymmetry(myLocation);
@@ -24,9 +30,71 @@ public class Mopper extends Robot {
             Pathfinding.init(rc);
             Pathfinding.initTurn();
             Pathfinding.move(target, true);
-        } else {
+           }
+            */
             // No target found, fallback to random movement
-            randomMove();
+        	Util.init(rc);
+            Explore.init(rc);
+            Pathfinding.init(rc);
+            Pathfinding.initTurn();
+            target = Explore.getExploreTarget();
+        	while (true) {
+    		    MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
+    	        
+    		    MapLocation ourLoc = rc.getLocation();
+    		    //If we can see enemy paint, move towards it
+    		    for (MapInfo tile : nearbyTiles){
+    		        if (tile.getPaint().isEnemy()){
+    		            MapLocation targetLoc = tile.getMapLocation();
+    		            Direction dir = ourLoc.directionTo(targetLoc);
+    		            if (rc.canAttack(targetLoc)){
+    		                rc.attack(targetLoc);
+    		            }
+
+    		            if (rc.canMove(dir)) {
+    		                rc.move(dir);
+    		                ourLoc.add(dir);
+
+    		            }
+    		        }
+    		    }
+    		    
+    		    int coord_x = originalLocation.x;
+    	    	int coord_y = originalLocation.y;
+    	    	
+    	    	if (coord_x < coord_y) {
+    		    	if (coord_x < mapWidth / 2) {
+    		            Random rand = new Random();
+    		            int randomInd = rand.nextInt(mapHeight);
+    		            MapLocation my_target = new MapLocation(mapWidth, randomInd);
+
+    		            Pathfinding.move(my_target, true);
+    		    	}
+    		    	else {
+    		    		Random rand = new Random();
+    		            int randomInd = rand.nextInt(mapHeight);
+    		            MapLocation my_target = new MapLocation(0, randomInd);
+
+    		            Pathfinding.move(my_target, true);
+    		    	}
+    	    	}
+    	    	else {
+    	    		if (coord_y < mapHeight / 2) {
+    		            Random rand = new Random();
+    		            int randomInd = rand.nextInt(mapWidth);
+    		            MapLocation my_target = new MapLocation(randomInd, mapHeight);
+
+    		            Pathfinding.move(my_target, true);
+    		    	}
+    		    	else {
+    		    		Random rand = new Random();
+    		    		int randomInd = rand.nextInt(mapWidth);
+    		            MapLocation my_target = new MapLocation(randomInd, 0);
+
+    		            Pathfinding.move(my_target, true);
+    		    	}
+    	    	}
+    		    Clock.yield();
         }
     }
 

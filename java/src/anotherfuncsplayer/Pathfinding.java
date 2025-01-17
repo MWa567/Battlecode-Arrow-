@@ -51,9 +51,11 @@ public class Pathfinding {
             			rc.attack(tile.getMapLocation());
             		}
             	}
+            	/*
             	else if (tile.getPaint().isAlly() && tile.getPaint().isSecondary()) {
             		return ;
             	}
+            	*/
             	else if (tile.getPaint() == PaintType.EMPTY || tile.getPaint().isEnemy()) {
             		existsEmpty = true;
             	}
@@ -80,8 +82,9 @@ public class Pathfinding {
     				paint(isSplasher);
     			}
     		}
+    		
     		Explore.init(rc);
-    		while (Explore.getExploreTarget().distanceSquaredTo(target) <= 15) {
+    		while (Explore.getExploreTarget().distanceSquaredTo(target) <= 30) {
     			Explore.init(rc);
     		}
         	target = Explore.getExploreTarget();
