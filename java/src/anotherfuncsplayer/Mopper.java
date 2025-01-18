@@ -9,6 +9,8 @@ import funcsplayer0.Util;
 
 public class Mopper extends Robot {
 	static MapLocation nearestTower;
+	static MapLocation my_target = null;
+	static boolean reached_target = false;
 	
     Mopper(RobotController rc) throws GameActionException {
         super(rc);
@@ -33,7 +35,7 @@ public class Mopper extends Robot {
            }
             */
             // No target found, fallback to random movement
-        anotherfuncsplayer.Util.init(rc);
+        	anotherfuncsplayer.Util.init(rc);
         	anotherfuncsplayer.Explore.init(rc);
             anotherfuncsplayer.Pathfinding.init(rc);
             anotherfuncsplayer.Pathfinding.initTurn();
@@ -47,54 +49,31 @@ public class Mopper extends Robot {
     		        if (tile.getPaint().isEnemy()){
     		            MapLocation targetLoc = tile.getMapLocation();
     		            Direction dir = ourLoc.directionTo(targetLoc);
-    		            if (rc.canAttack(targetLoc)){
+    		            if (rc.canMopSwing(dir)){
+    		                rc.mopSwing(dir);
+    		                System.out.println("Mop Swing! Booyah!");
+    		            }
+    		            else if (rc.canAttack(targetLoc)){
     		                rc.attack(targetLoc);
     		            }
 
     		            if (rc.canMove(dir)) {
     		                rc.move(dir);
     		                ourLoc.add(dir);
-
     		            }
     		        }
     		    }
     		    
-    		    int coord_x = originalLocation.x;
-    	    	int coord_y = originalLocation.y;
-    	    	
-    	    	if (coord_x < coord_y) {
-    		    	if (coord_x < mapWidth / 2) {
-    		            Random rand = new Random();
-    		            int randomInd = rand.nextInt(mapHeight);
-    		            MapLocation my_target = new MapLocation(mapWidth, randomInd);
-
-    		            anotherfuncsplayer.Pathfinding.move(my_target, true);
-    		    	}
-    		    	else {
-    		    		Random rand = new Random();
-    		            int randomInd = rand.nextInt(mapHeight);
-    		            MapLocation my_target = new MapLocation(0, randomInd);
-
-    		            anotherfuncsplayer.Pathfinding.move(my_target, true);
-    		    	}
+    		    if (anotherfuncsplayer.Util.distance(my_target, rc.getLocation()) <= 4) {
+    	    		reached_target = true;
+    	    		MapLocation rotation = new MapLocation(mapWidth - my_target.x - 1, mapHeight - my_target.y - 1);
+    	    		my_target = rotation;
     	    	}
-    	    	else {
-    	    		if (coord_y < mapHeight / 2) {
-    		            Random rand = new Random();
-    		            int randomInd = rand.nextInt(mapWidth);
-    		            MapLocation my_target = new MapLocation(randomInd, mapHeight);
-
-    		            anotherfuncsplayer.Pathfinding.move(my_target, true);
-    		    	}
-    		    	else {
-    		    		Random rand = new Random();
-    		    		int randomInd = rand.nextInt(mapWidth);
-    		            MapLocation my_target = new MapLocation(randomInd, 0);
-
-    		            anotherfuncsplayer.Pathfinding.move(my_target, true);
-    		    	}
+    	    	else if (!reached_target){
+    	    		getTarget();
     	    	}
-    		    Clock.yield();
+    	    	rc.setIndicatorString("MOVING TO TARGET AT " + my_target);
+    	    	anotherfuncsplayer.Pathfinding.move(my_target, true);
         }
     }
 
@@ -113,6 +92,39 @@ public class Mopper extends Robot {
                     }
                 }
             }
+        }
+    }
+    
+    public static void getTarget() throws GameActionException {
+    	int coord_x = originalLocation.x;
+    	int coord_y = originalLocation.y;
+    	
+    	anotherfuncsplayer.Pathfinding.init(rc);
+        anotherfuncsplayer.Pathfinding.initTurn();
+    	if (coord_x < coord_y) {
+	    	if (coord_x < mapWidth / 2) {
+	            Random rand = new Random();
+	            int randomInd = rand.nextInt(mapHeight);
+	            my_target = new MapLocation(mapWidth - 1, randomInd);
+	    	}
+	    	else {
+	    		Random rand = new Random();
+	            int randomInd = rand.nextInt(mapHeight);
+	            my_target = new MapLocation(0, randomInd);
+	    	}
+    	}
+    	else {
+    		if (coord_y < mapHeight / 2) {
+	            Random rand = new Random();
+	            int randomInd = rand.nextInt(mapWidth);
+	            my_target = new MapLocation(randomInd, mapHeight - 1);
+	    	}
+	    	else {
+	    		Random rand = new Random();
+	    		int randomInd = rand.nextInt(mapWidth);
+	            my_target = new MapLocation(randomInd, 0);
+	    	}
+			// We can also move our code into different methods or classes to better organize it!
         }
     }
 

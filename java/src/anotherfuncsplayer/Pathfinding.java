@@ -76,30 +76,7 @@ public class Pathfinding {
     }
     
     static public void move(MapLocation loc, boolean isSplasher) throws GameActionException {
-    	if (!rc.isMovementReady() || rc.getLocation().distanceSquaredTo(loc) <= 5) {
-    		for (Direction dir: directions) {
-    			if (rc.canMove(dir)) {
-    				rc.move(dir);
-    				paint(isSplasher);
-    			}
-    		}
-    		if (!isSplasher) {
-    			Explore.init(rc);
-        		while (Explore.getExploreTarget().distanceSquaredTo(target) <= 30) {
-        			Explore.init(rc);
-        		}
-        		setTarget(Explore.getExploreTarget());
-    		}
-    		else {
-    			splasherNewTarget(loc);
-    		}
-    		changedTarget = true;
-        	return ;
-    	}
-    	
-    	if (!changedTarget || (rc.getLocation().distanceSquaredTo(target) <= 5 && !isSplasher)) {
-    		setTarget(loc);
-    	}
+    	target = loc;
     	
         if (!BugNav.move()) {
         	greedyPath();

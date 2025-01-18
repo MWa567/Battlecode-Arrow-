@@ -1,6 +1,7 @@
 package anotherfuncsplayer;
 
 import java.util.Random;
+import battlecode.common.*;
 
 import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
@@ -13,6 +14,8 @@ public class Splasher extends Robot {
 	
 	static RobotController rc;
 	static MapLocation nearestTower;
+	static MapLocation my_target = null;
+	static boolean reached_target = false;
 
     Splasher(RobotController rc) throws GameActionException {
         super(rc);
@@ -21,9 +24,6 @@ public class Splasher extends Robot {
     }
 
     void play() throws GameActionException {
-        int coord_x = originalLocation.x;
-    	int coord_y = originalLocation.y;
-    	
     	/*
     	MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
     	//If we can see a ruin, move towards it
@@ -43,20 +43,34 @@ public class Splasher extends Robot {
     		}
     	}
     	*/
+    	if (anotherfuncsplayer.Util.distance(my_target, rc.getLocation()) <= 5) {
+    		reached_target = true;
+    		MapLocation rotation = new MapLocation(mapWidth - my_target.x - 1, mapHeight - my_target.y - 1);
+    		my_target = rotation;
+    	}
+    	else if (!reached_target){
+    		getTarget();
+    	}
+    	rc.setIndicatorString("MOVING TO TARGET AT " + my_target);
+    	anotherfuncsplayer.Pathfinding.move(my_target, true);
+    }
+    
+    public static void getTarget() throws GameActionException {
+    	int coord_x = originalLocation.x;
+    	int coord_y = originalLocation.y;
+    	
     	anotherfuncsplayer.Pathfinding.init(rc);
         anotherfuncsplayer.Pathfinding.initTurn();
     	if (coord_x < coord_y) {
 	    	if (coord_x < mapWidth / 2) {
 	            Random rand = new Random();
 	            int randomInd = rand.nextInt(mapHeight);
-	            MapLocation my_target = new MapLocation(mapWidth, randomInd);
-	            anotherfuncsplayer.Pathfinding.move(my_target, true);
+	            my_target = new MapLocation(mapWidth - 1, randomInd);
 	    	}
 	    	else {
 	    		Random rand = new Random();
 	            int randomInd = rand.nextInt(mapHeight);
-	            MapLocation my_target = new MapLocation(0, randomInd);
-	            anotherfuncsplayer.Pathfinding.move(my_target, true);
+	            my_target = new MapLocation(0, randomInd);
 	    	}
 	        updateEnemyRobots(rc);
     	}
@@ -64,14 +78,12 @@ public class Splasher extends Robot {
     		if (coord_y < mapHeight / 2) {
 	            Random rand = new Random();
 	            int randomInd = rand.nextInt(mapWidth);
-	            MapLocation my_target = new MapLocation(randomInd, mapHeight);
-	            anotherfuncsplayer.Pathfinding.move(my_target, true);
+	            my_target = new MapLocation(randomInd, mapHeight - 1);
 	    	}
 	    	else {
 	    		Random rand = new Random();
 	    		int randomInd = rand.nextInt(mapWidth);
-	            MapLocation my_target = new MapLocation(randomInd, 0);
-	            anotherfuncsplayer.Pathfinding.move(my_target, true);
+	            my_target = new MapLocation(randomInd, 0);
 	    	}
 			// We can also move our code into different methods or classes to better organize it!
 	        updateEnemyRobots(rc);

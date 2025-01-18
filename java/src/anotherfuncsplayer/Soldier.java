@@ -143,7 +143,9 @@ public class Soldier extends Robot {
 	            else if (rc.canMove(dir.rotateRight())){
 	            	rc.move(dir.rotateRight());
 	            }
-	            
+	            else {
+	            	break;
+	            }
 	            UnitType randomTower = getNewTowerType(rc);
 	            
 	            if (randomTower == UnitType.LEVEL_ONE_PAINT_TOWER) {
@@ -174,7 +176,6 @@ public class Soldier extends Robot {
             	// Fill in any spots in the pattern with the appropriate paint.
 	            for (MapInfo patternTile : rc.senseNearbyMapInfos(targetLoc, -1)){
 	                if (patternTile.getMark() != patternTile.getPaint() && patternTile.getMark() != PaintType.EMPTY){
-	                	rc.setIndicatorString("TRYING TO FILL IN PAINT AT" + patternTile.getMapLocation());
 	                    boolean useSecondaryColor = patternTile.getMark() == PaintType.ALLY_SECONDARY;
 	                    if (rc.canAttack(patternTile.getMapLocation()))
 	                        rc.attack(patternTile.getMapLocation(), useSecondaryColor);
@@ -192,8 +193,15 @@ public class Soldier extends Robot {
 	        }
 	        if (curRuin == null) {
 	        	try {
+	        		if (anotherfuncsplayer.Util.distance(rc.getLocation(), target) <= 5 || !rc.isMovementReady()) {
+	        			MapLocation oldTarget = target;
+	        			while (Util.distance(anotherfuncsplayer.Explore.getExploreTarget(), oldTarget) <= 20) {
+	        				anotherfuncsplayer.Explore.getNewTarget(10);
+	        			}
+	            		target = anotherfuncsplayer.Explore.exploreTarget;
+	        		}
+	        		rc.setIndicatorString("Moving toward target at "+ target);
 	        		anotherfuncsplayer.Pathfinding.move(target, false);
-		    		rc.setIndicatorString("Moving toward target at "+ Pathfinding.target);
 	    		}
 	        	catch (Exception e) {
 	    			System.out.println(rc.getType() + " Exception");
@@ -212,7 +220,7 @@ public class Soldier extends Robot {
         if (inMiddleX && inMiddleY) {
     		return UnitType.LEVEL_ONE_DEFENSE_TOWER;
     	}
-        else if (rc.getNumberTowers() < 4) {
+        else if (rc.getNumberTowers() <= 4) {
         	return UnitType.LEVEL_ONE_MONEY_TOWER;
         }
     	else if (randomNumber == 0 || randomNumber == 1 || randomNumber == 2) {

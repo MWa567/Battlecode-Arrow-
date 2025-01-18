@@ -51,7 +51,7 @@ public class RobotPlayer {
         }
 
         while(true){
-            r.initTurn();
+    		r.initTurn();
             r.play();
             r.endTurn();
         }

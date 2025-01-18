@@ -35,7 +35,10 @@ public class Util {
     }
     
     static public int distance(MapLocation A, MapLocation B) {
-        return Math.max(Math.abs(A.x - B.x), Math.abs(A.y - B.y));
+    	if (A == null || B == null) {
+    		return 99999;
+    	}
+        return (Math.abs(A.x - B.x) + Math.abs(A.y - B.y));
     }
     
     // Returns the location on the opposite side from loc wrt to your own location

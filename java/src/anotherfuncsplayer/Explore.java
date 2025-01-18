@@ -231,7 +231,7 @@ public class Explore {
             return false;
         return visited[loc.x][loc.y];
     }
-    static void getNewTarget(int tries) {
+    public static void getNewTarget(int tries) {
     	MapLocation currLoc = rc.getLocation();
         for (int i = tries; i-- > 0;) {
             int dx = 4 * (int) (Util.rng.nextInt(16) - 8);
