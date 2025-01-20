@@ -13,7 +13,7 @@ import funcsplayer0.Pathfinding;
 public class Splasher extends Robot {
 	
 	static RobotController rc;
-	static MapLocation nearestTower;
+	static MapLocation nearestTower = null;
 	static MapLocation my_target = null;
 	static boolean reached_target = false;
 
@@ -24,26 +24,27 @@ public class Splasher extends Robot {
     }
 
     void play() throws GameActionException {
-    	/*
     	MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
-    	//If we can see a ruin, move towards it
-	    int towerDist = 999999;
-	    for (MapInfo tile : nearbyTiles){
-    		if (tile.hasRuin() && rc.senseRobotAtLocation(tile.getMapLocation()) != null) {
-    			int dist = tile.getMapLocation().distanceSquaredTo(rc.getLocation());
-    			if (dist < towerDist) {
-    				nearestTower = tile.getMapLocation();
-    				towerDist = dist;
-    			}
-    			if (rc.getPaint() < 30) {
-    				if (rc.canTransferPaint(tile.getMapLocation(), -75)) {
-    					rc.transferPaint(tile.getMapLocation(), -75);
-    				}
-    			}
-    		}
-    	}
-    	*/
-    	if (anotherfuncsplayer.Util.distance(my_target, rc.getLocation()) <= 5) {
+    	for (MapInfo tile : nearbyTiles){
+    		RobotInfo potentialTower = rc.senseRobotAtLocation(tile.getMapLocation());
+			if (tile.hasRuin() && potentialTower != null) {
+				if (potentialTower.getTeam() != rc.getTeam()) {
+					nearestTower = potentialTower.location;
+					if (rc.canAttack(potentialTower.location)){
+						rc.attack(potentialTower.location);
+						Direction dir = rc.getLocation().directionTo(potentialTower.location).opposite();
+						if (rc.canMove(dir)){
+							rc.move(dir);
+							rc.setIndicatorString("GOING AWAY");
+						}
+					}
+				}
+			}
+		}
+		if (nearestTower != null) {
+			my_target = nearestTower;
+		}
+    	else if (anotherfuncsplayer.Util.distance(my_target, rc.getLocation()) <= 5) {
     		reached_target = true;
     		MapLocation rotation = new MapLocation(mapWidth - my_target.x - 1, mapHeight - my_target.y - 1);
     		my_target = rotation;

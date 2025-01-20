@@ -45,9 +45,6 @@ public class Pathfinding {
     		boolean existsEmpty = false;
     		MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
             for (MapInfo tile : nearbyTiles) {
-            	if (tile.getPaint().isAlly() && tile.getPaint().isSecondary()) {
-            		return ;
-            	}
             	if (tile.hasRuin() && rc.senseRobotAtLocation(tile.getMapLocation()) != null && rc.senseRobotAtLocation(tile.getMapLocation()).getTeam() != rc.getTeam()) {
             		setTarget(tile.getMapLocation());
             		if (rc.canAttack(target)) {
@@ -90,6 +87,7 @@ public class Pathfinding {
 			paint(isSplasher);
         }
     }
+    
     static final double eps = 1e-5;
     static void greedyPath() {
         try {
