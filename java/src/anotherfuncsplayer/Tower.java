@@ -32,17 +32,13 @@ public class Tower extends Robot {
         MapLocation ourLoc = rc.getLocation();
         
         Random random = new Random();
-        int randomNumber = random.nextInt(6);
-        
-        if (rc.getRoundNum() > 250 && randomNumber == 0 && rc.canBuildRobot(UnitType.MOPPER, nextLoc)) {
-        	rc.buildRobot(UnitType.MOPPER, nextLoc);
-            System.out.println("BUILT A MOPPER");
-        }
-        else if (rc.getRoundNum() < 400 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)){
+        int randomNumber = random.nextInt(4);
+
+        if (rc.getRoundNum() <= 300 && rc.getNumberTowers() < 20 && rc.getChips() > 500 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)) {
             rc.buildRobot(UnitType.SOLDIER, nextLoc);
             System.out.println("BUILT A SOLDIER");
         }
-        else if (rc.getRoundNum() > 100 && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
+        else if (rc.getRoundNum() > 300 && rc.getChips() > 500 && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
             rc.buildRobot(UnitType.SPLASHER, nextLoc);
             System.out.println("BUILT A SPLASHER");
         }

@@ -61,6 +61,7 @@ public class Mopper extends Robot {
     		                rc.move(dir);
     		                ourLoc.add(dir);
     		            }
+    		            Clock.yield();
     		        }
     		    }
     		    

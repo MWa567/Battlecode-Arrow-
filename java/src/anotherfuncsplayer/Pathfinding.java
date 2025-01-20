@@ -45,6 +45,9 @@ public class Pathfinding {
     		boolean existsEmpty = false;
     		MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
             for (MapInfo tile : nearbyTiles) {
+            	if (tile.getPaint().isAlly() && tile.getPaint().isSecondary()) {
+            		return ;
+            	}
             	if (tile.hasRuin() && rc.senseRobotAtLocation(tile.getMapLocation()) != null && rc.senseRobotAtLocation(tile.getMapLocation()).getTeam() != rc.getTeam()) {
             		setTarget(tile.getMapLocation());
             		if (rc.canAttack(target)) {
@@ -167,7 +170,7 @@ public class Pathfinding {
                 }
                 if (canMove(dir)) {
                     // Debug.println("can move");
-                    resetPathfinding();
+                    // resetPathfinding();
                 }
                 // I rotate clockwise or counterclockwise (depends on 'rotateRight'). If I try
                 // to go out of the map I change the orientation
