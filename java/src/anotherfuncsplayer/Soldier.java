@@ -55,6 +55,26 @@ public class Soldier extends Robot {
         anotherfuncsplayer.Pathfinding.initTurn();
         target = anotherfuncsplayer.Explore.getExploreTarget();
     	while (true) {
+			RobotInfo[] nearbyRobots = rc.senseNearbyRobots();
+			MapLocation ourLoc = rc.getLocation();
+			for (RobotInfo robo : nearbyRobots){
+				if (robo.team != rc.getTeam() && (robo.type==UnitType.MOPPER || robo.type.isTowerType())){
+				// if (robo.team != rc.getTeam()) {// && robo.type.isTowerType()){
+					if(rc.canAttack(robo.location)){
+						rc.attack(robo.location);
+						// currently this helps with one direction worsens another
+						// i think it does more good than harm
+						Direction dir = ourLoc.directionTo(robo.location).opposite();
+						if (rc.canMove(dir)){
+							rc.move(dir);
+							ourLoc.add(dir);
+							rc.setIndicatorString("GOING AWAY");
+							// Clock.yield();
+						}
+					}
+				}
+			}
+
 	    	MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
 		    // Search for a nearby ruin to complete.
 
@@ -103,6 +123,7 @@ public class Soldier extends Robot {
 							if (rc.canMove(dir)){
 								rc.move(dir);
 								rc.setIndicatorString("GOING AWAY");
+								Clock.yield();
 							}
 						}
 					}
