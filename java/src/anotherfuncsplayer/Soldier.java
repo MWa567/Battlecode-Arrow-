@@ -106,6 +106,7 @@ public class Soldier extends Robot {
                         	Direction dir = rc.getLocation().directionTo(potentialTower.location).opposite();
 							if (rc.canMove(dir)){
 								rc.move(dir);
+								rc.setIndicatorString("GOING AWAY");
 							}
 						}
 					}

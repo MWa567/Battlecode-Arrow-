@@ -48,9 +48,14 @@ public class Pathfinding {
                 MapLocation tileLoc = tile.getMapLocation();
             	if (tile.hasRuin() && rc.senseRobotAtLocation(tileLoc) != null && rc.senseRobotAtLocation(tileLoc).getTeam() != rc.getTeam()) {
             		setTarget(tileLoc);
-            		if (rc.canAttack(target)) {
-            			rc.attack(tile.getMapLocation());
-            		}
+                    if(rc.canAttack(target)){
+                        rc.attack(target);
+                        Direction dir = rc.getLocation().directionTo(target).opposite();
+                        if (rc.canMove(dir)){
+                            rc.move(dir);
+                        }
+                    }
+
             	}
             	else if (tile.getPaint().isAlly() && tile.getPaint().isSecondary()) {
             		return ;
