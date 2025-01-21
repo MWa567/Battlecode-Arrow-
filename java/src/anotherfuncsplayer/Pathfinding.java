@@ -1,6 +1,7 @@
 package anotherfuncsplayer;
 
 import battlecode.common.*;
+
 import java.util.HashSet;
 import java.util.Random;
 public class Pathfinding {
@@ -9,6 +10,7 @@ public class Pathfinding {
     static boolean[] impassable = null;
     static final Random rng = new Random(6147);
     static boolean changedTarget = false;
+    static boolean hasResource = false;
     static final Direction[] directions = {
             Direction.NORTH,
             Direction.NORTHEAST,
@@ -24,6 +26,9 @@ public class Pathfinding {
         rc = r;
         Util.init(rc);
         BugNav.rotateRight = Util.rng.nextDouble() > 0.5;
+        if (rc.getMapWidth() >= 40 || rc.getMapHeight() >= 40) {
+        	hasResource = true;
+        }
     }
     
     static void setImpassable(boolean[] imp) {
@@ -51,6 +56,9 @@ public class Pathfinding {
             			rc.attack(tile.getMapLocation());
             		}
             	}
+            	else if (hasResource && tile.getPaint() == PaintType.ALLY_SECONDARY) {
+            		return ;
+            	}
             	else if (tile.getPaint() == PaintType.EMPTY || tile.getPaint().isEnemy()) {
             		existsEmpty = true;
             	}
@@ -77,13 +85,14 @@ public class Pathfinding {
     
     static public void move(MapLocation loc, boolean isSplasher) throws GameActionException {
     	target = loc;
-    	
-        if (!BugNav.move()) {
+    	BugNav.init(rc);
+    	BugNav.initTurn();
+        if (!BugNav.nav(target)) {
         	greedyPath();
         	paint(isSplasher);
         }
 		else {
-			BugNav.move();
+			BugNav.move(target);
 			paint(isSplasher);
         }
     }
@@ -128,6 +137,7 @@ public class Pathfinding {
             return true;
         return target.distanceSquaredTo(newLoc) < target.distanceSquaredTo(oldLoc);
     }
+    /*
     static class BugNav {
         static final int INF = 1000000;
         static final int MAX_MAP_SIZE = GameConstants.MAP_MAX_HEIGHT;
@@ -216,4 +226,5 @@ public class Pathfinding {
             return (((((x << 6) | y) << 4) | obstacleDir.ordinal()) << 1) | bit;
         }
     }
+    */
 }

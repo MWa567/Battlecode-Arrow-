@@ -14,8 +14,11 @@ public class Splasher extends Robot {
 	
 	static RobotController rc;
 	static MapLocation nearestTower = null;
+	static MapInfo nearestTowerInfo = null;
+	static MapLocation prevTarget;
 	static MapLocation my_target = null;
 	static boolean reached_target = false;
+	static boolean hasResource = false;
 
     Splasher(RobotController rc) throws GameActionException {
         super(rc);
@@ -25,29 +28,53 @@ public class Splasher extends Robot {
 
     void play() throws GameActionException {
     	MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
+    	boolean moveAway = false;
     	for (MapInfo tile : nearbyTiles){
     		RobotInfo potentialTower = rc.senseRobotAtLocation(tile.getMapLocation());
 			if (tile.hasRuin() && potentialTower != null) {
 				if (potentialTower.getTeam() != rc.getTeam()) {
 					nearestTower = potentialTower.location;
+					nearestTowerInfo = tile;
 					if (rc.canAttack(potentialTower.location)){
 						rc.attack(potentialTower.location);
-						Direction dir = rc.getLocation().directionTo(potentialTower.location).opposite();
-						if (rc.canMove(dir)){
-							rc.move(dir);
-							rc.setIndicatorString("GOING AWAY");
-						}
+						moveAway = true;
 					}
 				}
 			}
+			else if (tile.hasRuin() && potentialTower == null){
+				nearestTower = null;
+			}
 		}
-		if (nearestTower != null) {
+    	if (nearestTower != null) {
+    		if (moveAway) {
+        		Direction dir = rc.getLocation().directionTo(nearestTower).opposite();
+    			if (rc.canMove(dir)){
+    				rc.move(dir);
+    				rc.setIndicatorString("GOING AWAY");
+    				}
+    			return ;
+        	}
+			prevTarget = my_target;
 			my_target = nearestTower;
 		}
     	else if (anotherfuncsplayer.Util.distance(my_target, rc.getLocation()) <= 5) {
     		reached_target = true;
-    		MapLocation rotation = new MapLocation(mapWidth - my_target.x - 1, mapHeight - my_target.y - 1);
-    		my_target = rotation;
+    		int newX;
+    		int newY;
+    		if (originalLocation.x <= mapWidth / 2) {
+    			newX = mapWidth - my_target.x - 1;
+    		}
+    		else {
+    			newX = mapWidth - my_target.x + 1;
+    		}
+    		if (originalLocation.y <= mapHeight / 2) {
+    			newY = mapHeight - my_target.y - 1;
+    		}
+    		else {
+    			newY = mapHeight - my_target.y + 1;
+    		}
+        	MapLocation rotation = new MapLocation(newX, newY);
+        	my_target = rotation;
     	}
     	else if (!reached_target){
     		getTarget();

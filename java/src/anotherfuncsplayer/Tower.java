@@ -34,11 +34,11 @@ public class Tower extends Robot {
         Random random = new Random();
         int randomNumber = random.nextInt(4);
 
-        if (rc.getRoundNum() <= 300 && rc.getNumberTowers() < 20 && rc.getChips() > 500 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)) {
+        if (rc.getRoundNum() <= 400 && rc.getNumberTowers() < 20 && rc.getChips() > 500 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)) {
             rc.buildRobot(UnitType.SOLDIER, nextLoc);
             System.out.println("BUILT A SOLDIER");
         }
-        else if (rc.getRoundNum() > 300 && rc.getChips() > 500 && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
+        else if (rc.getRoundNum() > 400 && rc.getChips() > 500 && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
             rc.buildRobot(UnitType.SPLASHER, nextLoc);
             System.out.println("BUILT A SPLASHER");
         }

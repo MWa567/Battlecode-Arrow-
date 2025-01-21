@@ -90,7 +90,7 @@ public class Soldier extends Robot {
 						if (dist < towerDist) {
 							nearestTower = tile.getMapLocation();
 							towerDist = dist;
-							if (rc.getPaint() < 50) {
+							if (rc.getPaint() < 100) {
 								if (rc.canTransferPaint(nearestTower, -75)) {
 									rc.transferPaint(nearestTower, -75);
 								}
@@ -183,10 +183,10 @@ public class Soldier extends Robot {
 	        if (rc.getMovementCooldownTurns() > 10) {
 	        	Clock.yield();
 	        }
-	        if (mapWidth > 50 || mapHeight > 50) {
-	        	if ((rc.getLocation().x > mapWidth * 0.7 || rc.getLocation().x < mapWidth * 0.3)
-		        		&& (rc.getLocation().y > mapHeight * 0.7 || rc.getLocation().y < mapHeight * 0.3)
-		        		&& rc.getLocation().x % 5 == 0 && rc.getLocation().y % 5 == 0) {
+	        if (mapWidth >= 40 || mapHeight >= 40) {
+	        	if ((rc.getLocation().x > mapWidth * 0.4 || rc.getLocation().x < mapWidth * 0.6)
+		        		&& (rc.getLocation().y > mapHeight * 0.6 || rc.getLocation().y < mapHeight * 0.4)
+		        		&& rc.getLocation().x % 4 == 0 && rc.getLocation().y % 4 == 3) {
 		        	boolean has_mark = false;
 		        	for (MapInfo patternTile : rc.senseNearbyMapInfos(rc.getLocation(), -1)){
 		                if (patternTile.getMark() != patternTile.getPaint() && patternTile.getMark() != PaintType.EMPTY){
