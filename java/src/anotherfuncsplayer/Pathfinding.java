@@ -2,7 +2,6 @@ package anotherfuncsplayer;
 
 import battlecode.common.*;
 
-import java.util.HashSet;
 import java.util.Random;
 public class Pathfinding {
     static RobotController rc;
@@ -26,7 +25,7 @@ public class Pathfinding {
         rc = r;
         Util.init(rc);
         BugNav.rotateRight = Util.rng.nextDouble() > 0.5;
-        if (rc.getMapWidth() >= 40 || rc.getMapHeight() >= 40) {
+        if (rc.getMapWidth() >= 30 || rc.getMapHeight() >= 30) {
         	hasResource = true;
         }
     }
@@ -56,7 +55,7 @@ public class Pathfinding {
             			rc.attack(tile.getMapLocation());
             		}
             	}
-            	else if (hasResource && tile.getPaint() == PaintType.ALLY_SECONDARY) {
+            	else if (hasResource && tile.getMark().isAlly()) {
             		return ;
             	}
             	else if (tile.getPaint() == PaintType.EMPTY || tile.getPaint().isEnemy()) {
@@ -137,94 +136,4 @@ public class Pathfinding {
             return true;
         return target.distanceSquaredTo(newLoc) < target.distanceSquaredTo(oldLoc);
     }
-    /*
-    static class BugNav {
-        static final int INF = 1000000;
-        static final int MAX_MAP_SIZE = GameConstants.MAP_MAX_HEIGHT;
-        static boolean rotateRight = true; // if I should rotate right or left
-        static MapLocation lastObstacleFound = null; // latest obstacle I've found in my way
-        static int minDistToEnemy = INF; // minimum distance I've been to the enemy while going around an obstacle
-        static MapLocation prevTarget = null; // previous target
-        static HashSet<Integer> visited = new HashSet<>();
-        static boolean move() {
-            try {
-                // different target? ==> previous data does not help!
-                if (prevTarget == null || target.distanceSquaredTo(prevTarget) > 0) {
-                    // Debug.println("New target");
-                    resetPathfinding();
-                }
-                // If I'm at a minimum distance to the target, I'm free!
-                MapLocation myLoc = rc.getLocation();
-                int d = myLoc.distanceSquaredTo(target);
-                if (d <= minDistToEnemy) {
-                    // Debug.println("New min dist");
-                    resetPathfinding();
-                }
-                int code = getCode();
-                if (visited.contains(code)) {
-                    // Debug.println("Contains code");
-                    resetPathfinding();
-                }
-                visited.add(code);
-                // Update data
-                prevTarget = target;
-                minDistToEnemy = Math.min(d, minDistToEnemy);
-                // If there's an obstacle I try to go around it [until I'm free] instead of
-                // going to the target directly
-                Direction dir = myLoc.directionTo(target);
-                if (lastObstacleFound != null) {
-                    // Debug.println("Last obstacle found");
-                    dir = myLoc.directionTo(lastObstacleFound);
-                }
-                if (canMove(dir)) {
-                    // Debug.println("can move");
-                    // resetPathfinding();
-                }
-                // I rotate clockwise or counterclockwise (depends on 'rotateRight'). If I try
-                // to go out of the map I change the orientation
-                // Note that we have to try at most 16 times since we can switch orientation in
-                // the middle of the loop. (It can be done more efficiently)
-                for (int i = 8; i-- > 0;) {
-                    if (canMove(dir)) {
-                        rc.move(dir);
-                        // Debug.println("Moving in dir: " + dir);
-                        return true;
-                    }
-                    MapLocation newLoc = myLoc.add(dir);
-                    if (!rc.onTheMap(newLoc))
-                        rotateRight = !rotateRight;
-                    // If I could not go in that direction and it was not outside of the map, then
-                    // this is the latest obstacle found
-                    else
-                        lastObstacleFound = myLoc.add(dir);
-                    if (rotateRight)
-                        dir = dir.rotateRight();
-                    else
-                        dir = dir.rotateLeft();
-                }
-                if (canMove(dir))
-                    rc.move(dir);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            // Debug.println("Last exit");
-            return true;
-        }
-        // clear some of the previous data
-        static void resetPathfinding() {
-            lastObstacleFound = null;
-            minDistToEnemy = INF;
-            visited.clear();
-        }
-        static int getCode() {
-            int x = rc.getLocation().x;
-            int y = rc.getLocation().y;
-            Direction obstacleDir = rc.getLocation().directionTo(target);
-            if (lastObstacleFound != null)
-                obstacleDir = rc.getLocation().directionTo(lastObstacleFound);
-            int bit = rotateRight ? 1 : 0;
-            return (((((x << 6) | y) << 4) | obstacleDir.ordinal()) << 1) | bit;
-        }
-    }
-    */
 }

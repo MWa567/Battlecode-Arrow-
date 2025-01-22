@@ -13,6 +13,7 @@ public class Tower extends Robot {
     private static final int TOWER = 2;
     
     static RobotController rc;
+    static boolean hasResource = false;
 
     private MapLocation[] friendlyTowers = new MapLocation[GameConstants.MAX_NUMBER_OF_TOWERS];
     private MapLocation[] enemyTowers = new MapLocation[GameConstants.MAX_NUMBER_OF_TOWERS];
@@ -20,6 +21,9 @@ public class Tower extends Robot {
     Tower(RobotController rc) throws GameActionException {
         super(rc);
         Tower.rc = rc;
+        if (mapWidth >= 40 || mapHeight >= 40) {
+        	hasResource = true;
+        }
     }
 
     static final Random rng = new Random(6147);
@@ -33,8 +37,8 @@ public class Tower extends Robot {
         
         Random random = new Random();
         int randomNumber = random.nextInt(4);
-
-        if (rc.getRoundNum() <= 400 && rc.getNumberTowers() < 20 && rc.getChips() > 500 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)) {
+        
+        if ((rc.getRoundNum() <= 400 || randomNumber == 1) && rc.getNumberTowers() < 20 && rc.getChips() > 500 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)) {
             rc.buildRobot(UnitType.SOLDIER, nextLoc);
             System.out.println("BUILT A SOLDIER");
         }

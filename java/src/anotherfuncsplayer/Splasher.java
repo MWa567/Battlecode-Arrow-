@@ -8,7 +8,6 @@ import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotController;
 import battlecode.common.RobotInfo;
-import funcsplayer0.Pathfinding;
 
 public class Splasher extends Robot {
 	
