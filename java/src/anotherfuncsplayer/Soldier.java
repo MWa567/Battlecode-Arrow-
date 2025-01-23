@@ -105,10 +105,10 @@ public class Soldier extends Robot {
 	    	}
 		    
 		    if (curRuin != null){
+		    	paintingRuinLoc = curRuin.getMapLocation();
                 paintingTowerType = getNewTowerType(rc);
                 turnsWithoutAttack = 0;
                 paintingTurns = 0;
-                paintingRuinLoc = curRuin.getMapLocation();
                 runPaintPattern(rc);
                 return ;
 	        }
@@ -117,9 +117,7 @@ public class Soldier extends Robot {
 	        	Clock.yield();
 	        }
 	        if (mapWidth >= 30 || mapHeight >= 30) {
-	        	if ((rc.getLocation().x > mapWidth * 0.4 || rc.getLocation().x < mapWidth * 0.6)
-		        		&& (rc.getLocation().y > mapHeight * 0.6 || rc.getLocation().y < mapHeight * 0.4)
-		        		&& rc.getLocation().x % 4 == 0 && rc.getLocation().y % 4 == 3) {
+	        	if (rc.getLocation().x % 4 == 0 && rc.getLocation().y % 4 == 3) {
 		        	boolean has_mark = false;
 		        	for (MapInfo patternTile : rc.senseNearbyMapInfos(rc.getLocation(), -1)){
 		                if (patternTile.getMark() != patternTile.getPaint() && patternTile.getMark() != PaintType.EMPTY){

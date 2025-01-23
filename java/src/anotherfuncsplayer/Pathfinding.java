@@ -56,7 +56,7 @@ public class Pathfinding {
             		}
             	}
             	else if (hasResource && tile.getMark().isAlly()) {
-            		return ;
+            		existsEmpty = false;
             	}
             	else if (tile.getPaint() == PaintType.EMPTY || tile.getPaint().isEnemy()) {
             		existsEmpty = true;
@@ -77,7 +77,7 @@ public class Pathfinding {
     }
     
     static public void splasherNewTarget(MapLocation target) throws GameActionException {
-    	MapLocation rotation = new MapLocation(Robot.mapWidth - target.x - 1, Robot.mapHeight - target.y - 1);
+    	MapLocation rotation = new MapLocation(target.y, target.x);
     	rotation = Util.clipToWithinMap(rotation);
     	setTarget(rotation);
     }

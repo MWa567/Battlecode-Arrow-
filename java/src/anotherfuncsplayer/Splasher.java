@@ -26,6 +26,7 @@ public class Splasher extends Robot {
     }
 
     void play() throws GameActionException {
+    	/*
     	MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
     	boolean moveAway = false;
     	for (MapInfo tile : nearbyTiles){
@@ -44,6 +45,7 @@ public class Splasher extends Robot {
 				nearestTower = null;
 			}
 		}
+		
     	if (nearestTower != null) {
     		if (moveAway) {
         		Direction dir = rc.getLocation().directionTo(nearestTower).opposite();
@@ -56,7 +58,8 @@ public class Splasher extends Robot {
 			prevTarget = my_target;
 			my_target = nearestTower;
 		}
-    	else if (anotherfuncsplayer.Util.distance(my_target, rc.getLocation()) <= 5) {
+		*/
+    	if (anotherfuncsplayer.Util.distance(my_target, rc.getLocation()) <= 5) {
     		reached_target = true;
     		int newX;
     		int newY;

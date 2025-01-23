@@ -1,80 +1,81 @@
 package anotherfuncsplayer;
 
 import java.util.Random;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 import battlecode.common.*;
-import funcsplayer0.Explore;
-import funcsplayer0.Pathfinding;
-import funcsplayer0.Util;
 
 public class Mopper extends Robot {
 	static MapLocation nearestTower;
-	static MapLocation my_target = null;
+	static MapLocation my_target;
 	static boolean reached_target = false;
+	static ArrayList<MapLocation> ruins = new ArrayList<>();
+	static ArrayList<MapLocation> visited = new ArrayList<>();
 	
     Mopper(RobotController rc) throws GameActionException {
         super(rc);
         MapRecorder.initMap(mapWidth, mapHeight);
+        my_target = rc.getLocation();
     }
 
     void play() throws GameActionException {
-        MapLocation myLocation = rc.getLocation();
-        /*
-        // Initialize symmetry analysis
-        if (!Comm.isSymmetryConfirmed) {
-            eliminateSymmetry(myLocation);
-        }
+    	anotherfuncsplayer.Util.init(rc);
+        anotherfuncsplayer.Pathfinding.init(rc);
+        anotherfuncsplayer.Pathfinding.initTurn();
+        while (true) {
+        	RobotInfo[] nearbyRobots = rc.senseNearbyRobots();
+            //If we can see a soldier, follow it
+            for (RobotInfo robo : nearbyRobots){
+            	if (robo.team != rc.getTeam() && (robo.type == UnitType.SOLDIER || robo.type == UnitType.SPLASHER)) {
+	                my_target = robo.location;
+	                Direction dir = rc.getLocation().directionTo(my_target);
+	                if (rc.canMopSwing(dir) && robo.team!=rc.getTeam()){
+	                    rc.mopSwing(dir);
+	                    anotherfuncsplayer.Pathfinding.move(my_target, false);
+		                Clock.yield();
+	                }
+            	}
+            }
+            
+        	MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
+    	    // Search for a nearby ruin to complete.
 
-        // Get target based on symmetry and enemy towers
-        MapLocation target = findEnemyTower();
-        if (target != null) {
-            // Move toward the target using Pathfinding
-            Pathfinding.init(rc);
-            Pathfinding.initTurn();
-            Pathfinding.move(target, true);
-           }
-            */
-            // No target found, fallback to random movement
-        	anotherfuncsplayer.Util.init(rc);
-        	anotherfuncsplayer.Explore.init(rc);
-            anotherfuncsplayer.Pathfinding.init(rc);
-            anotherfuncsplayer.Pathfinding.initTurn();
-            target = Explore.getExploreTarget();
-        	while (true) {
-    		    MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
-    	        
-    		    MapLocation ourLoc = rc.getLocation();
-    		    //If we can see enemy paint, move towards it
-    		    for (MapInfo tile : nearbyTiles){
-    		        if (tile.getPaint().isEnemy()){
-    		            MapLocation targetLoc = tile.getMapLocation();
-    		            Direction dir = ourLoc.directionTo(targetLoc);
-    		            if (rc.canMopSwing(dir)){
-    		                rc.mopSwing(dir);
-    		                System.out.println("Mop Swing! Booyah!");
-    		            }
-    		            else if (rc.canAttack(targetLoc)){
-    		                rc.attack(targetLoc);
-    		            }
-
-    		            if (rc.canMove(dir)) {
-    		                rc.move(dir);
-    		                ourLoc.add(dir);
-    		            }
-    		            Clock.yield();
-    		        }
-    		    }
-    		    
-    		    if (anotherfuncsplayer.Util.distance(my_target, rc.getLocation()) <= 4) {
-    	    		reached_target = true;
-    	    		MapLocation rotation = new MapLocation(mapWidth - my_target.x - 1, mapHeight - my_target.y - 1);
-    	    		my_target = rotation;
+    	    for (MapInfo tile : nearbyTiles){
+    	    	if (tile.hasRuin()){
+    	    		if (!ruins.contains(tile.getMapLocation())) {
+    	    			for (MapLocation symmetricRuin: getSymmetry(tile.getMapLocation())) {
+    	    				if (!ruins.contains(symmetricRuin)) {
+    	    					ruins.add(symmetricRuin);
+    	    					Clock.yield();
+    	    				}
+    	    			}
+    	    		}
     	    	}
-    	    	else if (!reached_target){
-    	    		getTarget();
-    	    	}
-    	    	rc.setIndicatorString("MOVING TO TARGET AT " + my_target);
-    	    	anotherfuncsplayer.Pathfinding.move(my_target, true);
+	    		if (tile.getPaint().isEnemy()){
+	                MapLocation targetLoc = tile.getMapLocation();
+	                if (rc.canAttack(targetLoc)){
+	                	rc.attack(targetLoc);
+	                }
+	    		}
+        	}
+    	    
+    	    
+    	    if (ruins.isEmpty()) {
+    	    	ruins = visited;
+    	    	visited = new ArrayList<>();
+    	    }
+    	    
+    	    if (anotherfuncsplayer.Util.distance(rc.getLocation(), my_target) <= 5) {
+    	    	ruins.remove(my_target);
+    	    	visited.add(my_target);
+    			int randomIndex = (int) (Math.random() * ruins.size());
+    			my_target = ruins.get(randomIndex);
+    			Clock.yield();
+    		}
+    		rc.setIndicatorString("Moving toward target at "+ target);
+    		anotherfuncsplayer.Pathfinding.move(my_target, false);
+    	    Clock.yield();
         }
     }
 
@@ -94,6 +95,17 @@ public class Mopper extends Robot {
                 }
             }
         }
+    }
+    
+    public static MapLocation[] getSymmetry(MapLocation loc) throws GameActionException {
+    	int x = loc.x;
+    	int y = loc.y;
+    	MapLocation horizontal = new MapLocation(mapWidth - x - 1, y);
+    	MapLocation vertical = new MapLocation(x, mapHeight - y - 1);
+    	MapLocation diagonal = new MapLocation(y, x);
+    	MapLocation antiDiagonal = new MapLocation(mapWidth - y - 1, mapHeight - x - 1);
+    	MapLocation[] symmetries = {horizontal, vertical, diagonal, antiDiagonal};
+    	return symmetries;
     }
     
     public static void getTarget() throws GameActionException {
