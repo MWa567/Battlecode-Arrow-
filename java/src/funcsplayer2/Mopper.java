@@ -1,4 +1,4 @@
-package anotherfuncsplayer;
+package funcsplayer2;
 
 import java.util.Random;
 import java.lang.reflect.Array;
@@ -20,9 +20,9 @@ public class Mopper extends Robot {
     }
 
     void play() throws GameActionException {
-    	anotherfuncsplayer.Util.init(rc);
-        anotherfuncsplayer.Pathfinding.init(rc);
-        anotherfuncsplayer.Pathfinding.initTurn();
+    	funcsplayer2.Util.init(rc);
+    	funcsplayer2.Pathfinding.init(rc);
+    	funcsplayer2.Pathfinding.initTurn();
         while (true) {
         	RobotInfo[] nearbyRobots = rc.senseNearbyRobots();
             //If we can see a soldier, follow it
@@ -32,7 +32,7 @@ public class Mopper extends Robot {
 	                Direction dir = rc.getLocation().directionTo(my_target);
 	                if (rc.canMopSwing(dir) && robo.team!=rc.getTeam()){
 	                    rc.mopSwing(dir);
-	                    anotherfuncsplayer.Pathfinding.move(my_target, false);
+	                    funcsplayer2.Pathfinding.move(my_target, false);
 		                Clock.yield();
 	                }
             	}
@@ -66,14 +66,15 @@ public class Mopper extends Robot {
     	    	visited = new ArrayList<>();
     	    }
     	    
-    	    if (anotherfuncsplayer.Util.distance(rc.getLocation(), my_target) <= 5 || !rc.isMovementReady()) {
+    	    if (funcsplayer2.Util.distance(rc.getLocation(), my_target) <= 5) {
     	    	ruins.remove(my_target);
     	    	visited.add(my_target);
     			int randomIndex = (int) (Math.random() * ruins.size());
     			my_target = ruins.get(randomIndex);
     			Clock.yield();
     		}
-    		anotherfuncsplayer.Pathfinding.move(my_target, false);
+    		rc.setIndicatorString("Moving toward target at "+ target);
+    		funcsplayer2.Pathfinding.move(my_target, false);
     	    Clock.yield();
         }
     }
@@ -96,8 +97,6 @@ public class Mopper extends Robot {
         }
     }
     
-    
-    
     public static MapLocation[] getSymmetry(MapLocation loc) throws GameActionException {
     	int x = loc.x;
     	int y = loc.y;
@@ -113,8 +112,8 @@ public class Mopper extends Robot {
     	int coord_x = originalLocation.x;
     	int coord_y = originalLocation.y;
     	
-    	anotherfuncsplayer.Pathfinding.init(rc);
-        anotherfuncsplayer.Pathfinding.initTurn();
+    	funcsplayer2.Pathfinding.init(rc);
+    	funcsplayer2.Pathfinding.initTurn();
     	if (coord_x < coord_y) {
 	    	if (coord_x < mapWidth / 2) {
 	            Random rand = new Random();
