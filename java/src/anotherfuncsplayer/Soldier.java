@@ -21,7 +21,7 @@ public class Soldier extends Robot {
     static MapLocation originalLocation = null;
     static MapLocation nearestTower;
     static MapLocation prevTarget = null;
-    
+
     static boolean[][] paintTowerPattern = null;
     static boolean[][] moneyTowerPattern = null;
     static boolean[][] defenseTowerPattern = null;
@@ -30,12 +30,16 @@ public class Soldier extends Robot {
     static UnitType paintingTowerType = null;
     static int paintingTurns = 0;
     static int turnsWithoutAttack = 0;
-    
+
     MapLocation curResource = null;
     boolean override = false;
 
     static boolean hasEnemyPaint = false;
     static MapLocation needMopperAt;
+
+	static boolean weaving = false;
+	static boolean moveAway = false;
+	static MapLocation myEnemyTower = null;
 
     /** Array containing all the possible movement directions. */
     static final Direction[] directions = {
@@ -66,7 +70,43 @@ public class Soldier extends Robot {
         anotherfuncsplayer.Pathfinding.init(rc);
         anotherfuncsplayer.Pathfinding.initTurn();
         target = anotherfuncsplayer.Explore.getExploreTarget();
-    	while (true) {
+
+		while (true) {
+			if (weaving) {
+				Direction dir = rc.getLocation().directionTo(myEnemyTower);
+				if (moveAway) {
+					if (rc.canAttack(myEnemyTower)){
+						rc.setIndicatorString("ATTACKING1");
+						rc.attack(myEnemyTower);
+					}
+					dir = dir.opposite();
+					if (rc.canMove(dir)){
+						rc.move(dir);
+						rc.setIndicatorString("GOING AWAY");
+					}
+
+				}
+				else {
+					if (rc.canMove(dir)){
+						rc.move(dir);
+						rc.setIndicatorString("GOING TOWARDS" + myEnemyTower);
+					}
+					if (rc.canAttack(myEnemyTower)){
+						rc.setIndicatorString("ATTACKING2");
+						rc.attack(myEnemyTower);
+					}
+					// else if(rc.canMove(dir.opposite())){
+					// 	rc.move(dir.opposite());
+					// }
+					if (rc.senseRobotAtLocation(myEnemyTower)==null){
+						weaving = false;
+					}
+
+				}
+				moveAway = !moveAway;
+				return;
+			}
+
 	    	// Sense information about all visible nearby tiles.
 		    MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
 		    // Search for a nearby ruin to complete.
@@ -77,13 +117,15 @@ public class Soldier extends Robot {
 		    int towerDist = 999999;
 		    for (MapInfo tile : nearbyTiles){
 		    	RobotInfo potentialTower = rc.senseRobotAtLocation(tile.getMapLocation());
-		    	if (tile.hasRuin() && potentialTower == null){
+		    	// this is a ruin
+				if (tile.hasRuin() && potentialTower == null){
 	            	int dist = tile.getMapLocation().distanceSquaredTo(rc.getLocation());
 	            	if (dist < ruinDist) {
 		                curRuin = tile;
 		                ruinDist = dist;
 	            	}
 	            }
+				//this is a tower
 		    	else if (tile.hasRuin() && potentialTower != null) {
 					if (potentialTower.getTeam() == rc.getTeam()){
 						int dist = tile.getMapLocation().distanceSquaredTo(rc.getLocation());
@@ -101,9 +143,38 @@ public class Soldier extends Robot {
 							System.out.println("Tower was upgraded!");
 						}
 					}
+					else{
+						//enemy tower!!
+						Direction dir = rc.getLocation().directionTo(potentialTower.location);
+						myEnemyTower = potentialTower.location;
+						rc.setIndicatorString("updating myEnemyTower" + myEnemyTower);
+						weaving = true;
+						// if (!weaving && potentialTower.getType()!=UnitType.LEVEL_TWO_DEFENSE_TOWER && potentialTower.getType()!=UnitType.LEVEL_ONE_DEFENSE_TOWER && potentialTower.getType()!=UnitType.LEVEL_THREE_DEFENSE_TOWER) weaving=true;
+						if (rc.canMove(dir)){
+							rc.move(dir);
+							moveAway = true;
+						}
+						if (rc.canAttack(myEnemyTower)){
+							rc.attack(myEnemyTower);
+						}
+						return;
+						// else if (rc.canMove(dir.opposite())){
+						// 	rc.move(dir.opposite());
+						// }
+						// if (rc.canMove(dir.opposite())){
+						// 	rc.move(dir.opposite());
+						// }
+						// MapLocation potentialTowerLoc = potentialTower.location.subtract(dir).subtract(dir);
+						// if (rc.canAttack(potentialTowerLoc)){
+						// 	rc.setIndicatorString("ATTACKING");
+						// 	rc.attack(potentialTowerLoc);
+						// }
+						// return;
+
+					}
 	    		}
 	    	}
-		    
+
 		    if (curRuin != null){
                 paintingTowerType = getNewTowerType(rc);
                 turnsWithoutAttack = 0;
@@ -187,11 +258,11 @@ public class Soldier extends Robot {
 		    Clock.yield();
     	}
     }
-    
+
     public static boolean isWithinPattern(MapLocation ruinLoc, MapLocation paintLoc) {
     	return Math.abs(paintLoc.x - ruinLoc.x) <= 2 && Math.abs(paintLoc.y - ruinLoc.y) <= 2 && !ruinLoc.equals(paintLoc);
     }
-    
+
     public static boolean getIsSecondary(MapLocation ruinLoc, MapLocation paintLoc, UnitType towerType) {
         if(!isWithinPattern(ruinLoc, paintLoc)) return false;
         int col = paintLoc.x - ruinLoc.x + 2;
@@ -206,7 +277,7 @@ public class Soldier extends Robot {
         	return defenseTowerPattern[row][col];
         }
     }
-    
+
     public static void runPaintPattern(RobotController rc) throws GameActionException {
     	/*
     	if(paintingTurns % 3 == 0) {
@@ -232,7 +303,7 @@ public class Soldier extends Robot {
 	    		return ;
 	    	}
 	    }
-    	
+
         //paint tiles for the pattern
         if(rc.isActionReady()) {
             MapInfo[] infos = rc.senseNearbyMapInfos();
@@ -241,7 +312,7 @@ public class Soldier extends Robot {
                 MapLocation paintLoc = info.getMapLocation();
                 boolean shouldBeSecondary = getIsSecondary(paintingRuinLoc, paintLoc, paintingTowerType);
                 if(rc.canAttack(paintLoc)
-                        && (info.getPaint() == PaintType.EMPTY || info.getPaint().isSecondary() != shouldBeSecondary) 
+                        && (info.getPaint() == PaintType.EMPTY || info.getPaint().isSecondary() != shouldBeSecondary)
                         && isWithinPattern(paintingRuinLoc, paintLoc)) {
                     rc.attack(paintLoc, shouldBeSecondary);
                     attacked = true;
@@ -251,7 +322,7 @@ public class Soldier extends Robot {
             }
             if(!attacked) turnsWithoutAttack++;
         }
-        
+
         Direction dir = rc.getLocation().directionTo(paintingRuinLoc);
 
         if (rc.getMovementCooldownTurns() > 10) {
@@ -268,7 +339,7 @@ public class Soldier extends Robot {
             rc.completeTowerPattern(paintingTowerType, paintingRuinLoc);
         }
     }
-    
+
     public static UnitType getNewTowerType(RobotController rc) {
     	Random random = new Random();
         int randomNumber = random.nextInt(7);

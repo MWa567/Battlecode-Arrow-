@@ -10,7 +10,7 @@ import battlecode.common.RobotController;
 import battlecode.common.RobotInfo;
 
 public class Splasher extends Robot {
-	
+
 	static RobotController rc;
 	static MapLocation nearestTower = null;
 	static MapInfo nearestTowerInfo = null;
@@ -18,45 +18,86 @@ public class Splasher extends Robot {
 	static MapLocation my_target = null;
 	static boolean reached_target = false;
 	static boolean hasResource = false;
+	static boolean towerSpotted = false;
+	static MapLocation myEnemyTower = null;
 
     Splasher(RobotController rc) throws GameActionException {
         super(rc);
         Splasher.rc = rc;
-        
+
     }
 
     void play() throws GameActionException {
+		if(towerSpotted){
+			if (rc.canAttack(myEnemyTower)){
+				rc.attack(myEnemyTower);
+			}
+			else if(rc.isActionReady()){
+				Direction dir = rc.getLocation().directionTo(myEnemyTower);
+				if(rc.canMove(dir)){
+					rc.move(dir);
+				}
+			}
+			if (rc.canAttack(myEnemyTower)){
+				rc.attack(myEnemyTower);
+			}
+			if (rc.canAttack(myEnemyTower)){
+				rc.attack(myEnemyTower);
+			}
+			if (rc.canAttack(myEnemyTower)){
+				rc.attack(myEnemyTower);
+			}
+			if (rc.senseRobotAtLocation(myEnemyTower)==null){
+				towerSpotted = false;
+			}
+
+			return;
+		}
+
     	MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
-    	boolean moveAway = false;
+    	// boolean moveAway = false;
     	for (MapInfo tile : nearbyTiles){
     		RobotInfo potentialTower = rc.senseRobotAtLocation(tile.getMapLocation());
 			if (tile.hasRuin() && potentialTower != null) {
 				if (potentialTower.getTeam() != rc.getTeam()) {
-					nearestTower = potentialTower.location;
-					nearestTowerInfo = tile;
-					if (rc.canAttack(potentialTower.location)){
-						rc.attack(potentialTower.location);
-						moveAway = true;
+					// enemy tower
+					myEnemyTower = potentialTower.location;
+					Direction dir = rc.getLocation().directionTo(myEnemyTower);
+					towerSpotted = true;
+					if(rc.canMove(dir)){
+						rc.move(dir);
 					}
+					if (rc.canAttack(myEnemyTower)){
+						rc.attack(myEnemyTower);
+					}
+					if (rc.canAttack(myEnemyTower)){
+						rc.attack(myEnemyTower);
+					}
+					if (rc.canAttack(myEnemyTower)){
+						rc.attack(myEnemyTower);
+					}
+					return;
+
 				}
 			}
-			else if (tile.hasRuin() && potentialTower == null){
-				nearestTower = null;
-			}
+			// else if (tile.hasRuin() && potentialTower == null){
+			// 	nearestTower = null;
+			// }
 		}
-    	if (nearestTower != null) {
-    		if (moveAway) {
-        		Direction dir = rc.getLocation().directionTo(nearestTower).opposite();
-    			if (rc.canMove(dir)){
-    				rc.move(dir);
-    				rc.setIndicatorString("GOING AWAY");
-    				}
-    			return ;
-        	}
-			prevTarget = my_target;
-			my_target = nearestTower;
-		}
-    	else if (anotherfuncsplayer.Util.distance(my_target, rc.getLocation()) <= 5) {
+    	// if (nearestTower != null) {
+    	// 	if (moveAway) {
+        // 		Direction dir = rc.getLocation().directionTo(nearestTower).opposite();
+    	// 		if (rc.canMove(dir)){
+    	// 			rc.move(dir);
+    	// 			rc.setIndicatorString("GOING AWAY");
+    	// 			}
+    	// 		return ;
+        // 	}
+		// 	prevTarget = my_target;
+		// 	my_target = nearestTower;
+		// }
+    	// else
+		if (anotherfuncsplayer.Util.distance(my_target, rc.getLocation()) <= 5) {
     		reached_target = true;
     		int newX;
     		int newY;
@@ -81,11 +122,11 @@ public class Splasher extends Robot {
     	rc.setIndicatorString("MOVING TO TARGET AT " + my_target);
     	anotherfuncsplayer.Pathfinding.move(my_target, true);
     }
-    
+
     public static void getTarget() throws GameActionException {
     	int coord_x = originalLocation.x;
     	int coord_y = originalLocation.y;
-    	
+
     	anotherfuncsplayer.Pathfinding.init(rc);
         anotherfuncsplayer.Pathfinding.initTurn();
     	if (coord_x < coord_y) {
