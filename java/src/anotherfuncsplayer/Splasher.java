@@ -80,23 +80,8 @@ public class Splasher extends Robot {
 
 				}
 			}
-			// else if (tile.hasRuin() && potentialTower == null){
-			// 	nearestTower = null;
-			// }
 		}
-    	// if (nearestTower != null) {
-    	// 	if (moveAway) {
-        // 		Direction dir = rc.getLocation().directionTo(nearestTower).opposite();
-    	// 		if (rc.canMove(dir)){
-    	// 			rc.move(dir);
-    	// 			rc.setIndicatorString("GOING AWAY");
-    	// 			}
-    	// 		return ;
-        // 	}
-		// 	prevTarget = my_target;
-		// 	my_target = nearestTower;
-		// }
-    	// else
+
 		if (anotherfuncsplayer.Util.distance(my_target, rc.getLocation()) <= 5) {
     		reached_target = true;
     		int newX;

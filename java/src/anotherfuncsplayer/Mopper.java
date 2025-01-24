@@ -41,8 +41,22 @@ public class Mopper extends Robot {
         	MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
     	    // Search for a nearby ruin to complete.
 
+        	MapInfo curRuin = null;
+		    int ruinDist = 999999;
     	    for (MapInfo tile : nearbyTiles){
+    	    	RobotInfo potentialTower = rc.senseRobotAtLocation(tile.getMapLocation());
+    	    	// Checks if there is a ruin nearby
     	    	if (tile.hasRuin()){
+    	    		if (potentialTower == null) {
+    	    			int dist = tile.getMapLocation().distanceSquaredTo(rc.getLocation());
+    	            	if (dist < ruinDist) {
+    		                curRuin = tile;
+    		                ruinDist = dist;
+    	            	}
+    	    		}
+	            }
+    	    	if (tile.hasRuin()){
+    	    		// If tile has ruin, adds it to the ruins array
     	    		if (!ruins.contains(tile.getMapLocation())) {
     	    			for (MapLocation symmetricRuin: getSymmetry(tile.getMapLocation())) {
     	    				if (!ruins.contains(symmetricRuin)) {
@@ -56,10 +70,45 @@ public class Mopper extends Robot {
 	                MapLocation targetLoc = tile.getMapLocation();
 	                if (rc.canAttack(targetLoc)){
 	                	rc.attack(targetLoc);
+	                	Clock.yield();
 	                }
 	    		}
         	}
     	    
+    	    if (curRuin != null) {
+    	    	MapLocation ruinLoc = curRuin.getMapLocation();
+    	    	
+    	    	Direction dir = rc.getLocation().directionTo(ruinLoc);
+
+    	        if (rc.getMovementCooldownTurns() > 10) {
+    	        	// Do nothing
+    	        }
+    	        else if (rc.canMove(dir)) {
+    	        	rc.move(dir);
+    	        }
+    	        else if (rc.canMove(dir.rotateRight())){
+    	        	rc.move(dir.rotateRight());
+    	        }
+    	        int counter = 0;
+    	    	while (counter <= 4) {
+    	    		if(rc.isActionReady()) {
+        	            MapInfo[] infos = rc.senseNearbyMapInfos();
+        	            for(MapInfo info : infos) {
+        	            	counter ++;
+        	                MapLocation paintLoc = info.getMapLocation();
+        	                if (info.getPaint().isEnemy() && rc.canAttack(paintLoc)) {
+        	                	rc.attack(paintLoc);
+        	                    counter = 0;
+        	                    Clock.yield();
+        	                }     
+        	            }
+        	            Clock.yield();
+        	    	}
+    	    		Clock.yield();
+    	    	}
+    		}
+    	        
+    	        
     	    
     	    if (ruins.isEmpty()) {
     	    	ruins = visited;

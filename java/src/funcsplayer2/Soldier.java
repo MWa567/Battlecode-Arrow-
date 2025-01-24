@@ -168,10 +168,10 @@ public class Soldier extends Robot {
 	    	}
 		    
 		    if (curRuin != null){
+		    	paintingRuinLoc = curRuin.getMapLocation();
                 paintingTowerType = getNewTowerType(rc);
                 turnsWithoutAttack = 0;
                 paintingTurns = 0;
-                paintingRuinLoc = curRuin.getMapLocation();
                 runPaintPattern(rc);
                 return ;
 	        }
@@ -336,8 +336,8 @@ public class Soldier extends Robot {
     	Random random = new Random();
         int randomNumber = random.nextInt(7);
 
-        boolean inMiddleX = 0.3 * mapWidth < rc.getLocation().x && rc.getLocation().x < 0.7 * mapWidth;
-        boolean inMiddleY = 0.3 * mapHeight < rc.getLocation().y && rc.getLocation().y < 0.7 * mapHeight;
+        boolean inMiddleX = 0.4 * mapWidth < paintingRuinLoc.x && paintingRuinLoc.x < 0.6 * mapWidth;
+        boolean inMiddleY = 0.4 * mapHeight < paintingRuinLoc.y && paintingRuinLoc.y < 0.6 * mapHeight;
         if (inMiddleX && inMiddleY) {
     		return UnitType.LEVEL_ONE_DEFENSE_TOWER;
     	}

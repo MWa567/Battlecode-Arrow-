@@ -36,12 +36,28 @@ public class Tower extends Robot {
         MapLocation nextLoc = rc.getLocation().add(dir);
         MapLocation ourLoc = rc.getLocation();
         
-        if (rc.getRoundNum() <= 200) {
+        if (rc.getRoundNum() <= 50) {
         	if (rc.canBuildRobot(UnitType.SOLDIER, nextLoc)) {
                 rc.buildRobot(UnitType.SOLDIER, nextLoc);
                 System.out.println("BUILT A SOLDIER");
             }
         }
+        else {
+        	int randomNumber = random.nextInt(6);
+        	if ((randomNumber < 3 ) && rc.getNumberTowers() <= 20 && rc.getChips() > 500 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)) {
+        		rc.buildRobot(UnitType.SOLDIER, nextLoc);
+                System.out.println("BUILT A SOLDIER");
+        	}
+        	else if ((randomNumber == 2 || randomNumber == 3) && rc.getChips() > 500 && rc.canBuildRobot(UnitType.MOPPER, nextLoc)) {
+        		rc.buildRobot(UnitType.MOPPER, nextLoc);
+                System.out.println("BUILT A MOPPER");
+        	}
+        	else if (rc.getChips() > 500 && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)) {
+        		rc.buildRobot(UnitType.SPLASHER, nextLoc);
+                System.out.println("BUILT A SPLASHER");
+        	}
+        }
+        /*
         else if (rc.getRoundNum() <= 300 && rc.getRoundNum() > 200 && rc.getNumberTowers() < 20) {
             int randomNumber = random.nextInt(4);
             if (randomNumber != 2 && rc.getChips() > 500 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)) {
@@ -72,9 +88,10 @@ public class Tower extends Robot {
         else if (rc.getRoundNum() > 700) {
         	if (rc.getChips() > 500 && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)) {
                 rc.buildRobot(UnitType.SPLASHER, nextLoc);
-                System.out.println("BUILT A SOLDIER");
+                System.out.println("BUILT A SPLASHER");
             }
         }
+        */
         
         // Attack Nearby Bots
         // Update: AOE
