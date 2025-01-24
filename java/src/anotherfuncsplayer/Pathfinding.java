@@ -9,7 +9,7 @@ public class Pathfinding {
     static boolean[] impassable = null;
     static final Random rng = new Random(6147);
     static boolean changedTarget = false;
-    static boolean hasResource = false;
+    static boolean hasResource = true;
     static final Direction[] directions = {
             Direction.NORTH,
             Direction.NORTHEAST,
@@ -23,11 +23,9 @@ public class Pathfinding {
     };
     public static void init(RobotController r) {
         rc = r;
-        Util.init(rc);
+        anotherfuncsplayer.Util.init(rc);
+        
         BugNav.rotateRight = Util.rng.nextDouble() > 0.5;
-        if (rc.getMapWidth() >= 30 || rc.getMapHeight() >= 30) {
-        	hasResource = true;
-        }
     }
     
     static void setImpassable(boolean[] imp) {

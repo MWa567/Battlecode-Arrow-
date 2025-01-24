@@ -67,6 +67,7 @@ public class Soldier extends Robot {
 	void play() throws GameActionException {
     	funcsplayer2.Util.init(rc);
     	funcsplayer2.Explore.init(rc);
+    	funcsplayer2.BugNav.init(rc);
         funcsplayer2.Pathfinding.init(rc);
         funcsplayer2.Pathfinding.initTurn();
         target = funcsplayer2.Explore.getExploreTarget();
@@ -196,7 +197,7 @@ public class Soldier extends Robot {
 		                }
 		            }
 
-		        	if (rc.getNumberTowers() > 8 && !has_mark && rc.canMarkResourcePattern(rc.getLocation())) {
+		        	if (rc.getNumberTowers() > 5 && !has_mark && rc.canMarkResourcePattern(rc.getLocation())) {
 		        		curResource = rc.getLocation();
 		        		target = curResource;
 		        		rc.markResourcePattern(curResource);
@@ -336,8 +337,8 @@ public class Soldier extends Robot {
     	Random random = new Random();
         int randomNumber = random.nextInt(7);
 
-        boolean inMiddleX = 0.4 * mapWidth < paintingRuinLoc.x && paintingRuinLoc.x < 0.6 * mapWidth;
-        boolean inMiddleY = 0.4 * mapHeight < paintingRuinLoc.y && paintingRuinLoc.y < 0.6 * mapHeight;
+        boolean inMiddleX = 0.3 * mapWidth < paintingRuinLoc.x && paintingRuinLoc.x < 0.7 * mapWidth;
+        boolean inMiddleY = 0.3 * mapHeight < paintingRuinLoc.y && paintingRuinLoc.y < 0.7 * mapHeight;
         if (inMiddleX && inMiddleY) {
     		return UnitType.LEVEL_ONE_DEFENSE_TOWER;
     	}

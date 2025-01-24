@@ -21,6 +21,7 @@ public class Mopper extends Robot {
 
     void play() throws GameActionException {
     	funcsplayer2.Util.init(rc);
+    	funcsplayer2.BugNav.init(rc);
     	funcsplayer2.Pathfinding.init(rc);
     	funcsplayer2.Pathfinding.initTurn();
         while (true) {

@@ -21,8 +21,9 @@ public class Mopper extends Robot {
 
     void play() throws GameActionException {
     	anotherfuncsplayer.Util.init(rc);
+    	anotherfuncsplayer.BugNav.init(rc);
         anotherfuncsplayer.Pathfinding.init(rc);
-        anotherfuncsplayer.Pathfinding.initTurn();
+        anotherfuncsplayer.Pathfinding.initTurn(); 
         while (true) {
         	RobotInfo[] nearbyRobots = rc.senseNearbyRobots();
             //If we can see a soldier, follow it
@@ -107,8 +108,6 @@ public class Mopper extends Robot {
     	    		Clock.yield();
     	    	}
     		}
-    	        
-    	        
     	    
     	    if (ruins.isEmpty()) {
     	    	ruins = visited;
