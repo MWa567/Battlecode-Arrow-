@@ -21,7 +21,7 @@ public class Soldier extends Robot {
     static MapLocation originalLocation = null;
     static MapLocation nearestTower;
     static MapLocation prevTarget = null;
-    
+
     static boolean[][] paintTowerPattern = null;
     static boolean[][] moneyTowerPattern = null;
     static boolean[][] defenseTowerPattern = null;
@@ -30,16 +30,17 @@ public class Soldier extends Robot {
     static UnitType paintingTowerType = null;
     static int paintingTurns = 0;
     static int turnsWithoutAttack = 0;
-    
+
     MapLocation curResource = null;
     boolean override = false;
 
     static boolean hasEnemyPaint = false;
     static MapLocation needMopperAt;
-    
+
     static boolean weaving = false;
 	static boolean moveAway = false;
 	static MapLocation myEnemyTower = null;
+	static int boredomweaving = 0;
 
     /** Array containing all the possible movement directions. */
     static final Direction[] directions = {
@@ -73,27 +74,53 @@ public class Soldier extends Robot {
         target = anotherfuncsplayer.Explore.getExploreTarget();
     	while (true) {
     		if (weaving) {
+				// boredom += 1;
+				// if (boredom <= 12) {
+				// 	weaving = false;
+				// 	return;
+				// }
 				Direction dir = rc.getLocation().directionTo(myEnemyTower);
 				if (moveAway) {
 					if (rc.canAttack(myEnemyTower)){
 						rc.setIndicatorString("ATTACKING1");
 						rc.attack(myEnemyTower);
 					}
+					else if(rc.isActionReady()){
+						//go towards it even more.
+						if (rc.canMove(dir)){
+							rc.move(dir);
+							rc.setIndicatorString("I CAN'T ATTACK YET");
+						}
+						return;
+					}
 					dir = dir.opposite();
 					if (rc.canMove(dir)){
 						rc.move(dir);
-						rc.setIndicatorString("GOING AWAY");
+						rc.setIndicatorString("GOING BACK");
+					}
+					else if (rc.isMovementReady()) {
+						if (rc.canMove(dir.rotateRight())) {
+							dir = dir.rotateRight();
+							rc.move(dir);
+							rc.setIndicatorString("GOING RIGHT");
+						}
+						else if (rc.canMove(dir.rotateLeft())) {
+							dir = dir.rotateLeft();
+							rc.move(dir);
+							rc.setIndicatorString("GOING LEFT");
+						}
 					}
 				}
 				else {
-					if (rc.canMove(dir)){
+					if (rc.canMove(dir) && !rc.canAttack(myEnemyTower)){
 						rc.move(dir);
 						rc.setIndicatorString("GOING TOWARDS" + myEnemyTower);
 					}
-					else if (rc.isMovementReady()) {
+					else if (rc.isMovementReady() && !rc.canAttack(myEnemyTower)) {
 						weaving = false;
 						return;
 					}
+
 					if (rc.canAttack(myEnemyTower)){
 						rc.setIndicatorString("ATTACKING2");
 						rc.attack(myEnemyTower);
@@ -106,11 +133,11 @@ public class Soldier extends Robot {
 				moveAway = !moveAway;
 				return;
 			}
-    		
+
 	    	// Sense information about all visible nearby tiles.
 		    MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
 		    // Search for a nearby ruin to complete
-		    
+
 		    //If we can see a ruin, move towards it
 		    MapInfo curRuin = null;
 		    int ruinDist = 999999;
@@ -148,7 +175,7 @@ public class Soldier extends Robot {
 						rc.setIndicatorString("updating myEnemyTower" + myEnemyTower);
 						weaving = true;
 						// if (!weaving && potentialTower.getType()!=UnitType.LEVEL_TWO_DEFENSE_TOWER && potentialTower.getType()!=UnitType.LEVEL_ONE_DEFENSE_TOWER && potentialTower.getType()!=UnitType.LEVEL_THREE_DEFENSE_TOWER) weaving=true;
-						if (rc.canMove(dir)){
+						if (rc.canMove(dir) && !rc.canAttack(myEnemyTower)){
 							rc.move(dir);
 							moveAway = true;
 						}
@@ -163,7 +190,7 @@ public class Soldier extends Robot {
 					}
 	    		}
 	    	}
-		    
+
 		    if (curRuin != null){
 		    	paintingRuinLoc = curRuin.getMapLocation();
 		    	if (rc.canCompleteTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, paintingRuinLoc)){
@@ -255,11 +282,11 @@ public class Soldier extends Robot {
 		    Clock.yield();
     	}
     }
-    
+
     public static boolean isWithinPattern(MapLocation ruinLoc, MapLocation paintLoc) {
     	return Math.abs(paintLoc.x - ruinLoc.x) <= 2 && Math.abs(paintLoc.y - ruinLoc.y) <= 2 && !ruinLoc.equals(paintLoc);
     }
-    
+
     public static boolean getIsSecondary(MapLocation ruinLoc, MapLocation paintLoc, UnitType towerType) {
         if(!isWithinPattern(ruinLoc, paintLoc)) return false;
         int col = paintLoc.x - ruinLoc.x + 2;
@@ -274,7 +301,7 @@ public class Soldier extends Robot {
         	return defenseTowerPattern[row][col];
         }
     }
-    
+
     public static void runPaintPattern(RobotController rc) throws GameActionException {
     	rc.setIndicatorString("SEARCHING FOR NEARBY ROBOTS");
     	for (RobotInfo robot: rc.senseNearbyRobots(-1)) {
@@ -284,7 +311,7 @@ public class Soldier extends Robot {
 	    		return ;
 	    	}
 	    }
-    	
+
         //paint tiles for the pattern
         if(rc.isActionReady()) {
             MapInfo[] infos = rc.senseNearbyMapInfos();
@@ -293,7 +320,7 @@ public class Soldier extends Robot {
                 MapLocation paintLoc = info.getMapLocation();
                 boolean shouldBeSecondary = getIsSecondary(paintingRuinLoc, paintLoc, paintingTowerType);
                 if(rc.canAttack(paintLoc)
-                        && (info.getPaint() == PaintType.EMPTY || info.getPaint().isSecondary() != shouldBeSecondary) 
+                        && (info.getPaint() == PaintType.EMPTY || info.getPaint().isSecondary() != shouldBeSecondary)
                         && isWithinPattern(paintingRuinLoc, paintLoc)) {
                     rc.attack(paintLoc, shouldBeSecondary);
                     attacked = true;
@@ -303,7 +330,7 @@ public class Soldier extends Robot {
             }
             if(!attacked) turnsWithoutAttack++;
         }
-        
+
         Direction dir = rc.getLocation().directionTo(paintingRuinLoc);
 
         if (rc.getMovementCooldownTurns() > 10) {
@@ -320,7 +347,7 @@ public class Soldier extends Robot {
             rc.completeTowerPattern(paintingTowerType, paintingRuinLoc);
         }
     }
-    
+
     public static UnitType getNewTowerType(RobotController rc) {
     	Random random = new Random();
         int randomNumber = random.nextInt(7);
