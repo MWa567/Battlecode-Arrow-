@@ -18,6 +18,7 @@ public class Splasher extends Robot {
 	static MapLocation my_target = null;
 	static boolean reached_target = false;
 	static boolean hasResource = false;
+	static boolean hasWall = false;
 	
 	static boolean towerSpotted = false;
 	static MapLocation myEnemyTower = null;
@@ -30,14 +31,18 @@ public class Splasher extends Robot {
 
     void play() throws GameActionException {
     	if(towerSpotted){
+    		prevTarget = myEnemyTower;
 			if (rc.canAttack(myEnemyTower)){
 				rc.attack(myEnemyTower);
 			}
 			else if(rc.isActionReady()){
+				/*
 				Direction dir = rc.getLocation().directionTo(myEnemyTower);
 				if(rc.canMove(dir)){
 					rc.move(dir);
 				}
+				*/
+				anotherfuncsplayer.Pathfinding.move(myEnemyTower, true);
 			}
 			if (rc.canAttack(myEnemyTower)){
 				rc.attack(myEnemyTower);

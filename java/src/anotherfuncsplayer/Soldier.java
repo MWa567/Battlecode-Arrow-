@@ -84,20 +84,20 @@ public class Soldier extends Robot {
 						rc.move(dir);
 						rc.setIndicatorString("GOING AWAY");
 					}
-
 				}
 				else {
 					if (rc.canMove(dir)){
 						rc.move(dir);
 						rc.setIndicatorString("GOING TOWARDS" + myEnemyTower);
 					}
+					else if (rc.isMovementReady()) {
+						weaving = false;
+						return;
+					}
 					if (rc.canAttack(myEnemyTower)){
 						rc.setIndicatorString("ATTACKING2");
 						rc.attack(myEnemyTower);
 					}
-					// else if(rc.canMove(dir.opposite())){
-					// 	rc.move(dir.opposite());
-					// }
 					if (rc.senseRobotAtLocation(myEnemyTower)==null){
 						weaving = false;
 					}
@@ -109,8 +109,8 @@ public class Soldier extends Robot {
     		
 	    	// Sense information about all visible nearby tiles.
 		    MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
-		    // Search for a nearby ruin to complete.
-
+		    // Search for a nearby ruin to complete
+		    
 		    //If we can see a ruin, move towards it
 		    MapInfo curRuin = null;
 		    int ruinDist = 999999;
@@ -152,6 +152,10 @@ public class Soldier extends Robot {
 							rc.move(dir);
 							moveAway = true;
 						}
+						else if (rc.isMovementReady()) {
+							weaving = false;
+							continue;
+						}
 						if (rc.canAttack(myEnemyTower)){
 							rc.attack(myEnemyTower);
 						}
@@ -171,14 +175,12 @@ public class Soldier extends Robot {
             	else if (rc.canCompleteTowerPattern(UnitType.LEVEL_ONE_DEFENSE_TOWER, paintingRuinLoc)) {
             		rc.completeTowerPattern(UnitType.LEVEL_ONE_DEFENSE_TOWER, paintingRuinLoc);
             	}
-		    	
                 paintingTowerType = getNewTowerType(rc);
                 turnsWithoutAttack = 0;
                 paintingTurns = 0;
                 runPaintPattern(rc);
                 return ;
 	        }
-
 	        if (rc.getMovementCooldownTurns() > 10) {
 	        	Clock.yield();
 	        }
@@ -203,7 +205,6 @@ public class Soldier extends Robot {
 		        		rc.markResourcePattern(curResource);
 		        	}
 		        }
-
 		        if (curResource != null) {
 		        	Direction dir = rc.getLocation().directionTo(curResource);
 
@@ -231,14 +232,17 @@ public class Soldier extends Robot {
 		            }
 		        }
 	        }
+	        System.out.println("BYTECODE " + Clock.getBytecodeNum() + " STARTING PATHFIND LINE 241");
 
 	        if (curRuin == null && curResource == null) {
 	        	try {
 	        		if (anotherfuncsplayer.Util.distance(rc.getLocation(), target) <= 5 || !rc.isMovementReady()) {
 	        			MapLocation oldTarget = target;
-	        			while (Util.distance(anotherfuncsplayer.Explore.getExploreTarget(), oldTarget) <= 20) {
+	        			while (Util.distance(anotherfuncsplayer.Explore.getExploreTarget(), oldTarget) <= Math.max(mapWidth, mapHeight) / 2) {
+	        				System.out.println("BYTECODE " + Clock.getBytecodeNum() + " NEW TARGET LINE 249");
 	        				anotherfuncsplayer.Explore.getNewTarget(10);
 	        			}
+	        			System.out.println("BYTECODE " + Clock.getBytecodeNum() + " FOUND NEW TARGET LINE 251");
 	            		target = anotherfuncsplayer.Explore.exploreTarget;
 	        		}
 	        		rc.setIndicatorString("Moving toward target at "+ target);

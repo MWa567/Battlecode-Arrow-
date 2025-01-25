@@ -236,7 +236,7 @@ public class Soldier extends Robot {
 	        	try {
 	        		if (funcsplayer2.Util.distance(rc.getLocation(), target) <= 5 || !rc.isMovementReady()) {
 	        			MapLocation oldTarget = target;
-	        			while (Util.distance(funcsplayer2.Explore.getExploreTarget(), oldTarget) <= 20) {
+	        			while (Util.distance(funcsplayer2.Explore.getExploreTarget(), oldTarget) <= Math.max(mapHeight, mapWidth) / 2) {
 	        				funcsplayer2.Explore.getNewTarget(10);
 	        			}
 	            		target = funcsplayer2.Explore.exploreTarget;
