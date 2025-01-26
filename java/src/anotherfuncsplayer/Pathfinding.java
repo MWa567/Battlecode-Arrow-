@@ -9,7 +9,6 @@ public class Pathfinding {
     static boolean[] impassable = null;
     static final Random rng = new Random(6147);
     static boolean changedTarget = false;
-    static boolean hasResource = true;
     static final Direction[] directions = {
             Direction.NORTH,
             Direction.NORTHEAST,
@@ -53,8 +52,9 @@ public class Pathfinding {
             			rc.attack(tile.getMapLocation());
             		}
             	}
-            	else if (hasResource && tile.getMark().isAlly()) {
+            	else if (tile.getMark() == PaintType.ALLY_SECONDARY) {
             		existsEmpty = false;
+            		return ;
             	}
             	else if (tile.getPaint() == PaintType.EMPTY || tile.getPaint().isEnemy()) {
             		existsEmpty = true;
@@ -87,6 +87,7 @@ public class Pathfinding {
         if (!BugNav.nav(target)) {
         	greedyPath();
         	paint(isSplasher);
+        	
         }
 		else {
 			BugNav.move(target);

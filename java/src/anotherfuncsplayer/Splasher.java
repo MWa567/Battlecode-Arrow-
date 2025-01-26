@@ -13,7 +13,6 @@ public class Splasher extends Robot {
 	
 	static RobotController rc;
 	static MapLocation nearestTower = null;
-	static MapInfo nearestTowerInfo = null;
 	static MapLocation prevTarget;
 	static MapLocation my_target = null;
 	static boolean reached_target = false;
@@ -30,18 +29,15 @@ public class Splasher extends Robot {
     }
 
     void play() throws GameActionException {
+    	if (rc.canCompleteResourcePattern(rc.getLocation())) {
+			rc.completeResourcePattern(rc.getLocation());
+		}
     	if(towerSpotted){
     		prevTarget = myEnemyTower;
 			if (rc.canAttack(myEnemyTower)){
 				rc.attack(myEnemyTower);
 			}
 			else if(rc.isActionReady()){
-				/*
-				Direction dir = rc.getLocation().directionTo(myEnemyTower);
-				if(rc.canMove(dir)){
-					rc.move(dir);
-				}
-				*/
 				anotherfuncsplayer.Pathfinding.move(myEnemyTower, true);
 			}
 			if (rc.canAttack(myEnemyTower)){
@@ -56,9 +52,9 @@ public class Splasher extends Robot {
 			if (rc.senseRobotAtLocation(myEnemyTower)==null){
 				towerSpotted = false;
 			}
-
 			return;
 		}
+    	
     	MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
     	// boolean moveAway = false;
     	for (MapInfo tile : nearbyTiles){
@@ -82,11 +78,10 @@ public class Splasher extends Robot {
 						rc.attack(myEnemyTower);
 					}
 					return;
-
 				}
 			}
 		}
-
+    	
 		if (anotherfuncsplayer.Util.distance(my_target, rc.getLocation()) <= 5) {
     		reached_target = true;
     		int newX;
@@ -119,6 +114,7 @@ public class Splasher extends Robot {
     	
     	anotherfuncsplayer.Pathfinding.init(rc);
         anotherfuncsplayer.Pathfinding.initTurn();
+
     	if (coord_x < coord_y) {
 	    	if (coord_x < mapWidth / 2) {
 	            Random rand = new Random();
