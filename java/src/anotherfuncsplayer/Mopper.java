@@ -25,16 +25,30 @@ public class Mopper extends Robot {
         anotherfuncsplayer.Pathfinding.init(rc);
         anotherfuncsplayer.Pathfinding.initTurn(); 
         while (true) {
+        	if (rc.canCompleteResourcePattern(rc.getLocation())) {
+    			rc.completeResourcePattern(rc.getLocation());
+    		}
         	RobotInfo[] nearbyRobots = rc.senseNearbyRobots();
             //If we can see a soldier, follow it
             for (RobotInfo robo : nearbyRobots){
             	if (robo.team != rc.getTeam() && (robo.type == UnitType.SOLDIER || robo.type == UnitType.SPLASHER)) {
+            		rc.setIndicatorString("ENEMY ROBOT SPOTTED");
 	                my_target = robo.location;
 	                Direction dir = rc.getLocation().directionTo(my_target);
 	                if (rc.canMopSwing(dir) && robo.team!=rc.getTeam()){
 	                    rc.mopSwing(dir);
-	                    anotherfuncsplayer.Pathfinding.move(my_target, false);
-		                Clock.yield();
+	                    Clock.yield();
+	                }
+	                else if (rc.canAttack(my_target)) {
+	                	rc.attack(my_target);
+	                }
+	                anotherfuncsplayer.Pathfinding.move(my_target, false);
+	                if (rc.canMopSwing(dir) && robo.team!=rc.getTeam()){
+	                    rc.mopSwing(dir);
+	                    Clock.yield();
+	                }
+	                else if (rc.canAttack(my_target)) {
+	                	rc.attack(my_target);
 	                }
             	}
             }

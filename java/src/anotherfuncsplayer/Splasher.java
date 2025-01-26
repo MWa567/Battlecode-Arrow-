@@ -3,12 +3,6 @@ package anotherfuncsplayer;
 import java.util.Random;
 import battlecode.common.*;
 
-import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
-import battlecode.common.MapLocation;
-import battlecode.common.RobotController;
-import battlecode.common.RobotInfo;
-
 public class Splasher extends Robot {
 	
 	static RobotController rc;
@@ -29,83 +23,87 @@ public class Splasher extends Robot {
     }
 
     void play() throws GameActionException {
-    	if (rc.canCompleteResourcePattern(rc.getLocation())) {
-			rc.completeResourcePattern(rc.getLocation());
-		}
-    	if(towerSpotted){
-    		prevTarget = myEnemyTower;
-			if (rc.canAttack(myEnemyTower)){
-				rc.attack(myEnemyTower);
-			}
-			else if(rc.isActionReady()){
-				anotherfuncsplayer.Pathfinding.move(myEnemyTower, true);
-			}
-			if (rc.canAttack(myEnemyTower)){
-				rc.attack(myEnemyTower);
-			}
-			if (rc.canAttack(myEnemyTower)){
-				rc.attack(myEnemyTower);
-			}
-			if (rc.canAttack(myEnemyTower)){
-				rc.attack(myEnemyTower);
-			}
-			if (rc.senseRobotAtLocation(myEnemyTower)==null){
-				towerSpotted = false;
-			}
-			return;
-		}
-    	
-    	MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
-    	// boolean moveAway = false;
-    	for (MapInfo tile : nearbyTiles){
-    		RobotInfo potentialTower = rc.senseRobotAtLocation(tile.getMapLocation());
-			if (tile.hasRuin() && potentialTower != null) {
-				if (potentialTower.getTeam() != rc.getTeam()) {
-					// enemy tower
-					myEnemyTower = potentialTower.location;
-					Direction dir = rc.getLocation().directionTo(myEnemyTower);
-					towerSpotted = true;
-					if(rc.canMove(dir)){
-						rc.move(dir);
-					}
-					if (rc.canAttack(myEnemyTower)){
-						rc.attack(myEnemyTower);
-					}
-					if (rc.canAttack(myEnemyTower)){
-						rc.attack(myEnemyTower);
-					}
-					if (rc.canAttack(myEnemyTower)){
-						rc.attack(myEnemyTower);
-					}
-					return;
-				}
-			}
-		}
-    	
-		if (anotherfuncsplayer.Util.distance(my_target, rc.getLocation()) <= 5) {
-    		reached_target = true;
-    		int newX;
-    		int newY;
-    		if (originalLocation.x <= mapWidth / 2) {
-    			newX = mapWidth - my_target.x - 1;
+    	anotherfuncsplayer.Util.init(rc);
+    	anotherfuncsplayer.Explore.init(rc);
+    	anotherfuncsplayer.BugNav.init(rc);
+        anotherfuncsplayer.Pathfinding.init(rc);
+        anotherfuncsplayer.Pathfinding.initTurn();
+        getTarget();
+        while (true) {
+        	if (rc.canCompleteResourcePattern(rc.getLocation())) {
+    			rc.completeResourcePattern(rc.getLocation());
     		}
-    		else {
-    			newX = mapWidth - my_target.x + 1;
+        	if(towerSpotted){
+        		prevTarget = myEnemyTower;
+    			if (rc.canAttack(myEnemyTower)){
+    				rc.attack(myEnemyTower);
+    			}
+    			else if(rc.isActionReady()){
+    				anotherfuncsplayer.Pathfinding.move(myEnemyTower, true);
+    			}
+    			if (rc.canAttack(myEnemyTower)){
+    				rc.attack(myEnemyTower);
+    			}
+    			if (rc.canAttack(myEnemyTower)){
+    				rc.attack(myEnemyTower);
+    			}
+    			if (rc.canAttack(myEnemyTower)){
+    				rc.attack(myEnemyTower);
+    			}
+    			if (rc.senseRobotAtLocation(myEnemyTower)==null){
+    				towerSpotted = false;
+    			}
+    			Direction dir = rc.getLocation().directionTo(myEnemyTower).opposite();
+    			if (rc.canMove(dir)){
+    				rc.move(dir);
+    				rc.setIndicatorString("GOING BACK");
+    			}
+    			return;
     		}
-    		if (originalLocation.y <= mapHeight / 2) {
-    			newY = mapHeight - my_target.y - 1;
+        	
+        	MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
+        	// boolean moveAway = false;
+        	for (MapInfo tile : nearbyTiles){
+        		if (rc.canCompleteResourcePattern(tile.getMapLocation())) {
+        			rc.completeResourcePattern(tile.getMapLocation());
+        		}
+        		RobotInfo potentialTower = rc.senseRobotAtLocation(tile.getMapLocation());
+    			if (tile.hasRuin() && potentialTower != null) {
+    				if (potentialTower.getTeam() != rc.getTeam()) {
+    					// enemy tower
+    					myEnemyTower = potentialTower.location;
+    					Direction dir = rc.getLocation().directionTo(myEnemyTower);
+    					towerSpotted = true;
+    					if(rc.canMove(dir)){
+    						rc.move(dir);
+    					}
+    					if (rc.canAttack(myEnemyTower)){
+    						rc.attack(myEnemyTower);
+    					}
+    					if (rc.canAttack(myEnemyTower)){
+    						rc.attack(myEnemyTower);
+    					}
+    					if (rc.canAttack(myEnemyTower)){
+    						rc.attack(myEnemyTower);
+    					}
+    					Direction new_dir = rc.getLocation().directionTo(myEnemyTower).opposite();
+    					if (rc.canMove(new_dir)){
+    						rc.move(new_dir);
+    						rc.setIndicatorString("GOING BACK");
+    					}
+    					return;
+    				}
+    			}
     		}
-    		else {
-    			newY = mapHeight - my_target.y + 1;
+        	if (anotherfuncsplayer.Util.distance(rc.getLocation(), my_target) <= 3 || !rc.isMovementReady()) {
+    			Explore.init(rc);
+    			Explore.getNewTarget();
+        		my_target = Explore.exploreTarget;
     		}
-        	MapLocation rotation = new MapLocation(newX, newY);
-        	my_target = rotation;
-    	}
-    	else if (!reached_target){
-    		getTarget();
-    	}
-    	rc.setIndicatorString("MOVING TO TARGET AT " + my_target);
-    	anotherfuncsplayer.Pathfinding.move(my_target, true);
+        	rc.setIndicatorString("MOVING TO TARGET AT " + my_target);
+        	anotherfuncsplayer.Pathfinding.move(my_target, true);
+        	Clock.yield();
+        }
     }
     
     public static void getTarget() throws GameActionException {

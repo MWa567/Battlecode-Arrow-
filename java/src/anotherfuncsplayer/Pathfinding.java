@@ -54,7 +54,6 @@ public class Pathfinding {
             	}
             	else if (tile.getMark() == PaintType.ALLY_SECONDARY) {
             		existsEmpty = false;
-            		return ;
             	}
             	else if (tile.getPaint() == PaintType.EMPTY || tile.getPaint().isEnemy()) {
             		existsEmpty = true;

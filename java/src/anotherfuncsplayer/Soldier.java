@@ -75,20 +75,11 @@ public class Soldier extends Robot {
     		if (rc.canCompleteResourcePattern(rc.getLocation())) {
     			rc.completeResourcePattern(rc.getLocation());
     		}
-    		/*
-    		if (rc.getPaint() < 100) {
-    			anotherfuncsplayer.Pathfinding.move(nearestTower, false);
-				if (rc.canTransferPaint(nearestTower, -75)) {
-					rc.transferPaint(nearestTower, -75);
-				}
-				return ;
-			}
-			*/
     		if (weaving) {
 				Direction dir = rc.getLocation().directionTo(myEnemyTower);
 				if (moveAway) {
 					if (rc.canAttack(myEnemyTower)){
-						rc.setIndicatorString("ATTACKING1");
+						rc.setIndicatorString("ATTACKING1 " + moveAway);
 						rc.attack(myEnemyTower);
 					}
 					else if(rc.isActionReady()){
@@ -102,7 +93,7 @@ public class Soldier extends Robot {
 					dir = dir.opposite();
 					if (rc.canMove(dir)){
 						rc.move(dir);
-						rc.setIndicatorString("GOING BACK");
+						// rc.setIndicatorString("GOING BACK");
 					}
 					else if (rc.isMovementReady()) {
 						if (rc.canMove(dir.rotateRight())) {
@@ -128,7 +119,7 @@ public class Soldier extends Robot {
 					}
 
 					if (rc.canAttack(myEnemyTower)){
-						rc.setIndicatorString("ATTACKING2");
+						rc.setIndicatorString("ATTACKING2 " + moveAway);
 						rc.attack(myEnemyTower);
 					}
 					if (rc.senseRobotAtLocation(myEnemyTower)==null){
@@ -147,8 +138,8 @@ public class Soldier extends Robot {
 		    int ruinDist = 999999;
 		    int towerDist = 999999;
 		    for (MapInfo tile : nearbyTiles){
-		    	if (rc.canCompleteResourcePattern(tile.getMapLocation())) {
-	    			rc.completeResourcePattern(tile.getMapLocation());
+		    	if (tile.getMapLocation().x % 4 == 2 && tile.getMapLocation().y % 4 == 2 && rc.canCompleteResourcePattern(tile.getMapLocation())) {
+		    		rc.completeResourcePattern(tile.getMapLocation());
 	    		}
 		    	RobotInfo potentialTower = rc.senseRobotAtLocation(tile.getMapLocation());
 		    	if (tile.hasRuin() && potentialTower == null){
@@ -196,7 +187,7 @@ public class Soldier extends Robot {
 					}
 	    		}
 	    	}
-		    if (curRuin != null){
+		    if (curRuin != null && rc.getNumberTowers() <= 25){
 		    	paintingRuinLoc = curRuin.getMapLocation();
 		    	if (rc.canCompleteTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, paintingRuinLoc)){
                     rc.completeTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, paintingRuinLoc);
@@ -216,27 +207,25 @@ public class Soldier extends Robot {
 	        if (rc.getMovementCooldownTurns() > 10) {
 	        	Clock.yield();
 	        }
-	        
+
+	        for (MapInfo tile : nearbyTiles) {
+        		int coordX = tile.getMapLocation().x % 4;
+        		int coordY = tile.getMapLocation().y % 4;
+        		
+        		if (rc.canPaint(tile.getMapLocation()) && rc.isActionReady()) {
+        			PaintType paintType = getPaintType(coordX, coordY);
+        			if (getPaintType(coordX, coordY) != tile.getPaint()) {
+        				boolean useSecondaryPaint = (paintType == PaintType.ALLY_SECONDARY);
+        				rc.attack(tile.getMapLocation(), useSecondaryPaint);
+        			}
+        		}
+        		if (rc.canCompleteResourcePattern(tile.getMapLocation())) {
+        			rc.completeResourcePattern(tile.getMapLocation());
+        		}
+        	}
 	        if (curRuin == null) {
-	        	for (MapInfo tile : nearbyTiles) {
-	        		int coordX = tile.getMapLocation().x % 4;
-	        		int coordY = tile.getMapLocation().y % 4;
-	        		
-	        		if (rc.canPaint(tile.getMapLocation()) && rc.isActionReady()) {
-	        			PaintType paintType = getPaintType(coordX, coordY);
-	        			if (getPaintType(coordX, coordY) != tile.getPaint()) {
-	        				boolean useSecondaryPaint = (paintType == PaintType.ALLY_SECONDARY);
-	        				rc.attack(tile.getMapLocation(), useSecondaryPaint);
-	        			}
-	        		}
-	        		if (rc.canCompleteResourcePattern(tile.getMapLocation())) {
-	        			rc.completeResourcePattern(tile.getMapLocation());
-	        		}
-	        	}
-	        	
 	        	try {
-	        		if (anotherfuncsplayer.Util.distance(rc.getLocation(), target) <= 5 || !rc.isMovementReady()) {
-	        			rc.setIndicatorString("THIS IS HAPPENING");
+	        		if (anotherfuncsplayer.Util.distance(rc.getLocation(), target) <= 1 || !rc.isMovementReady()) {
 	        			Explore.init(rc);
 	        			Explore.getNewTarget();
 	            		target = Explore.exploreTarget;
@@ -349,17 +338,17 @@ public class Soldier extends Robot {
 
     public static UnitType getNewTowerType(RobotController rc) {
     	Random random = new Random();
-        int randomNumber = random.nextInt(9);
+        int randomNumber = random.nextInt(7);
 
         boolean inMiddleX = 0.35 * mapWidth < paintingRuinLoc.x && paintingRuinLoc.x < 0.65 * mapWidth;
         boolean inMiddleY = 0.35 * mapHeight < paintingRuinLoc.y && paintingRuinLoc.y < 0.65 * mapHeight;
         if (inMiddleX && inMiddleY) {
     		return UnitType.LEVEL_ONE_DEFENSE_TOWER;
     	}
-        else if (rc.getNumberTowers() < 4) {
+        else if (rc.getNumberTowers() <= 4) {
         	return UnitType.LEVEL_ONE_MONEY_TOWER;
         }
-    	else if (randomNumber < 4) {
+    	else if (randomNumber < 3) {
 	    	return UnitType.LEVEL_ONE_PAINT_TOWER;
     	}
 	    else {
