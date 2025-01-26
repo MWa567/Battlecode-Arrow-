@@ -1,6 +1,7 @@
 package anotherfuncsplayer;
 
 import battlecode.common.*;
+import java.util.Random;
 
 public class Explore {
     static RobotController rc;
@@ -19,6 +20,10 @@ public class Explore {
             Direction.NORTHWEST,
             Direction.CENTER
     };
+    static int mapWidth;
+	static int mapHeight;
+	private static Random rand = new Random();
+	
     static Direction[] dirPath;
     static final int MAX_MAP_SIZE = 60;
     static final int MAX_MAP_SIZE_SQ = MAX_MAP_SIZE * MAX_MAP_SIZE;
@@ -45,16 +50,16 @@ public class Explore {
     static ExploreType exploreType;
     public static void init(RobotController r) {
         rc = r;
-        getNewTarget(10);
+        mapWidth = rc.getMapWidth();
+    	mapHeight = rc.getMapHeight();
+        getNewTarget();
     }
     
     public static void pickNewExploreDir() {
         Direction[] newDirChoices = {
-                // Util.turnLeft90(lastExploreDir),
                 lastExploreDir.rotateLeft(),
                 lastExploreDir,
                 lastExploreDir.rotateRight(),
-                // Util.turnRight90(lastExploreDir),
         };
         Direction[] validDirs = new Direction[5];
         int numValidDirs = 0;
@@ -231,16 +236,75 @@ public class Explore {
             return false;
         return visited[loc.x][loc.y];
     }
-    public static void getNewTarget(int tries) {
-    	MapLocation currLoc = rc.getLocation();
-        for (int i = tries; i-- > 0;) {
-            int dx = 4 * (int) (Util.rng.nextInt(16) - 8);
-            int dy = 4 * (int) (Util.rng.nextInt(16) - 8);
-            exploreTarget = new MapLocation(currLoc.x + dx, currLoc.y + dy);
-            exploreTarget = Util.clipToWithinMap(exploreTarget);
-            if (!hasVisited(exploreTarget))
-                return;
+    public static void getNewTarget() {
+    	int robotX = rc.getLocation().x;
+    	int robotY = rc.getLocation().y;
+    	
+    	// Random angle generation
+        double angle = rand.nextDouble() * 360; // Random angle in degrees
+
+        // Convert angle to radians
+        double angleRad = Math.toRadians(angle);
+
+        // Direction vector (dx, dy) as floating-point values
+        double dx = Math.cos(angleRad);
+        double dy = Math.sin(angleRad);
+
+        // Calculate intersections with map boundaries
+        double tMin = Double.MAX_VALUE;
+        int edgeX = robotX;
+        int edgeY = robotY;
+
+        // Check intersection with vertical edges (x = 0 and x = mapWidth - 1)
+        if (dx != 0) {
+            // Intersection with left edge (x = 0)
+            double tLeft = (0 - robotX) / dx;
+            if (tLeft > 0) {
+                double yLeft = robotY + tLeft * dy;
+                if (yLeft >= 0 && yLeft < mapHeight && tLeft < tMin) {
+                    tMin = tLeft;
+                    edgeX = 0;
+                    edgeY = (int) Math.round(yLeft);
+                }
+            }
+
+            // Intersection with right edge (x = mapWidth - 1)
+            double tRight = (mapWidth - 1 - robotX) / dx;
+            if (tRight > 0) {
+                double yRight = robotY + tRight * dy;
+                if (yRight >= 0 && yRight < mapHeight && tRight < tMin) {
+                    tMin = tRight;
+                    edgeX = mapWidth - 1;
+                    edgeY = (int) Math.round(yRight);
+                }
+            }
         }
+
+        // Check intersection with horizontal edges (y = 0 and y = mapHeight - 1)
+        if (dy != 0) {
+            // Intersection with top edge (y = 0)
+            double tTop = (0 - robotY) / dy;
+            if (tTop > 0) {
+                double xTop = robotX + tTop * dx;
+                if (xTop >= 0 && xTop < mapWidth && tTop < tMin) {
+                    tMin = tTop;
+                    edgeX = (int) Math.round(xTop);
+                    edgeY = 0;
+                }
+            }
+
+            // Intersection with bottom edge (y = mapHeight - 1)
+            double tBottom = (mapHeight - 1 - robotY) / dy;
+            if (tBottom > 0) {
+                double xBottom = robotX + tBottom * dx;
+                if (xBottom >= 0 && xBottom < mapWidth && tBottom < tMin) {
+                    tMin = tBottom;
+                    edgeX = (int) Math.round(xBottom);
+                    edgeY = mapHeight - 1;
+                }
+            }
+        }
+        exploreTarget = new MapLocation(edgeX, edgeY);
     }
     static void markSeen() {
         if (!initialized)

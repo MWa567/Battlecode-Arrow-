@@ -11,7 +11,6 @@ import battlecode.common.PaintType;
 import battlecode.common.RobotController;
 import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
-import funcsplayer0.Util;
 
 public class Soldier extends Robot {
 	static int turnCount = 0;
@@ -76,6 +75,15 @@ public class Soldier extends Robot {
     		if (rc.canCompleteResourcePattern(rc.getLocation())) {
     			rc.completeResourcePattern(rc.getLocation());
     		}
+    		/*
+    		if (rc.getPaint() < 100) {
+    			anotherfuncsplayer.Pathfinding.move(nearestTower, false);
+				if (rc.canTransferPaint(nearestTower, -75)) {
+					rc.transferPaint(nearestTower, -75);
+				}
+				return ;
+			}
+			*/
     		if (weaving) {
 				Direction dir = rc.getLocation().directionTo(myEnemyTower);
 				if (moveAway) {
@@ -228,11 +236,10 @@ public class Soldier extends Robot {
 	        	
 	        	try {
 	        		if (anotherfuncsplayer.Util.distance(rc.getLocation(), target) <= 5 || !rc.isMovementReady()) {
-	        			MapLocation oldTarget = target;
-	        			while (Util.distance(anotherfuncsplayer.Explore.getExploreTarget(), oldTarget) <= Math.max(mapWidth, mapHeight) / 4) {
-	        				anotherfuncsplayer.Explore.getNewTarget(10);
-	        			}
-	            		target = anotherfuncsplayer.Explore.exploreTarget;
+	        			rc.setIndicatorString("THIS IS HAPPENING");
+	        			Explore.init(rc);
+	        			Explore.getNewTarget();
+	            		target = Explore.exploreTarget;
 	        		}
 	        		rc.setIndicatorString("Moving toward target at "+ target);
 	        		anotherfuncsplayer.Pathfinding.move(target, false);
@@ -344,8 +351,8 @@ public class Soldier extends Robot {
     	Random random = new Random();
         int randomNumber = random.nextInt(9);
 
-        boolean inMiddleX = 0.35 * mapWidth < rc.getLocation().x && rc.getLocation().x < 0.65 * mapWidth;
-        boolean inMiddleY = 0.35 * mapHeight < rc.getLocation().y && rc.getLocation().y < 0.65 * mapHeight;
+        boolean inMiddleX = 0.35 * mapWidth < paintingRuinLoc.x && paintingRuinLoc.x < 0.65 * mapWidth;
+        boolean inMiddleY = 0.35 * mapHeight < paintingRuinLoc.y && paintingRuinLoc.y < 0.65 * mapHeight;
         if (inMiddleX && inMiddleY) {
     		return UnitType.LEVEL_ONE_DEFENSE_TOWER;
     	}

@@ -45,6 +45,9 @@ public class Mopper extends Robot {
         	MapInfo curRuin = null;
 		    int ruinDist = 999999;
     	    for (MapInfo tile : nearbyTiles){
+    	    	if (rc.canCompleteResourcePattern(tile.getMapLocation())) {
+	    			rc.completeResourcePattern(tile.getMapLocation());
+	    		}
     	    	RobotInfo potentialTower = rc.senseRobotAtLocation(tile.getMapLocation());
     	    	// Checks if there is a ruin nearby
     	    	if (tile.hasRuin()){
