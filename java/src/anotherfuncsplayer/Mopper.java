@@ -12,6 +12,7 @@ public class Mopper extends Robot {
 	static boolean reached_target = false;
 	static ArrayList<MapLocation> ruins = new ArrayList<>();
 	static ArrayList<MapLocation> visited = new ArrayList<>();
+	static int counter = 0;
 	
     Mopper(RobotController rc) throws GameActionException {
         super(rc);
@@ -75,22 +76,10 @@ public class Mopper extends Robot {
     	            	}
     	    		}
 	            }
-    	    	if (tile.hasRuin()){
-    	    		// If tile has ruin, adds it to the ruins array
-    	    		if (!ruins.contains(tile.getMapLocation())) {
-    	    			for (MapLocation symmetricRuin: getSymmetry(tile.getMapLocation())) {
-    	    				if (!ruins.contains(symmetricRuin)) {
-    	    					ruins.add(symmetricRuin);
-    	    					Clock.yield();
-    	    				}
-    	    			}
-    	    		}
-    	    	}
 	    		if (tile.getPaint().isEnemy()){
 	                MapLocation targetLoc = tile.getMapLocation();
 	                if (rc.canAttack(targetLoc)){
 	                	rc.attack(targetLoc);
-	                	Clock.yield();
 	                }
 	    		}
         	}
@@ -109,7 +98,6 @@ public class Mopper extends Robot {
     	        else if (rc.canMove(dir.rotateRight())){
     	        	rc.move(dir.rotateRight());
     	        }
-    	        int counter = 0;
     	    	while (counter <= 4) {
     	    		if(rc.isActionReady()) {
         	            MapInfo[] infos = rc.senseNearbyMapInfos();
@@ -128,21 +116,10 @@ public class Mopper extends Robot {
     	    	}
     		}
     	    
-    	    if (ruins.isEmpty()) {
-    	    	ruins = visited;
-    	    	visited = new ArrayList<>();
-    	    }
-    	    
     	    if (anotherfuncsplayer.Util.distance(rc.getLocation(), my_target) <= 5 || !rc.isMovementReady()) {
-    	    	ruins.remove(my_target);
-    	    	visited.add(my_target);
     	    	Explore.init(rc);
     			Explore.getNewTarget();
         		my_target = Explore.exploreTarget;
-    	    	/*
-    			int randomIndex = (int) (Math.random() * ruins.size());
-    			my_target = ruins.get(randomIndex);
-    			*/
     			Clock.yield();
     		}
     		anotherfuncsplayer.Pathfinding.move(my_target, false);

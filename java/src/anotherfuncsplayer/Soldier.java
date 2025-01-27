@@ -296,6 +296,7 @@ public class Soldier extends Robot {
 
     public static void runPaintPattern(RobotController rc) throws GameActionException {
     	rc.setIndicatorString("SEARCHING FOR NEARBY ROBOTS");
+ 
     	for (RobotInfo robot: rc.senseNearbyRobots(-1)) {
 	    	if (robot.team == rc.getTeam() && robot.type == UnitType.SOLDIER &&
 	    			paintingRuinLoc.distanceSquaredTo(robot.location) < rc.getLocation().distanceSquaredTo(paintingRuinLoc)) {
