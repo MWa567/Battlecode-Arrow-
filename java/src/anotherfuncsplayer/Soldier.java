@@ -187,7 +187,7 @@ public class Soldier extends Robot {
 					}
 	    		}
 	    	}
-		    if (curRuin != null && rc.getNumberTowers() <= 25){
+		    if (curRuin != null && rc.getNumberTowers() < 25){
 		    	paintingRuinLoc = curRuin.getMapLocation();
 		    	if (rc.canCompleteTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, paintingRuinLoc)){
                     rc.completeTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, paintingRuinLoc);
@@ -223,7 +223,7 @@ public class Soldier extends Robot {
         			rc.completeResourcePattern(tile.getMapLocation());
         		}
         	}
-	        if (curRuin == null) {
+	        if (curRuin == null || rc.getNumberTowers() == 25) {
 	        	try {
 	        		if (anotherfuncsplayer.Util.distance(rc.getLocation(), target) <= 1 || !rc.isMovementReady()) {
 	        			Explore.init(rc);
