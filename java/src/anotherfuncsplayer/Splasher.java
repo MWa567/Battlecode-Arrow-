@@ -95,7 +95,7 @@ public class Splasher extends Robot {
     				}
     			}
     		}
-        	if (anotherfuncsplayer.Util.distance(rc.getLocation(), my_target) <= 3 || !rc.isMovementReady()) {
+        	if (anotherfuncsplayer.Util.distance(rc.getLocation(), my_target) <= 5 || !rc.isMovementReady()) {
     			Explore.init(rc);
     			Explore.getNewTarget();
         		my_target = Explore.exploreTarget;

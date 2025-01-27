@@ -22,8 +22,10 @@ public class Mopper extends Robot {
     void play() throws GameActionException {
     	anotherfuncsplayer.Util.init(rc);
     	anotherfuncsplayer.BugNav.init(rc);
+    	anotherfuncsplayer.Explore.init(rc);
         anotherfuncsplayer.Pathfinding.init(rc);
-        anotherfuncsplayer.Pathfinding.initTurn(); 
+        anotherfuncsplayer.Pathfinding.initTurn();
+        my_target = anotherfuncsplayer.Explore.getExploreTarget();
         while (true) {
         	if (rc.canCompleteResourcePattern(rc.getLocation())) {
     			rc.completeResourcePattern(rc.getLocation());
@@ -134,11 +136,17 @@ public class Mopper extends Robot {
     	    if (anotherfuncsplayer.Util.distance(rc.getLocation(), my_target) <= 5 || !rc.isMovementReady()) {
     	    	ruins.remove(my_target);
     	    	visited.add(my_target);
+    	    	Explore.init(rc);
+    			Explore.getNewTarget();
+        		my_target = Explore.exploreTarget;
+    	    	/*
     			int randomIndex = (int) (Math.random() * ruins.size());
     			my_target = ruins.get(randomIndex);
+    			*/
     			Clock.yield();
     		}
     		anotherfuncsplayer.Pathfinding.move(my_target, false);
+    		rc.setIndicatorString("MOVING TOWARD TARGET AT "+ my_target);
     	    Clock.yield();
         }
     }
@@ -160,8 +168,6 @@ public class Mopper extends Robot {
             }
         }
     }
-    
-    
     
     public static MapLocation[] getSymmetry(MapLocation loc) throws GameActionException {
     	int x = loc.x;

@@ -337,18 +337,16 @@ public class Soldier extends Robot {
     }
 
     public static UnitType getNewTowerType(RobotController rc) {
-    	Random random = new Random();
-        int randomNumber = random.nextInt(7);
 
         boolean inMiddleX = 0.35 * mapWidth < paintingRuinLoc.x && paintingRuinLoc.x < 0.65 * mapWidth;
         boolean inMiddleY = 0.35 * mapHeight < paintingRuinLoc.y && paintingRuinLoc.y < 0.65 * mapHeight;
         if (inMiddleX && inMiddleY) {
     		return UnitType.LEVEL_ONE_DEFENSE_TOWER;
     	}
-        else if (rc.getNumberTowers() <= 4) {
+        else if (rc.getNumberTowers() < 4) {
         	return UnitType.LEVEL_ONE_MONEY_TOWER;
         }
-    	else if (randomNumber < 3) {
+    	else if ((paintingRuinLoc.x * 10 + paintingRuinLoc.y ) % 9 < 4) {
 	    	return UnitType.LEVEL_ONE_PAINT_TOWER;
     	}
 	    else {

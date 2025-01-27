@@ -34,8 +34,6 @@ public class Tower extends Robot {
         turn += 1;
         // Pick a direction to build in.
         Direction dir = directions[rng.nextInt(directions.length)];
-        MapLocation center = new MapLocation(mapWidth / 2, mapHeight / 2);
-        // Direction dir = rc.getLocation().directionTo(center);
         MapLocation nextLoc = rc.getLocation().add(dir);
         MapLocation ourLoc = rc.getLocation();
         
