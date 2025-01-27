@@ -1,4 +1,4 @@
-package anotherfuncsplayer;
+package funcsplayer3;
 
 import java.util.Random;
 
@@ -65,12 +65,12 @@ public class Soldier extends Robot {
 
     @Override
 	void play() throws GameActionException {
-    	anotherfuncsplayer.Util.init(rc);
-    	anotherfuncsplayer.Explore.init(rc);
-    	anotherfuncsplayer.BugNav.init(rc);
-        anotherfuncsplayer.Pathfinding.init(rc);
-        anotherfuncsplayer.Pathfinding.initTurn();
-        target = anotherfuncsplayer.Explore.getExploreTarget();
+    	funcsplayer3.Util.init(rc);
+    	funcsplayer3.Explore.init(rc);
+    	funcsplayer3.BugNav.init(rc);
+        funcsplayer3.Pathfinding.init(rc);
+        funcsplayer3.Pathfinding.initTurn();
+        target = funcsplayer3.Explore.getExploreTarget();
     	while (true) {
     		MapLocation closest_srp = new MapLocation(rc.getLocation().x - (rc.getLocation().x % 4) + 2, rc.getLocation().y - (rc.getLocation().y % 4) + 2);
     		if (rc.canCompleteResourcePattern(closest_srp)) {
@@ -208,7 +208,6 @@ public class Soldier extends Robot {
 	        if (rc.getMovementCooldownTurns() > 10) {
 	        	Clock.yield();
 	        }
-
 	        
 	        if (rc.getLocation().x % 4 == 2 && rc.getLocation().y % 4 == 2) {
 	        	for (MapInfo tile : nearbyTiles) {
@@ -247,13 +246,13 @@ public class Soldier extends Robot {
 	        
 	        if (curRuin == null || rc.getNumberTowers() == 25) {
 	        	try {
-	        		if (anotherfuncsplayer.Util.distance(rc.getLocation(), target) <= 1 || !rc.isMovementReady()) {
+	        		if (funcsplayer3.Util.distance(rc.getLocation(), target) <= 1 || !rc.isMovementReady()) {
 	        			Explore.init(rc);
 	        			Explore.getNewTarget();
 	            		target = Explore.exploreTarget;
 	        		}
 	        		rc.setIndicatorString("Moving toward target at "+ target);
-	        		anotherfuncsplayer.Pathfinding.move(target, false);
+	        		funcsplayer3.Pathfinding.move(target, false);
 	    		}
 	        	catch (Exception e) {
 	    			System.out.println(rc.getType() + " Exception");
@@ -321,7 +320,7 @@ public class Soldier extends Robot {
     	for (RobotInfo robot: rc.senseNearbyRobots(-1)) {
 	    	if (robot.team == rc.getTeam() && robot.type == UnitType.SOLDIER &&
 	    			paintingRuinLoc.distanceSquaredTo(robot.location) < rc.getLocation().distanceSquaredTo(paintingRuinLoc)) {
-	    		anotherfuncsplayer.Pathfinding.move(target, false);
+	    		funcsplayer3.Pathfinding.move(target, false);
 	    		return ;
 	    	}
 	    }
@@ -368,7 +367,7 @@ public class Soldier extends Robot {
         else if (rc.getNumberTowers() < 4) {
         	return UnitType.LEVEL_ONE_MONEY_TOWER;
         }
-    	else if ((paintingRuinLoc.x * 10 + paintingRuinLoc.y ) % 7 == 1 || (paintingRuinLoc.x * 10 + paintingRuinLoc.y ) % 7 == 2 || (paintingRuinLoc.x * 10 + paintingRuinLoc.y ) % 7 == 4) {
+    	else if ((paintingRuinLoc.x * 10 + paintingRuinLoc.y ) % 7 < 3) {
 	    	return UnitType.LEVEL_ONE_PAINT_TOWER;
     	}
 	    else {

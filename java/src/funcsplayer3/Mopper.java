@@ -1,4 +1,4 @@
-package anotherfuncsplayer;
+package funcsplayer3;
 
 import java.util.Random;
 import java.lang.reflect.Array;
@@ -22,12 +22,12 @@ public class Mopper extends Robot {
     }
 
     void play() throws GameActionException {
-    	anotherfuncsplayer.Util.init(rc);
-    	anotherfuncsplayer.BugNav.init(rc);
-    	anotherfuncsplayer.Explore.init(rc);
-        anotherfuncsplayer.Pathfinding.init(rc);
-        anotherfuncsplayer.Pathfinding.initTurn();
-        getTarget();
+    	funcsplayer3.Util.init(rc);
+    	funcsplayer3.BugNav.init(rc);
+    	funcsplayer3.Explore.init(rc);
+    	funcsplayer3.Pathfinding.init(rc);
+    	funcsplayer3.Pathfinding.initTurn();
+        my_target = funcsplayer3.Explore.getExploreTarget();
         while (true) {
         	MapLocation closest_srp = new MapLocation(rc.getLocation().x - (rc.getLocation().x % 4) + 2, rc.getLocation().y - (rc.getLocation().y % 4) + 2);
     		if (rc.canCompleteResourcePattern(closest_srp)) {
@@ -47,7 +47,7 @@ public class Mopper extends Robot {
 	                else if (rc.canAttack(my_target)) {
 	                	rc.attack(my_target);
 	                }
-	                anotherfuncsplayer.Pathfinding.move(my_target, false);
+	                funcsplayer3.Pathfinding.move(my_target, false);
 	                if (rc.canMopSwing(dir) && robo.team!=rc.getTeam()){
 	                    rc.mopSwing(dir);
 	                    Clock.yield();
@@ -55,13 +55,6 @@ public class Mopper extends Robot {
 	                else if (rc.canAttack(my_target)) {
 	                	rc.attack(my_target);
 	                }
-            	}
-            	
-            	if (robo.team == rc.getTeam() && robo.type == UnitType.SOLDIER) {
-            		if (robo.paintAmount <= 75 && rc.getPaint() >= 50 && rc.canTransferPaint(robo.location, 25)) {
-            			rc.transferPaint(robo.location, 25);
-            			Clock.yield();
-            		}
             	}
             }
             
@@ -108,8 +101,6 @@ public class Mopper extends Robot {
         	                if (info.getPaint().isEnemy() && rc.canAttack(paintLoc)) {
         	                	rc.attack(paintLoc);
         	                    counter = 0;
-        	                    Clock.yield();
-        	                    break ;
         	                }     
         	            }
         	    	}
@@ -124,21 +115,18 @@ public class Mopper extends Robot {
         	        else if (rc.canMove(dir.rotateRight())){
         	        	rc.move(dir.rotateRight());
         	        }
-        	        // Clock.yield();
+    	            Clock.yield();
     	    	}
-    	    	return ;
     		}
     	    
-    	    if (curRuin == null) {
-    	    	if (anotherfuncsplayer.Util.distance(rc.getLocation(), my_target) <= 4 || !rc.isMovementReady()) {
-        	    	Explore.init(rc);
-        			Explore.getNewTarget();
-            		my_target = Explore.exploreTarget;
-        			Clock.yield();
-        		}
-        		anotherfuncsplayer.Pathfinding.move(my_target, false);
-        		rc.setIndicatorString("MOVING TOWARD TARGET AT "+ my_target);
-    	    }
+    	    if (funcsplayer3.Util.distance(rc.getLocation(), my_target) <= 5 || !rc.isMovementReady()) {
+    	    	Explore.init(rc);
+    			Explore.getNewTarget();
+        		my_target = Explore.exploreTarget;
+    			Clock.yield();
+    		}
+    	    funcsplayer3.Pathfinding.move(my_target, false);
+    		rc.setIndicatorString("MOVING TOWARD TARGET AT "+ my_target);
     	    Clock.yield();
         }
     }
@@ -176,8 +164,8 @@ public class Mopper extends Robot {
     	int coord_x = originalLocation.x;
     	int coord_y = originalLocation.y;
     	
-    	anotherfuncsplayer.Pathfinding.init(rc);
-        anotherfuncsplayer.Pathfinding.initTurn();
+    	funcsplayer3.Pathfinding.init(rc);
+    	funcsplayer3.Pathfinding.initTurn();
     	if (coord_x < coord_y) {
 	    	if (coord_x < mapWidth / 2) {
 	            Random rand = new Random();

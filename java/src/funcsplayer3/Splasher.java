@@ -1,4 +1,4 @@
-package anotherfuncsplayer;
+package funcsplayer3;
 
 import java.util.Random;
 import battlecode.common.*;
@@ -23,11 +23,11 @@ public class Splasher extends Robot {
     }
 
     void play() throws GameActionException {
-    	anotherfuncsplayer.Util.init(rc);
-    	anotherfuncsplayer.Explore.init(rc);
-    	anotherfuncsplayer.BugNav.init(rc);
-        anotherfuncsplayer.Pathfinding.init(rc);
-        anotherfuncsplayer.Pathfinding.initTurn();
+    	funcsplayer3.Util.init(rc);
+    	funcsplayer3.Explore.init(rc);
+    	funcsplayer3.BugNav.init(rc);
+        funcsplayer3.Pathfinding.init(rc);
+        funcsplayer3.Pathfinding.initTurn();
         getTarget();
         while (true) {
         	MapLocation closest_srp = new MapLocation(rc.getLocation().x - (rc.getLocation().x % 4) + 2, rc.getLocation().y - (rc.getLocation().y % 4) + 2);
@@ -41,7 +41,7 @@ public class Splasher extends Robot {
     				rc.attack(myEnemyTower);
     			}
     			else if(rc.isActionReady()){
-    				anotherfuncsplayer.Pathfinding.move(myEnemyTower, true);
+    				funcsplayer3.Pathfinding.move(myEnemyTower, true);
     			}
     			if (rc.canAttack(myEnemyTower)){
     				rc.attack(myEnemyTower);
@@ -98,13 +98,13 @@ public class Splasher extends Robot {
     				}
     			}
     		}
-        	if (anotherfuncsplayer.Util.distance(rc.getLocation(), my_target) <= 4 || !rc.isMovementReady()) {
+        	if (funcsplayer3.Util.distance(rc.getLocation(), my_target) <= 5 || !rc.isMovementReady()) {
     			Explore.init(rc);
     			Explore.getNewTarget();
         		my_target = Explore.exploreTarget;
     		}
         	rc.setIndicatorString("MOVING TO TARGET AT " + my_target);
-        	anotherfuncsplayer.Pathfinding.move(my_target, true);
+        	funcsplayer3.Pathfinding.move(my_target, true);
         	Clock.yield();
         }
     }
@@ -113,8 +113,8 @@ public class Splasher extends Robot {
     	int coord_x = originalLocation.x;
     	int coord_y = originalLocation.y;
     	
-    	anotherfuncsplayer.Pathfinding.init(rc);
-        anotherfuncsplayer.Pathfinding.initTurn();
+    	funcsplayer3.Pathfinding.init(rc);
+        funcsplayer3.Pathfinding.initTurn();
 
     	if (coord_x < coord_y) {
 	    	if (coord_x < mapWidth / 2) {
