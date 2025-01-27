@@ -155,9 +155,9 @@ public class Soldier extends Robot {
 						if (dist < towerDist) {
 							nearestTower = tile.getMapLocation();
 							towerDist = dist;
-							if (rc.getPaint() < 100) {
-								if (rc.canTransferPaint(nearestTower, -75)) {
-									rc.transferPaint(nearestTower, -75);
+							if (rc.getPaint() < 150) {
+								if (rc.canTransferPaint(nearestTower, -50)) {
+									rc.transferPaint(nearestTower, -50);
 								}
 							}
 						}
@@ -346,7 +346,7 @@ public class Soldier extends Robot {
         else if (rc.getNumberTowers() < 4) {
         	return UnitType.LEVEL_ONE_MONEY_TOWER;
         }
-    	else if ((paintingRuinLoc.x * 10 + paintingRuinLoc.y ) % 9 < 4) {
+    	else if ((paintingRuinLoc.x * 10 + paintingRuinLoc.y ) % 7 < 3) {
 	    	return UnitType.LEVEL_ONE_PAINT_TOWER;
     	}
 	    else {

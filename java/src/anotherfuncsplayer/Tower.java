@@ -15,7 +15,6 @@ public class Tower extends Robot {
     private static int unitType = 0;
     
     static RobotController rc;
-    static boolean hasResource = false;
 
     private MapLocation[] friendlyTowers = new MapLocation[GameConstants.MAX_NUMBER_OF_TOWERS];
     private MapLocation[] enemyTowers = new MapLocation[GameConstants.MAX_NUMBER_OF_TOWERS];
@@ -23,9 +22,6 @@ public class Tower extends Robot {
     Tower(RobotController rc) throws GameActionException {
         super(rc);
         Tower.rc = rc;
-        if (mapWidth >= 40 || mapHeight >= 40) {
-        	hasResource = true;
-        }
     }
 
     static final Random rng = new Random(6147);
@@ -37,7 +33,7 @@ public class Tower extends Robot {
         MapLocation nextLoc = rc.getLocation().add(dir);
         MapLocation ourLoc = rc.getLocation();
         
-        if (rc.getRoundNum() <= 40) {
+        if (mapWidth > 25 && mapHeight > 25 && rc.getRoundNum() <= 40) {
         	if (rc.canBuildRobot(UnitType.SOLDIER, nextLoc)) {
                 rc.buildRobot(UnitType.SOLDIER, nextLoc);
                 System.out.println("BUILT A SOLDIER");
@@ -61,7 +57,7 @@ public class Tower extends Robot {
         	}
         }
 
-     // Attack Nearby Bots
+        // Attack Nearby Bots
         // Update: AOE
         RobotInfo[] nearbyRobots = rc.senseNearbyRobots();
         if (nearbyRobots.length <= 8){
