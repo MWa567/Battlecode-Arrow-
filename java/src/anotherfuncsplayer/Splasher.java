@@ -53,6 +53,31 @@ public class Splasher extends Robot {
         			rc.completeResourcePattern(tile.getMapLocation());
         		}
     		}
+        	MapLocation ourLoc = rc.getLocation();
+        	
+            //If we can see enemy paint, move towards it
+            for (MapInfo tile : nearbyTiles){
+            	if (tile.getPaint().isEnemy()){
+	            	MapLocation targetLoc = tile.getMapLocation();
+	            	Direction dir = ourLoc.directionTo(targetLoc);
+	            	rc.setIndicatorString("ENEMY PAINT DETECTED AT " + targetLoc);
+	            	if (rc.canMove(dir)) {
+	            		rc.move(dir);
+	            	}
+	            	else {
+	            		anotherfuncsplayer.Pathfinding.move(my_target, true);
+	            	}
+	            	rc.setIndicatorString("TYRING TO ATTACK " + targetLoc + rc.canAttack(targetLoc));
+	            	if (rc.canAttack(targetLoc)){
+	            		rc.attack(targetLoc);
+	            		return ;
+	            	}
+	            	else {
+	            		Clock.yield();
+	            	}
+            	}
+            }
+            
         	if (anotherfuncsplayer.Util.distance(rc.getLocation(), my_target) <= 4 || !rc.isMovementReady()) {
     			Explore.init(rc);
     			Explore.getNewTarget();
@@ -67,38 +92,38 @@ public class Splasher extends Robot {
     public static void getTarget() throws GameActionException {
     	int coord_x = originalLocation.x;
     	int coord_y = originalLocation.y;
-    	
     	anotherfuncsplayer.Pathfinding.init(rc);
         anotherfuncsplayer.Pathfinding.initTurn();
-
-    	if (coord_x < coord_y) {
-	    	if (coord_x < mapWidth / 2) {
-	            Random rand = new Random();
-	            int randomInd = rand.nextInt(mapHeight);
-	            my_target = new MapLocation(mapWidth - 1, randomInd);
-	    	}
-	    	else {
-	    		Random rand = new Random();
-	            int randomInd = rand.nextInt(mapHeight);
-	            my_target = new MapLocation(0, randomInd);
-	    	}
-	        updateEnemyRobots(rc);
-    	}
-    	else {
-    		if (coord_y < mapHeight / 2) {
-	            Random rand = new Random();
-	            int randomInd = rand.nextInt(mapWidth);
-	            my_target = new MapLocation(randomInd, mapHeight - 1);
-	    	}
-	    	else {
-	    		Random rand = new Random();
-	    		int randomInd = rand.nextInt(mapWidth);
-	            my_target = new MapLocation(randomInd, 0);
-	    	}
-			// We can also move our code into different methods or classes to better organize it!
-	        updateEnemyRobots(rc);
+        if (coord_x <= mapWidth / 2 && coord_y <= mapHeight / 2) {
+        	Random random = new Random();
+        	int randomX = random.nextInt(mapWidth / 2 ) + mapWidth / 2;
+        	int randomY = random.nextInt(mapHeight / 2 ) + mapHeight / 2;
+        	my_target = new MapLocation(randomX, randomY);
+        	updateEnemyRobots(rc);
+        }
+        else if (coord_x > mapWidth / 2 && coord_y <= mapHeight / 2) {
+        	Random random = new Random();
+        	int randomX = random.nextInt(mapWidth / 2 );
+        	int randomY = random.nextInt(mapHeight / 2 ) + mapHeight / 2;
+        	my_target = new MapLocation(randomX, randomY);
+        	updateEnemyRobots(rc);
+        }
+        else if (coord_x <= mapWidth / 2 && coord_y > mapHeight / 2) {
+        	Random random = new Random();
+        	int randomX = random.nextInt(mapWidth / 2 ) + mapWidth / 2;
+        	int randomY = random.nextInt(mapHeight / 2 );
+        	my_target = new MapLocation(randomX, randomY);
+        	updateEnemyRobots(rc);
+        }
+        else {
+        	Random random = new Random();
+        	int randomX = random.nextInt(mapWidth / 2 );
+        	int randomY = random.nextInt(mapHeight / 2 );
+        	my_target = new MapLocation(randomX, randomY);
+        	updateEnemyRobots(rc);
         }
     }
+        
 
     public static void updateEnemyRobots(RobotController rc) throws GameActionException{
         // Sensing methods can be passed in a radius of -1 to automatically

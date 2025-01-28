@@ -124,7 +124,6 @@ public class BugNav {
             // Note that we have to try at most 16 times since we can switch orientation in
             // the middle of the loop. (It can be done more efficiently)
             for (int i = 8; i-- > 0;) {
-            	rc.setIndicatorString("BUGNAV LINE 127 CAN MOVE");
                 MapLocation newLoc = myLoc.add(dir);
                 if (rc.canSenseLocation(newLoc)) {
                     if (canMove(dir)) {
@@ -134,12 +133,10 @@ public class BugNav {
                 }
                 RobotInfo ri; 
                 if (!rc.onTheMap(newLoc)) {
-                	rc.setIndicatorString("BUGNAV LINE 137 CAN MOVE");
                     rotateRight = !rotateRight;
                 } else if ((ri = rc.senseRobotAtLocation(newLoc)) != null) {
 
                 } else if (!rc.sensePassability(newLoc)) {
-                	rc.setIndicatorString("BUGNAV LINE 141 CAN MOVE");
                     // This is the latest obstacle found if
                     // - I can't move there
                     // - It's on the map

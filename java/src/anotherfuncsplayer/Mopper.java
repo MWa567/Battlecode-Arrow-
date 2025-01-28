@@ -35,7 +35,7 @@ public class Mopper extends Robot {
         	RobotInfo[] nearbyRobots = rc.senseNearbyRobots();
             //If we can see a soldier, follow it
             for (RobotInfo robo : nearbyRobots){
-            	if (robo.team != rc.getTeam() && (robo.type == UnitType.SOLDIER || robo.type == UnitType.SPLASHER)) {
+            	if (robo.team != rc.getTeam() && (robo.type == UnitType.SOLDIER || robo.type == UnitType.SPLASHER || robo.type == UnitType.MOPPER)) {
             		rc.setIndicatorString("ENEMY ROBOT SPOTTED");
 	                my_target = robo.location;
 	                Direction dir = rc.getLocation().directionTo(my_target);
@@ -49,7 +49,6 @@ public class Mopper extends Robot {
 	                anotherfuncsplayer.Pathfinding.move(my_target, false);
 	                if (rc.canMopSwing(dir) && robo.team!=rc.getTeam()){
 	                    rc.mopSwing(dir);
-	                    Clock.yield();
 	                }
 	                else if (rc.canAttack(my_target)) {
 	                	rc.attack(my_target);
@@ -84,6 +83,7 @@ public class Mopper extends Robot {
     	            	}
     	    		}
 	            }
+	    		
 	    		if (tile.getPaint().isEnemy()){
 	                MapLocation targetLoc = tile.getMapLocation();
 	                if (rc.canAttack(targetLoc)){
@@ -103,8 +103,7 @@ public class Mopper extends Robot {
     		    	if (robot.team == rc.getTeam() && robot.type == UnitType.MOPPER &&
     		    			ruinLoc.distanceSquaredTo(robot.location) < rc.getLocation().distanceSquaredTo(ruinLoc)) {
     		    		unitCounter ++;
-    		    		if (unitCounter > 1) {
-    		    			rc.setIndicatorString("PATHFINDING AWAY");
+    		    		if (unitCounter > 2) {
     		    			anotherfuncsplayer.Pathfinding.move(my_target, false);
     		    			return ;
     		    		}
@@ -127,8 +126,7 @@ public class Mopper extends Robot {
         	                	rc.attack(paintLoc);
         	                    counter = 0;
         	                    Clock.yield();
-        	                    break ;
-        	                }     
+        	                } 
         	            }
         	    	}
     	    		Direction dir = rc.getLocation().directionTo(ruinLoc);
@@ -137,22 +135,23 @@ public class Mopper extends Robot {
         	        	// Do nothing
         	        }
         	        else if (rc.canMove(dir) && Util.distance(rc.getLocation(), ruinLoc) > 3) {
-        	        	rc.setIndicatorString("MOVING TOWARD");
         	        	rc.move(dir);
         	        }
         	        else if (rc.canMove(dir.rotateRight()) && Util.distance(rc.getLocation(), ruinLoc) > 2){
-        	        	rc.setIndicatorString("MOVING RIGHT");
         	        	rc.move(dir.rotateRight());
         	        }
         	        else if (rc.canMove(dir.rotateRight().rotateRight())){
-        	        	rc.setIndicatorString("MOVING RIGHT RIGHT");
         	        	rc.move(dir.rotateRight().rotateRight());
         	        }
         	        Clock.yield();
     	    	}
     	    	return ;
     		}
-    	    
+    	    for (MapInfo tile : nearbyTiles) {
+        		if (tile.getPaint().isEnemy() && rc.canAttack(tile.getMapLocation()) && rc.isActionReady()) {
+        			rc.attack(tile.getMapLocation());
+        		}
+        	}
     	    if (curRuin == null) {
     	    	MapLocation ourLoc = rc.getLocation();
                 //If we can see enemy paint, move towards it
