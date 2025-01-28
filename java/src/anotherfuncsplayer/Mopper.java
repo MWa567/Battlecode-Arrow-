@@ -29,9 +29,8 @@ public class Mopper extends Robot {
         anotherfuncsplayer.Pathfinding.initTurn();
         getTarget();
         while (true) {
-        	MapLocation closest_srp = new MapLocation(rc.getLocation().x - (rc.getLocation().x % 4) + 2, rc.getLocation().y - (rc.getLocation().y % 4) + 2);
-    		if (rc.canCompleteResourcePattern(closest_srp)) {
-    			rc.completeResourcePattern(closest_srp);
+    		if (rc.canCompleteResourcePattern(rc.getLocation())) {
+    			rc.completeResourcePattern(rc.getLocation());
     		}
         	RobotInfo[] nearbyRobots = rc.senseNearbyRobots();
             //If we can see a soldier, follow it
@@ -95,6 +94,20 @@ public class Mopper extends Robot {
     	    
     	    if (curRuin != null) {
     	    	MapLocation ruinLoc = curRuin.getMapLocation();
+    	    	
+    	    	int unitCounter = 0;
+    	    	
+    	    	for (RobotInfo robot: rc.senseNearbyRobots(-1)) {
+    		    	if (robot.team == rc.getTeam() && robot.type == UnitType.MOPPER &&
+    		    			ruinLoc.distanceSquaredTo(robot.location) < rc.getLocation().distanceSquaredTo(ruinLoc)) {
+    		    		unitCounter ++;
+    		    		if (unitCounter > 3) {
+    		    			anotherfuncsplayer.Pathfinding.move(my_target, false);
+    		    			return ;
+    		    		}
+    		    	}
+    		    }
+    	    	
     	    	if (prevRuin != ruinLoc) {
     	    		counter = 0;
     	    	}

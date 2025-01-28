@@ -30,73 +30,30 @@ public class Splasher extends Robot {
         anotherfuncsplayer.Pathfinding.initTurn();
         getTarget();
         while (true) {
-        	MapLocation closest_srp = new MapLocation(rc.getLocation().x - (rc.getLocation().x % 4) + 2, rc.getLocation().y - (rc.getLocation().y % 4) + 2);
-    		if (rc.canCompleteResourcePattern(closest_srp)) {
-    			rc.completeResourcePattern(closest_srp);
+    		if (rc.canCompleteResourcePattern(rc.getLocation())) {
+    			rc.completeResourcePattern(rc.getLocation());
     		}
     		
-        	if(towerSpotted){
-        		prevTarget = myEnemyTower;
-    			if (rc.canAttack(myEnemyTower)){
-    				rc.attack(myEnemyTower);
-    			}
-    			else if(rc.isActionReady()){
-    				anotherfuncsplayer.Pathfinding.move(myEnemyTower, true);
-    			}
-    			if (rc.canAttack(myEnemyTower)){
-    				rc.attack(myEnemyTower);
-    			}
-    			if (rc.canAttack(myEnemyTower)){
-    				rc.attack(myEnemyTower);
-    			}
-    			if (rc.canAttack(myEnemyTower)){
-    				rc.attack(myEnemyTower);
-    			}
-    			if (rc.senseRobotAtLocation(myEnemyTower)==null){
-    				towerSpotted = false;
-    			}
-    			Direction dir = rc.getLocation().directionTo(myEnemyTower).opposite();
-    			if (rc.canMove(dir)){
-    				rc.move(dir);
-    				rc.setIndicatorString("GOING BACK");
-    			}
-    			return;
-    		}
-    		
-        	
         	MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
         	// boolean moveAway = false;
         	for (MapInfo tile : nearbyTiles){
         		if (rc.canCompleteResourcePattern(tile.getMapLocation())) {
         			rc.completeResourcePattern(tile.getMapLocation());
         		}
+        		/*
         		RobotInfo potentialTower = rc.senseRobotAtLocation(tile.getMapLocation());
     			if (tile.hasRuin() && potentialTower != null) {
     				if (potentialTower.getTeam() != rc.getTeam()) {
     					// enemy tower
     					myEnemyTower = potentialTower.location;
     					Direction dir = rc.getLocation().directionTo(myEnemyTower);
-    					towerSpotted = true;
-    					if(rc.canMove(dir)){
+    					dir = dir.rotateRight();
+    					while (Util.distance(rc.getLocation(), myEnemyTower) <= 5) {
     						rc.move(dir);
     					}
-    					if (rc.canAttack(myEnemyTower)){
-    						rc.attack(myEnemyTower);
-    					}
-    					if (rc.canAttack(myEnemyTower)){
-    						rc.attack(myEnemyTower);
-    					}
-    					if (rc.canAttack(myEnemyTower)){
-    						rc.attack(myEnemyTower);
-    					}
-    					Direction new_dir = rc.getLocation().directionTo(myEnemyTower).opposite();
-    					if (rc.canMove(new_dir)){
-    						rc.move(new_dir);
-    						rc.setIndicatorString("GOING BACK");
-    					}
-    					return;
     				}
     			}
+    			*/
     		}
         	if (anotherfuncsplayer.Util.distance(rc.getLocation(), my_target) <= 4 || !rc.isMovementReady()) {
     			Explore.init(rc);

@@ -76,6 +76,18 @@ public class Soldier extends Robot {
     		if (rc.canCompleteResourcePattern(closest_srp)) {
     			rc.completeResourcePattern(closest_srp);
     		}
+    		/*
+    		if (rc.canAttack(rc.getLocation())) {
+    			rc.attack(rc.getLocation(), (getPaintType(rc.getLocation().x, rc.getLocation().y) == PaintType.ALLY_SECONDARY));
+    		}
+    		*/
+    		if (rc.getPaint() <= 50 && Util.distance(nearestTower, rc.getLocation()) < 10) {
+    			anotherfuncsplayer.Pathfinding.move(nearestTower, false);
+    			if (rc.canTransferPaint(nearestTower, -75)) {
+					rc.transferPaint(nearestTower, -75);
+				}
+    			return ;
+    		}
     		if (weaving) {
 				Direction dir = rc.getLocation().directionTo(myEnemyTower);
 				if (moveAway) {
@@ -239,6 +251,7 @@ public class Soldier extends Robot {
 	        				rc.attack(tile.getMapLocation(), useSecondaryPaint);
 	        			}
 	        		}
+	        		
 	        		if (rc.canCompleteResourcePattern(tile.getMapLocation())) {
 	        			rc.completeResourcePattern(tile.getMapLocation());
 	        		}
@@ -317,15 +330,19 @@ public class Soldier extends Robot {
     }
 
     public static void runPaintPattern(RobotController rc) throws GameActionException {
+    	int unitCounter = 0;
     	
     	for (RobotInfo robot: rc.senseNearbyRobots(-1)) {
 	    	if (robot.team == rc.getTeam() && robot.type == UnitType.SOLDIER &&
 	    			paintingRuinLoc.distanceSquaredTo(robot.location) < rc.getLocation().distanceSquaredTo(paintingRuinLoc)) {
-	    		anotherfuncsplayer.Pathfinding.move(target, false);
-	    		return ;
+	    		unitCounter ++;
+	    		if (unitCounter > 2) {
+	    			anotherfuncsplayer.Pathfinding.move(target, false);
+	    			return ;
+	    		}
 	    	}
 	    }
-	    
+    	
         //paint tiles for the pattern
         if(rc.isActionReady()) {
             MapInfo[] infos = rc.senseNearbyMapInfos();
@@ -339,8 +356,7 @@ public class Soldier extends Robot {
                     break;
                 }
             }
-        }
-
+        } 
         Direction dir = rc.getLocation().directionTo(paintingRuinLoc);
 
         if (rc.getMovementCooldownTurns() > 10) {
@@ -352,7 +368,6 @@ public class Soldier extends Robot {
         else if (rc.canMove(dir.rotateRight())){
         	rc.move(dir.rotateRight());
         }
-
         if (rc.canCompleteTowerPattern(paintingTowerType, paintingRuinLoc)){
             rc.completeTowerPattern(paintingTowerType, paintingRuinLoc);
         }
