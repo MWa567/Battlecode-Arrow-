@@ -35,25 +35,10 @@ public class Splasher extends Robot {
     		}
     		
         	MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
-        	// boolean moveAway = false;
         	for (MapInfo tile : nearbyTiles){
         		if (rc.canCompleteResourcePattern(tile.getMapLocation())) {
         			rc.completeResourcePattern(tile.getMapLocation());
         		}
-        		/*
-        		RobotInfo potentialTower = rc.senseRobotAtLocation(tile.getMapLocation());
-    			if (tile.hasRuin() && potentialTower != null) {
-    				if (potentialTower.getTeam() != rc.getTeam()) {
-    					// enemy tower
-    					myEnemyTower = potentialTower.location;
-    					Direction dir = rc.getLocation().directionTo(myEnemyTower);
-    					dir = dir.rotateRight();
-    					while (Util.distance(rc.getLocation(), myEnemyTower) <= 5) {
-    						rc.move(dir);
-    					}
-    				}
-    			}
-    			*/
     		}
         	if (anotherfuncsplayer.Util.distance(rc.getLocation(), my_target) <= 4 || !rc.isMovementReady()) {
     			Explore.init(rc);

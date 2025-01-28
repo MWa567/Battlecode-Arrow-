@@ -64,7 +64,7 @@ public class Mopper extends Robot {
             	}
             }
             
-        	MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
+            MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
     	    // Search for a nearby ruin to complete.
 
         	MapInfo curRuin = null;
@@ -91,32 +91,36 @@ public class Mopper extends Robot {
 	                }
 	    		}
         	}
-    	    
+    	    if (prevRuin != null && curRuin != null) {
+    	    	if ((prevRuin.x == curRuin.getMapLocation().x && prevRuin.y == curRuin.getMapLocation().y) && counter > 4) {
+    	    		curRuin = null;
+    	    	}
+    	    }
     	    if (curRuin != null) {
     	    	MapLocation ruinLoc = curRuin.getMapLocation();
-    	    	
     	    	int unitCounter = 0;
-    	    	
     	    	for (RobotInfo robot: rc.senseNearbyRobots(-1)) {
     		    	if (robot.team == rc.getTeam() && robot.type == UnitType.MOPPER &&
     		    			ruinLoc.distanceSquaredTo(robot.location) < rc.getLocation().distanceSquaredTo(ruinLoc)) {
     		    		unitCounter ++;
-    		    		if (unitCounter > 3) {
+    		    		if (unitCounter > 2) {
     		    			anotherfuncsplayer.Pathfinding.move(my_target, false);
     		    			return ;
     		    		}
     		    	}
     		    }
-    	    	
-    	    	if (prevRuin != ruinLoc) {
+    	    	if (prevRuin == null) {
+    	    		prevRuin = ruinLoc;
+    	    	}
+    	    	else if (prevRuin.x != ruinLoc.x || prevRuin.y != ruinLoc.y) {
     	    		counter = 0;
     	    	}
     	    	prevRuin = ruinLoc;
     	    	while (counter <= 4) {
     	    		if(rc.isActionReady()) {
+    	    			counter ++;
         	            MapInfo[] infos = rc.senseNearbyMapInfos();
         	            for(MapInfo info : infos) {
-        	            	counter ++;
         	                MapLocation paintLoc = info.getMapLocation();
         	                if (info.getPaint().isEnemy() && rc.canAttack(paintLoc)) {
         	                	rc.attack(paintLoc);
@@ -137,12 +141,33 @@ public class Mopper extends Robot {
         	        else if (rc.canMove(dir.rotateRight())){
         	        	rc.move(dir.rotateRight());
         	        }
-        	        // Clock.yield();
+        	        rc.setIndicatorString("" + counter);
+        	        Clock.yield();
     	    	}
     	    	return ;
     		}
     	    
     	    if (curRuin == null) {
+    	    	MapLocation ourLoc = rc.getLocation();
+                //If we can see enemy paint, move towards it
+                for (MapInfo tile : nearbyTiles){
+                	if (tile.getPaint().isEnemy()){
+    	            	MapLocation targetLoc = tile.getMapLocation();
+    	            	Direction dir = ourLoc.directionTo(targetLoc);
+    	            	if (rc.canMove(dir)) {
+    	            		rc.move(dir);
+    	            	}
+    	            	else {
+    	            		anotherfuncsplayer.Pathfinding.move(targetLoc, false);
+    	            	}
+    	            	if (rc.canAttack(targetLoc)){
+    	            		rc.attack(targetLoc);
+    	            	}
+    	            	else {
+    	            		Clock.yield();
+    	            	}
+                	}
+                }
     	    	if (anotherfuncsplayer.Util.distance(rc.getLocation(), my_target) <= 4 || !rc.isMovementReady()) {
         	    	Explore.init(rc);
         			Explore.getNewTarget();

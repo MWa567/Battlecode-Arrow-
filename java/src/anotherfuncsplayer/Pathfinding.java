@@ -42,17 +42,16 @@ public class Pathfinding {
     }
     
     static public void paint(boolean isSplasher) throws GameActionException {
+    	MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
+    	MapLocation closest_srp = new MapLocation(rc.getLocation().x - (rc.getLocation().x % 4) + 2, rc.getLocation().y - (rc.getLocation().y % 4) + 2);
+		if (rc.canCompleteResourcePattern(closest_srp)) {
+			rc.completeResourcePattern(closest_srp);
+		}
+    	
     	if (isSplasher) {
     		boolean existsEmpty = false;
-    		MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
             for (MapInfo tile : nearbyTiles) {
-            	if (tile.hasRuin() && rc.senseRobotAtLocation(tile.getMapLocation()) != null && rc.senseRobotAtLocation(tile.getMapLocation()).getTeam() != rc.getTeam()) {
-            		setTarget(tile.getMapLocation());
-            		if (rc.canAttack(target)) {
-            			rc.attack(tile.getMapLocation());
-            		}
-            	}
-            	else if (tile.getMark() == PaintType.ALLY_SECONDARY) {
+            	if (tile.getPaint() == PaintType.ALLY_SECONDARY) {
             		existsEmpty = false;
             	}
             	else if (tile.getPaint() == PaintType.EMPTY || tile.getPaint().isEnemy()) {
@@ -63,10 +62,34 @@ public class Pathfinding {
         		return ;
             }
     	}
+    	else if (rc.getType() == UnitType.MOPPER) {
+    		MapInfo currentTile = rc.senseMapInfo(rc.getLocation());
+            if (currentTile.getPaint().isEnemy() && rc.canAttack(rc.getLocation())){
+            	rc.attack(rc.getLocation());
+        	}
+            RobotInfo[] nearbyRobots = rc.senseNearbyRobots();
+            for (RobotInfo robo : nearbyRobots){
+            	if (robo.team != rc.getTeam() && (robo.type == UnitType.SOLDIER || robo.type == UnitType.SPLASHER)) {
+	                MapLocation my_target = robo.location;
+	                Direction dir = rc.getLocation().directionTo(my_target);
+	                if (rc.canMopSwing(dir) && robo.team!=rc.getTeam()){
+	                    rc.mopSwing(dir);
+	                    return ;
+	                }
+            	}
+            	if (robo.team == rc.getTeam() && robo.type == UnitType.SOLDIER) {
+            		if (robo.paintAmount <= 75 && rc.getPaint() >= 50 && rc.canTransferPaint(robo.location, 25)) {
+            			rc.transferPaint(robo.location, 25);
+            			return ;
+            		}
+            	}
+            }
+            return ;
+    	}
     	MapInfo currentTile = rc.senseMapInfo(rc.getLocation());
         if (!currentTile.getPaint().isAlly() && rc.canAttack(rc.getLocation())){
-            rc.attack(rc.getLocation());
-        }
+        	rc.attack(rc.getLocation());
+    	}
     }
     
     static public void setTarget(MapLocation newTarget) {

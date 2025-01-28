@@ -76,18 +76,6 @@ public class Soldier extends Robot {
     		if (rc.canCompleteResourcePattern(closest_srp)) {
     			rc.completeResourcePattern(closest_srp);
     		}
-    		/*
-    		if (rc.canAttack(rc.getLocation())) {
-    			rc.attack(rc.getLocation(), (getPaintType(rc.getLocation().x, rc.getLocation().y) == PaintType.ALLY_SECONDARY));
-    		}
-    		*/
-    		if (rc.getPaint() <= 50 && Util.distance(nearestTower, rc.getLocation()) < 10) {
-    			anotherfuncsplayer.Pathfinding.move(nearestTower, false);
-    			if (rc.canTransferPaint(nearestTower, -75)) {
-					rc.transferPaint(nearestTower, -75);
-				}
-    			return ;
-    		}
     		if (weaving) {
 				Direction dir = rc.getLocation().directionTo(myEnemyTower);
 				if (moveAway) {
@@ -220,7 +208,14 @@ public class Soldier extends Robot {
 	        if (rc.getMovementCooldownTurns() > 10) {
 	        	Clock.yield();
 	        }
-
+	        
+	        if (rc.getPaint() <= 30 && Util.distance(nearestTower, rc.getLocation()) < 10) {
+    			anotherfuncsplayer.Pathfinding.move(nearestTower, false);
+    			if (rc.canTransferPaint(nearestTower, -75)) {
+					rc.transferPaint(nearestTower, -75);
+				}
+    			return ;
+    		}
 	        
 	        if (rc.getLocation().x % 4 == 2 && rc.getLocation().y % 4 == 2) {
 	        	for (MapInfo tile : nearbyTiles) {
@@ -260,6 +255,13 @@ public class Soldier extends Robot {
 	        
 	        if (curRuin == null || rc.getNumberTowers() == 25) {
 	        	try {
+	        		if (rc.getPaint() <= 75) {
+	        			anotherfuncsplayer.Pathfinding.move(nearestTower, false);
+	        			if (rc.canTransferPaint(nearestTower, -75)) {
+	    					rc.transferPaint(nearestTower, -75);
+	    				}
+	        			return ;
+	        		}
 	        		if (anotherfuncsplayer.Util.distance(rc.getLocation(), target) <= 1 || !rc.isMovementReady()) {
 	        			Explore.init(rc);
 	        			Explore.getNewTarget();
@@ -383,7 +385,7 @@ public class Soldier extends Robot {
         else if (rc.getNumberTowers() < 4) {
         	return UnitType.LEVEL_ONE_MONEY_TOWER;
         }
-    	else if ((paintingRuinLoc.x * 10 + paintingRuinLoc.y ) % 7 == 1 || (paintingRuinLoc.x * 10 + paintingRuinLoc.y ) % 7 == 2 || (paintingRuinLoc.x * 10 + paintingRuinLoc.y ) % 7 == 4) {
+    	else if ((paintingRuinLoc.x * 10 + paintingRuinLoc.y ) % 7 == 3 || (paintingRuinLoc.x * 10 + paintingRuinLoc.y ) % 7 == 3 || (paintingRuinLoc.x * 10 + paintingRuinLoc.y ) % 7 == 4) {
 	    	return UnitType.LEVEL_ONE_PAINT_TOWER;
     	}
 	    else {

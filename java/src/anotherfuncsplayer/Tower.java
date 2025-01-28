@@ -39,7 +39,7 @@ public class Tower extends Robot {
                 System.out.println("BUILT A SOLDIER");
             }
         }
-        else {
+        else if (rc.getRoundNum() <= 250){
         	if ((unitType % 4 == 0 || unitType % 4 == 3) && rc.getChips() > 1250 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)) {
         		rc.buildRobot(UnitType.SOLDIER, nextLoc);
                 System.out.println("BUILT A SOLDIER");
@@ -51,6 +51,23 @@ public class Tower extends Robot {
                 unitType ++;
         	}
         	else if (unitType % 4 == 2 && rc.getChips() > 1300 && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)) {
+        		rc.buildRobot(UnitType.SPLASHER, nextLoc);
+                System.out.println("BUILT A SPLASHER");
+                unitType ++;
+        	}
+        }
+        else {
+        	if ((unitType % 4 == 0) && rc.getChips() > 1250 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)) {
+        		rc.buildRobot(UnitType.SOLDIER, nextLoc);
+                System.out.println("BUILT A SOLDIER");
+                unitType ++;
+        	}
+        	else if ((unitType % 4 == 1 || unitType % 4 == 3) && rc.getChips() > 1400 && rc.canBuildRobot(UnitType.MOPPER, nextLoc)) {
+        		rc.buildRobot(UnitType.MOPPER, nextLoc);
+                System.out.println("BUILT A MOPPER");
+                unitType ++;
+        	}
+        	else if ((unitType % 4 == 2) && rc.getChips() > 1300 && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)) {
         		rc.buildRobot(UnitType.SPLASHER, nextLoc);
                 System.out.println("BUILT A SPLASHER");
                 unitType ++;
