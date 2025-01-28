@@ -131,7 +131,7 @@ def run_mopper():
 
 
 def update_enemy_robots():
-    # Sensing methods can be passed in a radius of -1 to automatically 
+    # Sensing methods can be passed in a radius of -1 to automatically
     # use the largest possible value.
     enemy_robots = sense_nearby_robots(team=get_team().opponent())
     if len(enemy_robots) == 0:
