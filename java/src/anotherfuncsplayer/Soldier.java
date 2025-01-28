@@ -199,6 +199,13 @@ public class Soldier extends Robot {
             	else if (rc.canCompleteTowerPattern(UnitType.LEVEL_ONE_DEFENSE_TOWER, paintingRuinLoc)) {
             		rc.completeTowerPattern(UnitType.LEVEL_ONE_DEFENSE_TOWER, paintingRuinLoc);
             	}
+		    	if (rc.getPaint() <= 30) {
+        			anotherfuncsplayer.Pathfinding.move(nearestTower, false);
+        			if (rc.canTransferPaint(nearestTower, -75)) {
+    					rc.transferPaint(nearestTower, -75);
+    				}
+        			return ;
+        		}
                 paintingTowerType = getNewTowerType(rc);
                 turnsWithoutAttack = 0;
                 paintingTurns = 0;
@@ -216,7 +223,7 @@ public class Soldier extends Robot {
 				}
     			return ;
     		}
-	        
+
 	        if (rc.getLocation().x % 4 == 2 && rc.getLocation().y % 4 == 2) {
 	        	for (MapInfo tile : nearbyTiles) {
 	        		int coordX = tile.getMapLocation().x % 4;
@@ -262,13 +269,14 @@ public class Soldier extends Robot {
 	    				}
 	        			return ;
 	        		}
-	        		if (anotherfuncsplayer.Util.distance(rc.getLocation(), target) <= 1 || !rc.isMovementReady()) {
+	        		if (anotherfuncsplayer.Util.distance(rc.getLocation(), target) <= 3 || !rc.isMovementReady()) {
 	        			Explore.init(rc);
 	        			Explore.getNewTarget();
 	            		target = Explore.exploreTarget;
 	        		}
 	        		rc.setIndicatorString("Moving toward target at "+ target);
 	        		anotherfuncsplayer.Pathfinding.move(target, false);
+	        		
 	    		}
 	        	catch (Exception e) {
 	    			System.out.println(rc.getType() + " Exception");
@@ -338,13 +346,13 @@ public class Soldier extends Robot {
 	    	if (robot.team == rc.getTeam() && robot.type == UnitType.SOLDIER &&
 	    			paintingRuinLoc.distanceSquaredTo(robot.location) < rc.getLocation().distanceSquaredTo(paintingRuinLoc)) {
 	    		unitCounter ++;
-	    		if (unitCounter > 2) {
+	    		if (unitCounter > 1) {
 	    			anotherfuncsplayer.Pathfinding.move(target, false);
 	    			return ;
 	    		}
 	    	}
 	    }
-    	
+
         //paint tiles for the pattern
         if(rc.isActionReady()) {
             MapInfo[] infos = rc.senseNearbyMapInfos();
@@ -370,6 +378,9 @@ public class Soldier extends Robot {
         else if (rc.canMove(dir.rotateRight())){
         	rc.move(dir.rotateRight());
         }
+        else {
+        	anotherfuncsplayer.Pathfinding.move(paintingRuinLoc, false);
+        }
         if (rc.canCompleteTowerPattern(paintingTowerType, paintingRuinLoc)){
             rc.completeTowerPattern(paintingTowerType, paintingRuinLoc);
         }
@@ -379,13 +390,14 @@ public class Soldier extends Robot {
 
         boolean inMiddleX = 0.35 * mapWidth < paintingRuinLoc.x && paintingRuinLoc.x < 0.65 * mapWidth;
         boolean inMiddleY = 0.35 * mapHeight < paintingRuinLoc.y && paintingRuinLoc.y < 0.65 * mapHeight;
+        int randomNumber = 100 * (paintingRuinLoc.x * 10 + paintingRuinLoc.y) / 13;
         if (inMiddleX && inMiddleY) {
     		return UnitType.LEVEL_ONE_DEFENSE_TOWER;
     	}
         else if (rc.getNumberTowers() < 4) {
         	return UnitType.LEVEL_ONE_MONEY_TOWER;
         }
-    	else if ((paintingRuinLoc.x * 10 + paintingRuinLoc.y ) % 7 == 3 || (paintingRuinLoc.x * 10 + paintingRuinLoc.y ) % 7 == 3 || (paintingRuinLoc.x * 10 + paintingRuinLoc.y ) % 7 == 4) {
+    	else if (randomNumber % 7 < 3) {
 	    	return UnitType.LEVEL_ONE_PAINT_TOWER;
     	}
 	    else {

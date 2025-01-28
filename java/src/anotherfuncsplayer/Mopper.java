@@ -103,7 +103,8 @@ public class Mopper extends Robot {
     		    	if (robot.team == rc.getTeam() && robot.type == UnitType.MOPPER &&
     		    			ruinLoc.distanceSquaredTo(robot.location) < rc.getLocation().distanceSquaredTo(ruinLoc)) {
     		    		unitCounter ++;
-    		    		if (unitCounter > 2) {
+    		    		if (unitCounter > 1) {
+    		    			rc.setIndicatorString("PATHFINDING AWAY");
     		    			anotherfuncsplayer.Pathfinding.move(my_target, false);
     		    			return ;
     		    		}
@@ -135,13 +136,18 @@ public class Mopper extends Robot {
         	        if (rc.getMovementCooldownTurns() > 10) {
         	        	// Do nothing
         	        }
-        	        else if (rc.canMove(dir)) {
+        	        else if (rc.canMove(dir) && Util.distance(rc.getLocation(), ruinLoc) > 3) {
+        	        	rc.setIndicatorString("MOVING TOWARD");
         	        	rc.move(dir);
         	        }
-        	        else if (rc.canMove(dir.rotateRight())){
+        	        else if (rc.canMove(dir.rotateRight()) && Util.distance(rc.getLocation(), ruinLoc) > 2){
+        	        	rc.setIndicatorString("MOVING RIGHT");
         	        	rc.move(dir.rotateRight());
         	        }
-        	        rc.setIndicatorString("" + counter);
+        	        else if (rc.canMove(dir.rotateRight().rotateRight())){
+        	        	rc.setIndicatorString("MOVING RIGHT RIGHT");
+        	        	rc.move(dir.rotateRight().rotateRight());
+        	        }
         	        Clock.yield();
     	    	}
     	    	return ;
@@ -158,7 +164,7 @@ public class Mopper extends Robot {
     	            		rc.move(dir);
     	            	}
     	            	else {
-    	            		anotherfuncsplayer.Pathfinding.move(targetLoc, false);
+    	            		anotherfuncsplayer.Pathfinding.move(my_target, false);
     	            	}
     	            	if (rc.canAttack(targetLoc)){
     	            		rc.attack(targetLoc);
@@ -166,6 +172,7 @@ public class Mopper extends Robot {
     	            	else {
     	            		Clock.yield();
     	            	}
+    	            	return ;
                 	}
                 }
     	    	if (anotherfuncsplayer.Util.distance(rc.getLocation(), my_target) <= 4 || !rc.isMovementReady()) {

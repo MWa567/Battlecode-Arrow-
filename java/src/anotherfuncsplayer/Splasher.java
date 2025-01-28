@@ -33,8 +33,21 @@ public class Splasher extends Robot {
     		if (rc.canCompleteResourcePattern(rc.getLocation())) {
     			rc.completeResourcePattern(rc.getLocation());
     		}
+    		MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
+    		boolean existsEmpty = false;
+            for (MapInfo tile : nearbyTiles) {
+            	if (tile.getPaint() == PaintType.ALLY_SECONDARY) {
+            		existsEmpty = false;
+            	}
+            	else if (tile.getPaint() == PaintType.EMPTY || tile.getPaint().isEnemy()) {
+            		existsEmpty = true;
+            	}
+            }
+            MapInfo currentTile = rc.senseMapInfo(rc.getLocation());
+            if (existsEmpty && !currentTile.getPaint().isAlly() && rc.canAttack(rc.getLocation())){
+            	rc.attack(rc.getLocation());
+        	}
     		
-        	MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
         	for (MapInfo tile : nearbyTiles){
         		if (rc.canCompleteResourcePattern(tile.getMapLocation())) {
         			rc.completeResourcePattern(tile.getMapLocation());
