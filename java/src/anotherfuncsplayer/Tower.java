@@ -33,21 +33,28 @@ public class Tower extends Robot {
         MapLocation nextLoc = rc.getLocation().add(dir);
         MapLocation ourLoc = rc.getLocation();
         
+        if (rc.getRoundNum() <= 2 && mapWidth <= 50 && mapHeight <= 50) {
+        	MapLocation center = new MapLocation(mapWidth / 2, mapHeight / 2);
+        	if (rc.canBuildRobot(UnitType.SOLDIER, center)) {
+                rc.buildRobot(UnitType.SOLDIER, center);
+                System.out.println("BUILT A SOLDIER");
+            }
+        }
         if (mapWidth > 25 && mapHeight > 25 && rc.getRoundNum() <= 40) {
-        	if (rc.canBuildRobot(UnitType.SOLDIER, nextLoc)) {
+        	if (rc.canBuildRobot(UnitType.SOLDIER, nextLoc) && rc.getChips() > 1250) {
                 rc.buildRobot(UnitType.SOLDIER, nextLoc);
                 System.out.println("BUILT A SOLDIER");
             }
         }
         else if (rc.getRoundNum() <= 250){
-        	if ((unitType % 3 == 0) && rc.getChips() > 1250 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)) {
-        		rc.buildRobot(UnitType.SOLDIER, nextLoc);
-                System.out.println("BUILT A SOLDIER");
-                unitType ++;
-        	}
-        	else if ((unitType % 3 == 1) && rc.getChips() > 1400 && rc.canBuildRobot(UnitType.MOPPER, nextLoc)) {
+        	if (unitType % 3 == 1 && rc.getChips() > 1400 && rc.canBuildRobot(UnitType.MOPPER, nextLoc)) {
         		rc.buildRobot(UnitType.MOPPER, nextLoc);
                 System.out.println("BUILT A MOPPER");
+                unitType ++;
+        	}
+        	else if (unitType % 3 == 0 && rc.getChips() > 1250 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)) {
+        		rc.buildRobot(UnitType.SOLDIER, nextLoc);
+                System.out.println("BUILT A SOLDIER");
                 unitType ++;
         	}
         	else if (unitType % 3 == 2 && rc.getChips() > 1300 && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)) {

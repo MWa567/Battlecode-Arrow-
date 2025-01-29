@@ -49,16 +49,18 @@ public class Pathfinding {
 		}
     	
     	if (isSplasher) {
-    		boolean existsEmpty = false;
+    		int empty = 0;
+    		int allied = 0;
+    		// boolean existsEmpty = false;
             for (MapInfo tile : nearbyTiles) {
             	if (tile.getPaint() == PaintType.ALLY_SECONDARY) {
-            		existsEmpty = false;
+            		allied ++;
             	}
             	else if (tile.getPaint() == PaintType.EMPTY || tile.getPaint().isEnemy()) {
-            		existsEmpty = true;
+            		empty ++;
             	}
             }
-            if (!existsEmpty) {
+            if (empty * 2 <= allied) {
         		return ;
             }
     	}
@@ -102,18 +104,22 @@ public class Pathfinding {
     	setTarget(rotation);
     }
     
-    static public void move(MapLocation loc, boolean isSplasher) throws GameActionException {
+    static public void move(MapLocation loc, boolean notOverride) throws GameActionException {
+    	boolean isSplasher = (rc.getType() == UnitType.SPLASHER);
     	target = loc;
     	BugNav.init(rc);
     	BugNav.initTurn();
         if (!BugNav.nav(target)) {
         	greedyPath();
-        	paint(isSplasher);
-        	
+        	if (notOverride) {
+        		paint(isSplasher);
+        	}
         }
 		else {
 			BugNav.move(target);
-			paint(isSplasher);
+			if (notOverride) {
+        		paint(isSplasher);
+        	}
         }
     }
     

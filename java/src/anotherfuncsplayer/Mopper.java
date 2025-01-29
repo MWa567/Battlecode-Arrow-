@@ -125,12 +125,13 @@ public class Mopper extends Robot {
         	                if (info.getPaint().isEnemy() && rc.canAttack(paintLoc)) {
         	                	rc.attack(paintLoc);
         	                    counter = 0;
-        	                    Clock.yield();
+        	                    if (mapWidth <= 25 && mapHeight <= 25) {
+        	                    	Clock.yield();
+        	                    }
         	                } 
         	            }
         	    	}
     	    		Direction dir = rc.getLocation().directionTo(ruinLoc);
-
         	        if (rc.getMovementCooldownTurns() > 10) {
         	        	// Do nothing
         	        }
@@ -175,7 +176,7 @@ public class Mopper extends Robot {
                 	}
                 }
     	    	if (anotherfuncsplayer.Util.distance(rc.getLocation(), my_target) <= 4 || !rc.isMovementReady()) {
-        	    	Explore.init(rc);
+    	    		Explore.init(rc);
         			Explore.getNewTarget();
             		my_target = Explore.exploreTarget;
         			Clock.yield();

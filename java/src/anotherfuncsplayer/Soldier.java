@@ -11,15 +11,17 @@ import battlecode.common.PaintType;
 import battlecode.common.RobotController;
 import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
+import java.util.ArrayList;
 
 public class Soldier extends Robot {
 	static int turnCount = 0;
 
     static final Random rng = new Random(6147);
-    static MapLocation target;
+    static MapLocation target = null;
     static MapLocation originalLocation = null;
     static MapLocation nearestTower;
     static MapLocation prevTarget = null;
+
 
     static boolean[][] paintTowerPattern = null;
     static boolean[][] moneyTowerPattern = null;
@@ -40,6 +42,9 @@ public class Soldier extends Robot {
 	static boolean moveAway = false;
 	static MapLocation myEnemyTower = null;
 	static int boredomweaving = 0;
+	
+	boolean attackTowers = false;
+	static ArrayList<MapLocation> ruins = new ArrayList<>();
 
     /** Array containing all the possible movement directions. */
     static final Direction[] directions = {
@@ -61,6 +66,9 @@ public class Soldier extends Robot {
         paintTowerPattern = rc.getTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER);
         moneyTowerPattern = rc.getTowerPattern(UnitType.LEVEL_ONE_MONEY_TOWER);
         defenseTowerPattern = rc.getTowerPattern(UnitType.LEVEL_ONE_DEFENSE_TOWER);
+        if (rc.getRoundNum() <= 2) {
+			attackTowers = true;
+		}
     }
 
     @Override
@@ -70,7 +78,6 @@ public class Soldier extends Robot {
     	anotherfuncsplayer.BugNav.init(rc);
         anotherfuncsplayer.Pathfinding.init(rc);
         anotherfuncsplayer.Pathfinding.initTurn();
-        target = anotherfuncsplayer.Explore.getExploreTarget();
     	while (true) {
     		MapLocation closest_srp = new MapLocation(rc.getLocation().x - (rc.getLocation().x % 4) + 2, rc.getLocation().y - (rc.getLocation().y % 4) + 2);
     		if (rc.canCompleteResourcePattern(closest_srp)) {
@@ -94,7 +101,7 @@ public class Soldier extends Robot {
 					dir = dir.opposite();
 					if (rc.canMove(dir)){
 						rc.move(dir);
-						// rc.setIndicatorString("GOING BACK");
+						rc.setIndicatorString("GOING BACK");
 					}
 					else if (rc.isMovementReady()) {
 						if (rc.canMove(dir.rotateRight())) {
@@ -108,6 +115,11 @@ public class Soldier extends Robot {
 							rc.setIndicatorString("GOING LEFT");
 						}
 					}
+					else{
+						rc.move(dir);
+						moveAway = false;
+						return;
+					}
 				}
 				else {
 					if (rc.canMove(dir) && !rc.canAttack(myEnemyTower)){
@@ -116,6 +128,7 @@ public class Soldier extends Robot {
 					}
 					else if (rc.isMovementReady() && !rc.canAttack(myEnemyTower)) {
 						weaving = false;
+						moveAway = false;
 						return;
 					}
 
@@ -130,6 +143,26 @@ public class Soldier extends Robot {
 				moveAway = !moveAway;
 				return;
 			}
+    		
+    		if (attackTowers) {
+    			MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
+    			for (MapInfo tile : nearbyTiles) {
+        	    	// Checks if there is a ruin nearby
+        	    	if (tile.hasRuin()){
+        	    		// If tile has ruin, adds it to the ruins array
+        	    		if (!ruins.contains(tile.getMapLocation())) {
+        	    			for (MapLocation symmetricRuin: getSymmetry(tile.getMapLocation())) {
+        	    				if (!ruins.contains(symmetricRuin)) {
+        	    					ruins.add(symmetricRuin);
+        	    				}
+        	    			}
+        	    		}
+        	    	}
+    			}
+    			rush();
+    			return ;
+    		}
+    		
 	    	// Sense information about all visible nearby tiles.
 		    MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
 		    // Search for a nearby ruin to complete
@@ -192,12 +225,24 @@ public class Soldier extends Robot {
 		    	paintingRuinLoc = curRuin.getMapLocation();
 		    	if (rc.canCompleteTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, paintingRuinLoc)){
                     rc.completeTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, paintingRuinLoc);
+                    if (rc.canUpgradeTower(paintingRuinLoc)) {
+						rc.upgradeTower(paintingRuinLoc);
+						System.out.println("Tower was upgraded!");
+					}
                 }
             	else if (rc.canCompleteTowerPattern(UnitType.LEVEL_ONE_MONEY_TOWER, paintingRuinLoc)){
                     rc.completeTowerPattern(UnitType.LEVEL_ONE_MONEY_TOWER, paintingRuinLoc);
+                    if (rc.canUpgradeTower(paintingRuinLoc)) {
+						rc.upgradeTower(paintingRuinLoc);
+						System.out.println("Tower was upgraded!");
+					}
                 }
             	else if (rc.canCompleteTowerPattern(UnitType.LEVEL_ONE_DEFENSE_TOWER, paintingRuinLoc)) {
             		rc.completeTowerPattern(UnitType.LEVEL_ONE_DEFENSE_TOWER, paintingRuinLoc);
+            		if (rc.canUpgradeTower(paintingRuinLoc)) {
+						rc.upgradeTower(paintingRuinLoc);
+						System.out.println("Tower was upgraded!");
+					}
             	}
 		    	if (rc.getPaint() <= 20 && Util.distance(rc.getLocation(), nearestTower) < 10) {
         			anotherfuncsplayer.Pathfinding.move(nearestTower, false);
@@ -239,7 +284,7 @@ public class Soldier extends Robot {
         			rc.completeResourcePattern(tile.getMapLocation());
         		}
 	        }
-	        
+        	target = anotherfuncsplayer.Explore.getExploreTarget();
 	        if (curRuin == null || rc.getNumberTowers() == 25) {
 	        	try {
 	        		if (rc.getPaint() <= 20) {
@@ -364,6 +409,10 @@ public class Soldier extends Robot {
         }
         if (rc.canCompleteTowerPattern(paintingTowerType, paintingRuinLoc)){
             rc.completeTowerPattern(paintingTowerType, paintingRuinLoc);
+            if (rc.canUpgradeTower(paintingRuinLoc)) {
+    			rc.upgradeTower(paintingRuinLoc);
+    			System.out.println("Tower was upgraded!");
+    		}
         }
     }
 
@@ -371,18 +420,47 @@ public class Soldier extends Robot {
 
         boolean inMiddleX = 0.35 * mapWidth < paintingRuinLoc.x && paintingRuinLoc.x < 0.65 * mapWidth;
         boolean inMiddleY = 0.35 * mapHeight < paintingRuinLoc.y && paintingRuinLoc.y < 0.65 * mapHeight;
-        int randomNumber = 100 * (paintingRuinLoc.x * 10 + paintingRuinLoc.y) / 13;
+        int randomNumber = 5555 * (paintingRuinLoc.x * 10 + paintingRuinLoc.y) / 13;
         if (inMiddleX && inMiddleY) {
     		return UnitType.LEVEL_ONE_DEFENSE_TOWER;
     	}
         else if (rc.getNumberTowers() < 4) {
         	return UnitType.LEVEL_ONE_MONEY_TOWER;
         }
-    	else if (randomNumber % 7 < 4) {
+    	else if (randomNumber % 7 == 1 || randomNumber % 7 == 2 || randomNumber % 7 == 5) {
 	    	return UnitType.LEVEL_ONE_PAINT_TOWER;
     	}
 	    else {
 	    	return UnitType.LEVEL_ONE_MONEY_TOWER;
 	    }
+    }
+    
+    public static MapLocation[] getSymmetry(MapLocation loc) throws GameActionException {
+    	int x = loc.x;
+    	int y = loc.y;
+    	MapLocation horizontal = new MapLocation(mapWidth - x - 1, y);
+    	MapLocation vertical = new MapLocation(x, mapHeight - y - 1);
+    	MapLocation diagonal = new MapLocation(y, x);
+    	MapLocation antiDiagonal = new MapLocation(mapWidth - x - 1, mapHeight - y - 1);
+    	MapLocation[] symmetries = {horizontal, vertical, antiDiagonal, diagonal};
+    	return symmetries;
+    }
+    
+    public static void rush() throws GameActionException {
+    	if (target == null) {
+        	target = ruins.get(2);
+    	}
+    	MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
+    	for (MapInfo tile : nearbyTiles){
+    		RobotInfo potentialTower = rc.senseRobotAtLocation(tile.getMapLocation());
+    		if (tile.hasRuin() && potentialTower != null && potentialTower.team != rc.getTeam()) {
+    			//enemy tower!!
+    			myEnemyTower = potentialTower.location;
+    			rc.setIndicatorString("updating myEnemyTower" + myEnemyTower);
+    			weaving = true;
+    		}
+		}
+    	rc.setIndicatorString("GOING TO TOWER AT " + target);
+    	anotherfuncsplayer.Pathfinding.move(target, false);
     }
 }

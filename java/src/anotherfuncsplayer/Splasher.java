@@ -11,7 +11,7 @@ public class Splasher extends Robot {
 	static MapLocation my_target = null;
 	static boolean reached_target = false;
 	static boolean hasResource = false;
-	static boolean hasWall = false;
+	static MapLocation prevLoc = new MapLocation(-1, -1);
 	
 	static boolean towerSpotted = false;
 	static MapLocation myEnemyTower = null;
@@ -60,31 +60,35 @@ public class Splasher extends Robot {
             	if (tile.getPaint().isEnemy()){
 	            	MapLocation targetLoc = tile.getMapLocation();
 	            	Direction dir = ourLoc.directionTo(targetLoc);
-	            	rc.setIndicatorString("ENEMY PAINT DETECTED AT " + targetLoc);
 	            	if (rc.canMove(dir)) {
 	            		rc.move(dir);
 	            	}
 	            	else {
-	            		anotherfuncsplayer.Pathfinding.move(my_target, true);
+	            		anotherfuncsplayer.Pathfinding.move(my_target, false);
 	            	}
 	            	rc.setIndicatorString("TYRING TO ATTACK " + targetLoc + rc.canAttack(targetLoc));
 	            	if (rc.canAttack(targetLoc)){
+	            		rc.setIndicatorString("TRYING TO ATTACK " + targetLoc + rc.canAttack(targetLoc));
 	            		rc.attack(targetLoc);
 	            		return ;
 	            	}
 	            	else {
+	            		if (rc.canAttack(rc.getLocation())) {
+	            			rc.setIndicatorString("TRYING TO ATTACK " + rc.getLocation());
+	            			rc.attack(rc.getLocation());
+		            		return ;
+	            		}
 	            		Clock.yield();
 	            	}
             	}
             }
-            
         	if (anotherfuncsplayer.Util.distance(rc.getLocation(), my_target) <= 4 || !rc.isMovementReady()) {
     			Explore.init(rc);
     			Explore.getNewTarget();
         		my_target = Explore.exploreTarget;
     		}
         	rc.setIndicatorString("MOVING TO TARGET AT " + my_target);
-        	anotherfuncsplayer.Pathfinding.move(my_target, true);
+        	anotherfuncsplayer.Pathfinding.move(my_target, false);
         	Clock.yield();
         }
     }
