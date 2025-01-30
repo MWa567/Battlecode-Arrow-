@@ -43,7 +43,7 @@ public class Soldier extends Robot {
 	static MapLocation myEnemyTower = null;
 	static int boredomweaving = 0;
 	
-	boolean attackTowers = false;
+	static boolean attackTowers = false;
 	static ArrayList<MapLocation> ruins = new ArrayList<>();
 
     /** Array containing all the possible movement directions. */
@@ -66,9 +66,6 @@ public class Soldier extends Robot {
         paintTowerPattern = rc.getTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER);
         moneyTowerPattern = rc.getTowerPattern(UnitType.LEVEL_ONE_MONEY_TOWER);
         defenseTowerPattern = rc.getTowerPattern(UnitType.LEVEL_ONE_DEFENSE_TOWER);
-        if (rc.getRoundNum() <= 2) {
-			attackTowers = true;
-		}
     }
 
     @Override
@@ -138,30 +135,12 @@ public class Soldier extends Robot {
 					}
 					if (rc.senseRobotAtLocation(myEnemyTower)==null){
 						weaving = false;
+						attackTowers = false;
 					}
 				}
 				moveAway = !moveAway;
 				return;
 			}
-    		
-    		if (attackTowers) {
-    			MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
-    			for (MapInfo tile : nearbyTiles) {
-        	    	// Checks if there is a ruin nearby
-        	    	if (tile.hasRuin()){
-        	    		// If tile has ruin, adds it to the ruins array
-        	    		if (!ruins.contains(tile.getMapLocation())) {
-        	    			for (MapLocation symmetricRuin: getSymmetry(tile.getMapLocation())) {
-        	    				if (!ruins.contains(symmetricRuin)) {
-        	    					ruins.add(symmetricRuin);
-        	    				}
-        	    			}
-        	    		}
-        	    	}
-    			}
-    			rush();
-    			return ;
-    		}
     		
 	    	// Sense information about all visible nearby tiles.
 		    MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
@@ -206,7 +185,7 @@ public class Soldier extends Robot {
 						myEnemyTower = potentialTower.location;
 						rc.setIndicatorString("updating myEnemyTower" + myEnemyTower);
 						weaving = true;
-						if (rc.canMove(dir) && !rc.canAttack(myEnemyTower)){
+						if (rc.canMove(dir)){//} && !rc.canAttack(myEnemyTower)){
 							rc.move(dir);
 							moveAway = true;
 						}
@@ -445,22 +424,5 @@ public class Soldier extends Robot {
     	MapLocation[] symmetries = {horizontal, vertical, antiDiagonal, diagonal};
     	return symmetries;
     }
-    
-    public static void rush() throws GameActionException {
-    	if (target == null) {
-        	target = ruins.get(2);
-    	}
-    	MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
-    	for (MapInfo tile : nearbyTiles){
-    		RobotInfo potentialTower = rc.senseRobotAtLocation(tile.getMapLocation());
-    		if (tile.hasRuin() && potentialTower != null && potentialTower.team != rc.getTeam()) {
-    			//enemy tower!!
-    			myEnemyTower = potentialTower.location;
-    			rc.setIndicatorString("updating myEnemyTower" + myEnemyTower);
-    			weaving = true;
-    		}
-		}
-    	rc.setIndicatorString("GOING TO TOWER AT " + target);
-    	anotherfuncsplayer.Pathfinding.move(target, false);
-    }
+
 }

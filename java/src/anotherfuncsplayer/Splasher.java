@@ -66,15 +66,13 @@ public class Splasher extends Robot {
 	            	else {
 	            		anotherfuncsplayer.Pathfinding.move(my_target, false);
 	            	}
-	            	rc.setIndicatorString("TYRING TO ATTACK " + targetLoc + rc.canAttack(targetLoc));
+	            	
 	            	if (rc.canAttack(targetLoc)){
-	            		rc.setIndicatorString("TRYING TO ATTACK " + targetLoc + rc.canAttack(targetLoc));
 	            		rc.attack(targetLoc);
 	            		return ;
 	            	}
 	            	else {
 	            		if (rc.canAttack(rc.getLocation())) {
-	            			rc.setIndicatorString("TRYING TO ATTACK " + rc.getLocation());
 	            			rc.attack(rc.getLocation());
 		            		return ;
 	            		}

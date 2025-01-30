@@ -104,20 +104,20 @@ public class Pathfinding {
     	setTarget(rotation);
     }
     
-    static public void move(MapLocation loc, boolean notOverride) throws GameActionException {
+    static public void move(MapLocation loc, boolean override) throws GameActionException {
     	boolean isSplasher = (rc.getType() == UnitType.SPLASHER);
     	target = loc;
     	BugNav.init(rc);
     	BugNav.initTurn();
         if (!BugNav.nav(target)) {
         	greedyPath();
-        	if (notOverride) {
+        	if (!override) {
         		paint(isSplasher);
         	}
         }
 		else {
 			BugNav.move(target);
-			if (notOverride) {
+			if (!override) {
         		paint(isSplasher);
         	}
         }

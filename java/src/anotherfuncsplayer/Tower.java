@@ -33,13 +33,6 @@ public class Tower extends Robot {
         MapLocation nextLoc = rc.getLocation().add(dir);
         MapLocation ourLoc = rc.getLocation();
         
-        if (rc.getRoundNum() <= 2 && mapWidth <= 50 && mapHeight <= 50) {
-        	MapLocation center = new MapLocation(mapWidth / 2, mapHeight / 2);
-        	if (rc.canBuildRobot(UnitType.SOLDIER, center)) {
-                rc.buildRobot(UnitType.SOLDIER, center);
-                System.out.println("BUILT A SOLDIER");
-            }
-        }
         if (mapWidth > 25 && mapHeight > 25 && rc.getRoundNum() <= 40) {
         	if (rc.canBuildRobot(UnitType.SOLDIER, nextLoc) && rc.getChips() > 1250) {
                 rc.buildRobot(UnitType.SOLDIER, nextLoc);
